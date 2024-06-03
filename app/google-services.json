@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1019041333179",
+    "project_id": "hammami-9adc7",
+    "storage_bucket": "hammami-9adc7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019041333179:android:0dce2358e3d9c46e868e9e",
+        "android_client_info": {
+          "package_name": "com.example.hammami"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmxr5xKp7u-oJkPAaMc1Q9SleQ9juMByE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
