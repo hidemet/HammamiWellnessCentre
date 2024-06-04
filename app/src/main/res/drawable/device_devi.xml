@@ -6,6 +6,17 @@
     android:viewportWidth="428"
     android:viewportHeight="908"
     >
+
+    <View
+        android:id="@+id/elenco_cate"
+        android:layout_width="360dp"
+        android:layout_height="318dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="124dp"
+        />
+
     <group>
         <clip-path
             android:pathData="M26 8H402C411.941 8 420 16.0589 420 26V882C420 891.941 411.941 900 402 900H26C16.0589 900 8 891.941 8 882V26C8 16.0589 16.0589 8 26 8Z"
