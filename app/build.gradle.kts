@@ -4,7 +4,9 @@ plugins {
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")}
+    id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
+}
 
 android {
     namespace = "com.example.hammami"
@@ -45,12 +47,13 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Material Design 3
-    implementation("com.google.android.material:material:1.12")
+    implementation("com.google.android.material:material:1.12.0")
 
     //loading button
     //implementation("br.com.simplepass:loading-button-android:2.2.0")
@@ -73,4 +76,7 @@ dependencies {
     //Dagger hilt
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    // Firebase
+    implementation(libs.firebase.auth)
 }

@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Hammami</string>
+    <string name="benvenuto_">
+Benvenuto!
+</string>
+    <string name="placeHolderEmail">Inserisci email</string>
+    <string name="placeHolderPassword">Inserisci password</string>
+    <string name="accedi_con_">Accedi con le credenziali del tuo account per cominciare ad utilizzare l’app</string>
+    <string name="ricordami">
+Ricordami
+</string>
+    <string name="accedi">Accedi</string>
+    <string name="hai_dimenticato_la_password">Hai dimenticato la password?</string>
+    <string name="Register">Registrati</string>
+    <string name="non_hai_un_account">Non hai un account?</string>
+
 </resources>
