@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_home"
+        android:enabled="true"
+        android:icon="@drawable/ic_home"
+        android:title="Home"/>
+    <item
+        android:id="@+id/item_services"
+        android:enabled="true"
+        android:icon="@drawable/ic_search"
+        android:title="Servizi"/>
+    <item
+        android:id="@+id/item_appointements"
+        android:enabled="true"
+        android:icon="@drawable/ic_appuntamenti"
+        android:title="Appuntamenti"/>
+    <item
+        android:id="@+id/item_center"
+        android:enabled="true"
+        android:icon="@drawable/ic_spa"
+        android:title="Il centro"/>
+
+</menu>
