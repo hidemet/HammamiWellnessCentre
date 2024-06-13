@@ -14,4 +14,23 @@ Ricordami
     <string name="Register">Registrati</string>
     <string name="non_hai_un_account">Non hai un account?</string>
 
+    <string name="crea_account">Crea un account Hammami</string>
+    <string name="inserisci_info_personali">Inserisci il tuo nome, cognome e numero di cellulare per proseguire la registrazione</string>
+    <string name="placeHolderNome">Nome</string>
+    <string name="placeHolderCognome">Cognome</string>
+    <string name="placeHolderNumero">Numero di cellulare</string>
+    <string name="avanti">Avanti</string>
+    <string name="proseguiamo">Proseguiamo con la registrazione!</string>
+    <string name="inserisci_info_personali_2">Inserisci il tuo sesso, data di nascita, eventuali allergie e/o invalidità</string>
+    <string name="placeHolderAllergie">Eventuali allergie</string>
+    <string name="placeHolderInvalidita">Eventuali invalidità</string>
+    <string name="quasi">Ci siamo quasi!</string>
+    <string name="inserisci_credenziali">Inserisci la tua email e scegli una password per il tuo account</string>
+    <string name="placeHolderConfermaPassword">Conferma password</string>
+    <string name="placeHolderCodiceAmico">Inserisci codice amico</string>
+    <string name="conferma">Conferma</string>
+    <string name="opzionale">* opzionale</string>
+    <string name="conferma_registrazione">Conferma la registrazione</string>
+    <string name="controlla_registrazione">Controlla i campi inseriti prima di confermare la registrazione</string>
+
 </resources>
