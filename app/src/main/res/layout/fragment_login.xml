@@ -19,6 +19,7 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.91" />
 
+
     <ImageView
         android:id="@+id/logoHammami"
         android:layout_width="224dp"
@@ -187,6 +188,11 @@
             android:layout_marginStart="0dp"
             android:layout_marginTop="15dp"
             android:text="@string/Register" />
+
+
+
     </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

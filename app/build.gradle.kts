@@ -38,6 +38,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures{
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -54,6 +58,10 @@ dependencies {
 
     // Material Design 3
     implementation("com.google.android.material:material:1.12.0")
+
+
+    implementation("com.google.android.material:material-icons-core:1.6.7")
+    implementation("com.google.android.material:material-icons-extended:1.6.7")
 
     //loading button
     //implementation("br.com.simplepass:loading-button-android:2.2.0")
