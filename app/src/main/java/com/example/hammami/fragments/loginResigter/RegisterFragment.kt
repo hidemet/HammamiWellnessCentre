@@ -17,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 private val TAG = "RegisterFragment"
 @AndroidEntryPoint
-class RegisterFragment : Fragment (R.layout.fragment_register){
+class RegisterFragment : Fragment (R.layout.fragment_register) {
 
     private lateinit var binding: FragmentRegisterBinding
     private val viewModel by viewModels<RegisterViewModel>()
@@ -47,23 +47,25 @@ class RegisterFragment : Fragment (R.layout.fragment_register){
             }
         }
 
-        lifecycleScope.launchWhenStarted{
+        lifecycleScope.launchWhenStarted {
             viewModel.register.collect { event ->
-                when(event){
+                when (event) {
                     is Resource.Loading -> {
-                     binding.buttonRegisterResgister.startAnimation()
+                        binding.buttonRegisterResgister.startAnimation()
                     }
+
                     is Resource.Success -> {
-                        Log.d("test",event.message.toString())
+                        Log.d("test", event.message.toString())
                         binding.buttonRegisterResgister.revertAnimation()
                     }
 
                     is Resource.Error -> {
-                        Log.e(TAG, event.message,toString())
+                        Log.e(TAG, event.message, toString())
                         binding.buttonRegisterResgister.revertAnimation()
+                    }
                 }
             }
         }
-    }
 
+    }
 }
