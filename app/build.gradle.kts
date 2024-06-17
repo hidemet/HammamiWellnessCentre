@@ -60,8 +60,8 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
 
 
-    implementation("com.google.android.material:material-icons-core:1.6.7")
-    implementation("com.google.android.material:material-icons-extended:1.6.7")
+    //implementation("com.google.android.material:material-icons-core:1.6.7")
+    //implementation("com.google.android.material:material-icons-extended:1.6.7")
 
     //loading button
     //implementation("br.com.simplepass:loading-button-android:2.2.0")
@@ -76,7 +76,7 @@ dependencies {
     //implementation("io.github.vejei.viewpagerindicator:viewpagerindicator:1.0.0-alpha.1")
 
     //stepView
-   // implementation("com.shuhart.stepview:stepview:1.5.1")
+    //implementation("com.shuhart.stepview:stepview:1.5.1")
 
     //Android Ktx
     implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
@@ -87,4 +87,9 @@ dependencies {
 
     // Firebase
     implementation(libs.firebase.auth)
+
+    //Navigation component
+    val nav_version = "2.5.2"
+    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 }
