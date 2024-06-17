@@ -17,8 +17,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 private val TAG = "RegisterFragment"
 @AndroidEntryPoint
-class RegisterFragment : Fragment (R.layout.fragment_register){
-
+class RegisterFragment : Fragment (R.layout.fragment_register4){
+    // FragmentRegisterBinding variabile usata per manipolare gli elementi dell'interfaccia utente
+    // definiti nel relativo layout xml associato a RegisterFragment
     private lateinit var binding: FragmentRegisterBinding
     private val viewModel by viewModels<RegisterViewModel>()
 
@@ -48,6 +49,12 @@ class RegisterFragment : Fragment (R.layout.fragment_register){
             }
         }
 
+        /*
+        * Osserva il flusso di dati emesso da RegisterViewModel e reagisce di conseguenza
+        * lifecycleScope.launchWhenStarted{} è un blocco di codice che viene eseguito quando il LifeCycle
+        * del fragment è nello stato STARTED (viene avviato). E' una coroutine. Le corotine sono utilizzate
+        * per esequire operazioni asincrone in Kotlin.
+        */
         lifecycleScope.launchWhenStarted{
             viewModel.register.collect { event ->
                 when(event){
