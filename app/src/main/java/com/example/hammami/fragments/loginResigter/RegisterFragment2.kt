@@ -10,18 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.hammami.R
 import com.example.hammami.model.User
-import com.example.hammami.databinding.FragmentRegisterBinding
-import com.example.hammami.util.RegisterValidation
 import com.example.hammami.viewmodel.RegisterViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
-
-private val TAG = "RegisterFragment"
 
 @AndroidEntryPoint
-class RegisterFragment : Fragment(R.layout.fragment_register4) {
+class RegisterFragment2 : Fragment(R.layout.fragment_register2){
     // FragmentRegisterBinding variabile usata per manipolare gli elementi dell'interfaccia utente
     // definiti nel relativo layout xml associato a RegisterFragment
     private lateinit var binding: FragmentRegisterBinding
@@ -32,6 +25,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register4) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // iniizializiamo il collegamento il modo che il binding sia uguale a FragmentRegisterBinding
         binding = FragmentRegisterBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -58,13 +52,12 @@ class RegisterFragment : Fragment(R.layout.fragment_register4) {
         * del fragment è nello stato STARTED (viene avviato). E' una coroutine. Le corotine sono utilizzate
         * per esequire operazioni asincrone in Kotlin.
         */
-        lifecycleScope.launchWhenStarted {
+        lifecycleScope.launchWhenStarted{
             viewModel.register.collect { event ->
-                when (event) {
+                when(event){
                     is Resource.Loading -> {
-                        binding.buttonRegisterResgister.startAnimation()
+                     binding.buttonRegisterResgister.startAnimation()
                     }
-
                     is Resource.Success -> {
                         Log.d("test", event.message.toString())
                         binding.buttonRegisterResgister.revertAnimation()
@@ -73,29 +66,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register4) {
                     is Resource.Error -> {
                         Log.e(TAG, event.message, toString())
                         binding.buttonRegisterResgister.revertAnimation()
-                    }
-
-                    else -> Unit
-                }
-            }
-
-            lifecycleScope.launchWhenStarted {
-                viewModel.validation.collect { validation ->
-                    if (validation.email is RegisterValidation.Failed) {
-                        withContext(Dispatchers.Main) {
-                            binding.edEmailRegister.apply {
-                                requestFocus()
-                                error = validation.email.message
-                            }
-                        }
-                    }
-                    if(validation.password is RegisterValidation.Failed) {
-                        withContext(Dispatchers.Main) {
-                            binding.edPasswordRegister.apply {
-                                requestFocus()
-                                error = validation.password.message
-                            }
-                        }
                 }
             }
         }

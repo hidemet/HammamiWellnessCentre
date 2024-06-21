@@ -1,4 +1,4 @@
-package com.example.hammami.data
+package com.example.hammami.model
 
 data class User (
 
