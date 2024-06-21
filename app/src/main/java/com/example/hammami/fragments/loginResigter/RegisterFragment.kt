@@ -32,6 +32,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register4) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // iniizializiamo il collegamento il modo che il binding sia uguale a FragmentRegisterBinding
         binding = FragmentRegisterBinding.inflate(inflater, container, false)
         return binding.root
     }
