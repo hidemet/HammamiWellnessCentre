@@ -32,5 +32,8 @@ Ricordami
     <string name="opzionale">* opzionale</string>
     <string name="conferma_registrazione">Conferma la registrazione</string>
     <string name="controlla_registrazione">Controlla i campi inseriti prima di confermare la registrazione</string>
+    <string name="err_email_obbligatoria">L\'Email è obbligatoria</string>
+    <string name="err_password_obbligatoria">Password è obbligatoria</string>
+    <string name="err_email_non_valida">Email non valida</string>
 
 </resources>
