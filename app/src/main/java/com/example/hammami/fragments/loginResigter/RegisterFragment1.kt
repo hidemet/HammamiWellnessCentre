@@ -9,12 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.hammami.R
+import com.example.hammami.databinding.FragmentRegisterBinding
 import com.example.hammami.model.User
 import com.example.hammami.viewmodel.RegisterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RegisterFragment1 : Fragment(R.layout.fragment_register1){
+class RegisterFragment1 : Fragment(R.layout.fragment_register1) {
     // FragmentRegisterBinding variabile usata per manipolare gli elementi dell'interfaccia utente
     // definiti nel relativo layout xml associato a RegisterFragment
     private lateinit var binding: FragmentRegisterBinding
@@ -52,12 +53,13 @@ class RegisterFragment1 : Fragment(R.layout.fragment_register1){
         * del fragment è nello stato STARTED (viene avviato). E' una coroutine. Le corotine sono utilizzate
         * per esequire operazioni asincrone in Kotlin.
         */
-        lifecycleScope.launchWhenStarted{
+        lifecycleScope.launchWhenStarted {
             viewModel.register.collect { event ->
-                when(event){
+                when (event) {
                     is Resource.Loading -> {
-                     binding.buttonRegisterResgister.startAnimation()
+                        binding.buttonRegisterResgister.startAnimation()
                     }
+
                     is Resource.Success -> {
                         Log.d("test", event.message.toString())
                         binding.buttonRegisterResgister.revertAnimation()
@@ -66,9 +68,10 @@ class RegisterFragment1 : Fragment(R.layout.fragment_register1){
                     is Resource.Error -> {
                         Log.e(TAG, event.message, toString())
                         binding.buttonRegisterResgister.revertAnimation()
+                    }
                 }
             }
         }
-    }
 
+    }
 }

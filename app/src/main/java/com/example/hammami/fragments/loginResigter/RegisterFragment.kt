@@ -89,16 +89,17 @@ class RegisterFragment : Fragment(R.layout.fragment_register4) {
                             }
                         }
                     }
-                    if(validation.password is RegisterValidation.Failed) {
+                    if (validation.password is RegisterValidation.Failed) {
                         withContext(Dispatchers.Main) {
                             binding.edPasswordRegister.apply {
                                 requestFocus()
                                 error = validation.password.message
                             }
                         }
+                    }
                 }
             }
         }
-    }
 
+    }
 }
