@@ -8,33 +8,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.example.hammami.R
 import com.example.hammami.activities.LoginRegisterActivity
-import com.example.hammami.activities.LunchActivity
 import com.example.hammami.activities.ShoppingActivity
 import com.example.hammami.databinding.FragmentLoginBinding
-import com.example.hammami.viewmodel.HammamiViewmodel
-import com.google.android.play.integrity.internal.i
-import dagger.hilt.android.AndroidEntryPoint
+import com.example.hammami.viewmodel.HammamiViewModel
 
-@AndroidEntryPoint
-class LoginFragment : Fragment(R.layout.fragment_login) {
+
+
+class LoginFragment : Fragment() {
 
     val TAG: String = "LoginFragment"
 
     private lateinit var binding: FragmentLoginBinding
     private lateinit var buttonLogin: Button
-    private lateinit var viewModel: HammamiViewmodel
+    private lateinit var viewModel: HammamiViewModel
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = (activity as LunchActivity).viewModel
+        viewModel = (activity as LoginRegisterActivity).viewModel
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,6 +45,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         buttonLogin = view.findViewById(R.id.button_login)
 
         onLoginClick()
+        observerLogin()
+        observerLoginError()
+
 
         //----------------------------------------------
   /*
@@ -125,10 +123,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun observerLoginError() {
-        viewModel.loginError.observe(viewLifecycleOwner, Observer { error ->
+        viewModel.loginError.observe(viewLifecycleOwner) { error ->
             Log.e(TAG, error)
             Toast.makeText(activity, "Controlla le informazioni inserite", Toast.LENGTH_LONG).show()
-        })
+        }
     }
 
 
@@ -138,18 +136,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
          */
 
     private fun observerLogin() {
-            viewModel.login.observe(viewLifecycleOwner, Observer {
-                if (it == true) {
-                    val intent = Intent(activity, ShoppingActivity::class.java)
-
-                    /**
-                     *
-                     */
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                }
-            })
+        viewModel.login.observe(viewLifecycleOwner) { isLogged ->
+            if (isLogged) {
+                val intent = Intent(activity, ShoppingActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            }
         }
+    }
     }
 
 

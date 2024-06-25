@@ -8,8 +8,8 @@ import com.example.hammami.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 
-@HiltViewModel
-class HammamiViewmodel(
+
+class HammamiViewModel(
     private val firebaseDatabase: FirebaseDb
 
 ) : ViewModel() {

@@ -1,5 +1,6 @@
-package com.example.hammami.adapter
 
+package com.example.hammami.adapter
+/*
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -43,4 +44,4 @@ class NewServicesAdapter: RecyclerView.Adapter<NewServicesAdapter.NewServicesVie
     }
 
 
-}
+}*/
