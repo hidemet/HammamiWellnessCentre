@@ -1,11 +1,11 @@
 plugins {
     id("kotlin-android")
+    id("kotlin-kapt")
     id("com.android.application")
     id ("com.google.gms.google-services")
     id ("kotlin-parcelize")
     id ("androidx.navigation.safeargs.kotlin")
     id ("dagger.hilt.android.plugin")
-    kotlin("kapt")
 }
 
 android {
@@ -32,11 +32,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures{
@@ -85,8 +85,8 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
 
     //Dagger hilt
-    implementation("com.google.dagger:hilt-android:2.38.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.40.1")
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     // Firebase
     implementation(libs.firebase.auth)
@@ -94,7 +94,7 @@ dependencies {
     //implementation("com.google.firebase:firebase-firestore-ktx") // Add Firestore dependency
 
     //Navigation component
-    val nav_version = "2.5.2"
+    val nav_version = "2.5.0"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 }

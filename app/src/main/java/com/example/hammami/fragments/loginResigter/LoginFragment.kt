@@ -92,6 +92,7 @@ class LoginFragment : Fragment() {
             if (email != null && password != null) {
                 viewModel.loginUser(email, password)
             }
+
         }
     }
 
