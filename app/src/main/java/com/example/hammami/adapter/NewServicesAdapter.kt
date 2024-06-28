@@ -6,12 +6,23 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.hammami.data.Service
-import com.example.hammami.databinding.NewRvItemBinding
+import com.example.hammami.databinding.ItemHomepageBinding
 
 class NewServicesAdapter: RecyclerView.Adapter<NewServicesAdapter.NewServicesViewHolder>() {
 
-    inner class NewServicesViewHolder(private val binding: NewRvItemBinding): RecyclerView.ViewHolder(binding.root)
+    inner class NewServicesViewHolder(private val binding: ItemHomepageBinding):
+        RecyclerView.ViewHolder(binding.root){
+
+            fun bind(service: Service){
+                binding.apply {
+                    Glide.with(itemView).load(service.image).into(imageNewRvItem)
+                    tvNewRvItemName.text = service.name
+                    tvNewItemRvPrice.text = service.price
+                }
+            }
+        }
 
     private val diffCallback = object : DiffUtil.ItemCallback<Service>(){
 
@@ -29,18 +40,19 @@ class NewServicesAdapter: RecyclerView.Adapter<NewServicesAdapter.NewServicesVie
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewServicesViewHolder {
         return NewServicesViewHolder(
-            NewRvItemBinding.inflate(
+            ItemHomepageBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+        return differ.currentList.size
     }
 
     override fun onBindViewHolder(holder: NewServicesViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val service = differ.currentList[position]
+        holder.bind(service)
     }
 
 

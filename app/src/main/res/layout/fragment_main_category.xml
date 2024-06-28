@@ -14,9 +14,10 @@
             android:layout_height="match_parent">
 
             <ProgressBar
+                android:id="@+id/mainProgressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -32,10 +33,10 @@
                 android:textSize="22sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/newsProducts"/>
+                app:layout_constraintBottom_toTopOf="@+id/rvNewServices"/>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/newsProducts"
+                android:id="@+id/rvNewServices"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
@@ -53,14 +54,14 @@
                 android:text="Offerte"
                 android:textSize="22sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/newsProducts" />
+                app:layout_constraintTop_toBottomOf="@+id/rvNewServices" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/bestDeals"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                app:layout_constraintStart_toStartOf="@+id/newsProducts"
+                app:layout_constraintStart_toStartOf="@+id/rvNewServices"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvBestDeals" />
 
@@ -80,7 +81,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                app:layout_constraintStart_toStartOf="@+id/newsProducts"
+                app:layout_constraintStart_toStartOf="@+id/rvNewServices"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvRecommended" />
 

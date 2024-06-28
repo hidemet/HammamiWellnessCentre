@@ -17,6 +17,7 @@
 
             <!-- Media -->
             <ImageView
+                android:id="@+id/imageNewRvItem"
                 android:layout_width="match_parent"
                 android:layout_height="153dp"
                 app:srcCompat="@drawable/massaggio4mani"
@@ -31,12 +32,14 @@
 
                 <!-- Title, secondary and supporting text -->
                 <TextView
+                    android:id="@+id/tvNewRvItemName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Massaggio prova"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     />
                 <TextView
+                    android:id="@+id/tvNewItemRvPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
