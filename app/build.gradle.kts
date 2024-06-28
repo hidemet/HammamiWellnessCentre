@@ -51,6 +51,7 @@ dependencies {
 
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.firebase.firestore.ktx)
 
 
 
@@ -91,7 +92,7 @@ dependencies {
     // Firebase
     implementation(libs.firebase.auth)
     //implementation(platform("com.google.firebase:firebase-bom:32.0.0")) // Update to the latest BOM version
-    //implementation("com.google.firebase:firebase-firestore-ktx") // Add Firestore dependency
+    implementation("com.google.firebase:firebase-firestore-ktx") // Add Firestore dependency
 
     //Navigation component
     val nav_version = "2.5.0"

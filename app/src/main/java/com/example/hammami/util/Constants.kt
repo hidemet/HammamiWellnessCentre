@@ -1,5 +1,7 @@
 package com.example.hammami.util
 
-object Constants {
-    const val USER_COLLECTION = "user"
+class Constants {
+    companion object {
+        const val USER_COLLECTION = "users"
+    }
 }

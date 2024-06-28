@@ -8,14 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.hammami.R
 import com.example.hammami.activities.LoginRegisterActivity
-import com.example.hammami.databinding.FragmentRegisterBinding
+import com.example.hammami.databinding.FragmentRegister3Binding
 import com.example.hammami.viewmodel.HammamiViewModel
 
 private val TAG = "RegisterFragment3"
 class RegisterFragment3 : Fragment() {
     // FragmentRegisterBinding variabile usata per manipolare gli elementi dell'interfaccia utente
     // definiti nel relativo layout xml associato a RegisterFragment
-    private lateinit var binding: FragmentRegisterBinding
+    private lateinit var binding: FragmentRegister3Binding
     lateinit var viewModel: HammamiViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +29,7 @@ class RegisterFragment3 : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // iniizializiamo il collegamento il modo che il binding sia uguale a FragmentRegisterBinding
-        binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        binding = FragmentRegister3Binding.inflate(inflater, container, false)
         return binding.root
     }
 

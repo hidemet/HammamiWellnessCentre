@@ -17,7 +17,7 @@
             >
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topAppBar"
+                android:id="@+id/top_app_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="?attr/actionBarSize"
@@ -27,8 +27,6 @@
                     android:id="@+id/logo_hammam"
                     android:layout_width="158.52dp"
                     android:layout_height="27.12dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
                     android:layout_marginStart="110dp"
                     android:layout_marginTop="18dp"
                     android:clipToOutline="true"

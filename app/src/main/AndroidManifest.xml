@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Hammami"
         tools:targetApi="31">
         <activity
-            android:name=".activities.ShoppingActivity"
+            android:name=".activities.HomeActivity"
             android:exported="false" />
         <activity
             android:name=".activities.LoginRegisterActivity"

@@ -5,23 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
-import com.example.hammami.activities.LoginRegisterActivity
-import com.example.hammami.databinding.FragmentRegisterBinding
+import com.example.hammami.databinding.FragmentRegister1Binding
 import com.example.hammami.viewmodel.HammamiViewModel
+import com.google.android.material.textfield.TextInputLayout
 
-
-private val TAG = "RegisterFragment1"
 class RegisterFragment1 : Fragment() {
-    // FragmentRegisterBinding variabile usata per manipolare gli elementi dell'interfaccia utente
-    // definiti nel relativo layout xml associato a RegisterFragment
-    private lateinit var binding: FragmentRegisterBinding
-    lateinit var viewModel: HammamiViewModel
+    private lateinit var binding: FragmentRegister1Binding
+    private lateinit var viewModel: HammamiViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = (activity as LoginRegisterActivity).viewModel
+        viewModel = defaultViewModelProviderFactory.create(HammamiViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -29,21 +25,48 @@ class RegisterFragment1 : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // iniizializiamo il collegamento il modo che il binding sia uguale a FragmentRegisterBinding
-        binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        binding = FragmentRegister1Binding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.buttonNext.setOnClickListener { onButtonNextClick() }
+        binding.topAppBar.setNavigationOnClickListener { onToolbarBackClick() }
     }
-    /*
-    * Osserva il flusso di dati emesso da RegisterViewModel e reagisce di conseguenza
-    * lifecycleScope.launchWhenStarted{} è un blocco di codice che viene eseguito quando il LifeCycle
-    * del fragment è nello stato STARTED (viene avviato). E' una coroutine. Le corotine sono utilizzate
-    * per esequire operazioni asincrone in Kotlin.
-    */
 
+    private fun onToolbarBackClick() {
+        viewModel.clearRegisterUserData()
+        findNavController().popBackStack()
+    }
+
+    private fun onButtonNextClick() {
+        val firstName = validateAndReturnField(binding.textFieldFirstName, "Nome obbligatorio")
+        val lastName = validateAndReturnField(binding.textFieldLastName, "Cognome obbligatorio")
+
+
+        if (firstName != null && lastName != null) {
+            viewModel.updateRegisterUserData("firstName", firstName)
+            viewModel.updateRegisterUserData("lastName", lastName)
+            findNavController().navigate(R.id.action_registerFragment1_to_registerFragment2)
+        }
+    }
+
+    private fun validateAndReturnField(
+        field: TextInputLayout,
+        emptyError: String,
+        invalidError: String? = null,
+        validation: ((String) -> Boolean)? = null
+    ): String? {
+        val text = field.editText?.text.toString()
+        var error: String? = null
+        when {
+            text.isBlank() -> error = emptyError
+            validation != null && !validation(text) -> error = invalidError
+        }
+        field.error = error
+        return text.takeIf { error == null }
+    }
 
 }

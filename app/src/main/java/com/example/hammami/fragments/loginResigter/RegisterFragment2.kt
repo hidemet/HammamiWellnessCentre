@@ -5,22 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
-import com.example.hammami.activities.LoginRegisterActivity
-import com.example.hammami.databinding.FragmentRegisterBinding
+import com.example.hammami.databinding.FragmentRegister2Binding
 import com.example.hammami.viewmodel.HammamiViewModel
+import com.google.android.material.textfield.TextInputLayout
 
-private val TAG = "RegisterFragment2"
 class RegisterFragment2 : Fragment() {
-    // FragmentRegisterBinding variabile usata per manipolare gli elementi dell'interfaccia utente
-    // definiti nel relativo layout xml associato a RegisterFragment
-    private lateinit var binding: FragmentRegisterBinding
-    lateinit var viewModel: HammamiViewModel
+    private lateinit var binding: FragmentRegister2Binding
+    private lateinit var viewModel: HammamiViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = (activity as LoginRegisterActivity).viewModel
+        viewModel = defaultViewModelProviderFactory.create(HammamiViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -28,21 +25,69 @@ class RegisterFragment2 : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // iniizializiamo il collegamento il modo che il binding sia uguale a FragmentRegisterBinding
-        binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        binding = FragmentRegister2Binding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.buttonNext.setOnClickListener { onButtonNextClick() }
+        binding.topAppBar.setNavigationOnClickListener { onToolbarBackClick() }
     }
-    /*
-    * Osserva il flusso di dati emesso da RegisterViewModel e reagisce di conseguenza
-    * lifecycleScope.launchWhenStarted{} è un blocco di codice che viene eseguito quando il LifeCycle
-    * del fragment è nello stato STARTED (viene avviato). E' una coroutine. Le corotine sono utilizzate
-    * per esequire operazioni asincrone in Kotlin.
-    */
 
+    private fun onToolbarBackClick() {
+        viewModel.clearRegisterUserData()
+        findNavController().popBackStack()
+    }
+
+    private fun onButtonNextClick() {
+        val birthDate = validateBirthDate()
+        val gender = validateAndReturnField(binding.textFieldGender, "Genere obbligatorio")
+        val allergies = binding.textFieldAllergies.editText?.text.toString()
+        val disabilities = binding.textFieldDisabilities.editText?.text.toString()
+
+
+        if (birthDate != null && gender != null) {
+            viewModel.updateRegisterUserData("birthDate", birthDate)
+            viewModel.updateRegisterUserData("gender", gender)
+            viewModel.updateRegisterUserData("allergies", allergies)
+            viewModel.updateRegisterUserData("disabilities", disabilities)
+            // Navigate to the next fragment (you'll need to create the appropriate action in your nav graph)
+            // findNavController().navigate(R.id.action_registerFragment2_to_registerFragment3)
+        }
+    }
+
+    private fun validateBirthDate(): String? {
+        val day = binding.textFieldDay.editText?.text.toString()
+        val month = binding.textFieldMonth.editText?.text.toString()
+        val year = binding.textFieldYear.editText?.text.toString()
+
+        if (day.isBlank() || month.isBlank() || year.isBlank()) {
+            binding.textFieldDay.error = "Inserisci una data di nascita completa"
+            binding.textFieldMonth.error = "Inserisci una data di nascita completa"
+            binding.textFieldYear.error = "Inserisci una data di nascita completa"
+            return null
+        }
+
+        // Here you should add more sophisticated date validation
+        return "$day/$month/$year"
+    }
+
+    private fun validateAndReturnField(
+        field: TextInputLayout,
+        emptyError: String,
+        invalidError: String? = null,
+        validation: ((String) -> Boolean)? = null
+    ): String? {
+        val text = field.editText?.text.toString()
+        var error: String? = null
+        when {
+            text.isBlank() -> error = emptyError
+            validation != null && !validation(text) -> error = invalidError
+        }
+        field.error = error
+        return text.takeIf { error == null }
+    }
 
 }

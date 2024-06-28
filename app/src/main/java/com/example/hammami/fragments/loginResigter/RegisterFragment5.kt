@@ -5,19 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.hammami.R
 import com.example.hammami.activities.LoginRegisterActivity
-import com.example.hammami.databinding.FragmentRegisterBinding
+import com.example.hammami.databinding.FragmentRegister4Binding
 import com.example.hammami.viewmodel.HammamiViewModel
 
-
-private val TAG = "RegisterFragment"
-
-
-class RegisterFragment : Fragment() {
+class RegisterFragment5 : Fragment() {
     // FragmentRegisterBinding variabile usata per manipolare gli elementi dell'interfaccia utente
     // definiti nel relativo layout xml associato a RegisterFragment
-    private lateinit var binding: FragmentRegisterBinding
+    private lateinit var binding: FragmentRegister4Binding
     lateinit var viewModel: HammamiViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +26,7 @@ class RegisterFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // iniizializiamo il collegamento il modo che il binding sia uguale a FragmentRegisterBinding
-        binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        binding = FragmentRegister4Binding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -39,12 +34,12 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
     }
-        /*
-        * Osserva il flusso di dati emesso da RegisterViewModel e reagisce di conseguenza
-        * lifecycleScope.launchWhenStarted{} è un blocco di codice che viene eseguito quando il LifeCycle
-        * del fragment è nello stato STARTED (viene avviato). E' una coroutine. Le corotine sono utilizzate
-        * per esequire operazioni asincrone in Kotlin.
-        */
+    /*
+    * Osserva il flusso di dati emesso da RegisterViewModel e reagisce di conseguenza
+    * lifecycleScope.launchWhenStarted{} è un blocco di codice che viene eseguito quando il LifeCycle
+    * del fragment è nello stato STARTED (viene avviato). E' una coroutine. Le corotine sono utilizzate
+    * per esequire operazioni asincrone in Kotlin.
+    */
 
 
 }

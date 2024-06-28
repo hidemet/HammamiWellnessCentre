@@ -1,39 +1,70 @@
 <resources>
     <string name="app_name">Hammami</string>
-    <string name="benvenuto_">
-Benvenuto!
-</string>
-    <string name="placeHolderEmail">Inserisci email</string>
-    <string name="placeHolderPassword">Inserisci password</string>
+    <string name="benvenuto_">Benvenuto!</string>
+    <string name="placeholder__login_email">Inserisci email</string>
+    <string name="placeholder_login_password">Inserisci password</string>
     <string name="accedi_con_">Accedi con le credenziali del tuo account per cominciare ad utilizzare l’app</string>
-    <string name="ricordami">
-Ricordami
-</string>
-    <string name="accedi">Accedi</string>
+    <string name="ricordami">Ricordami</string>
+    <string name="sign_in">Accedi</string>
     <string name="hai_dimenticato_la_password">Hai dimenticato la password?</string>
     <string name="Register">Registrati</string>
     <string name="non_hai_un_account">Non hai un account?</string>
 
     <string name="crea_account">Crea un account Hammami</string>
-    <string name="inserisci_info_personali">Inserisci il tuo nome, cognome e numero di cellulare per proseguire la registrazione</string>
-    <string name="placeHolderNome">Nome</string>
-    <string name="placeHolderCognome">Cognome</string>
-    <string name="placeHolderNumero">Numero di cellulare</string>
+    <string name="inserisci_info_personali">Inserisci il tuo nome e cognome</string>
+    <string name="placeholder_first_name">Nome</string>
+    <string name="placeholder_last_name">Cognome</string>
+    <string name="placeholder_phone_number">Numero di cellulare</string>
     <string name="avanti">Avanti</string>
     <string name="proseguiamo">Proseguiamo con la registrazione!</string>
     <string name="inserisci_info_personali_2">Inserisci il tuo sesso, data di nascita, eventuali allergie e/o invalidità</string>
-    <string name="placeHolderAllergie">Eventuali allergie</string>
-    <string name="placeHolderInvalidita">Eventuali invalidità</string>
+    <string name="placeholder_allergy">Eventuali allergie</string>
+    <string name="placeholder_disability">Eventuali invalidità</string>
     <string name="quasi">Ci siamo quasi!</string>
     <string name="inserisci_credenziali">Inserisci la tua email e scegli una password per il tuo account</string>
-    <string name="placeHolderConfermaPassword">Conferma password</string>
-    <string name="placeHolderCodiceAmico">Inserisci codice amico</string>
+    <string name="placeholder_confirm">Conferma password</string>
+    <string name="placeholder_code">Inserisci codice amico</string>
     <string name="conferma">Conferma</string>
     <string name="opzionale">* opzionale</string>
     <string name="conferma_registrazione">Conferma la registrazione</string>
     <string name="controlla_registrazione">Controlla i campi inseriti prima di confermare la registrazione</string>
-    <string name="err_email_obbligatoria">L\'Email è obbligatoria</string>
-    <string name="err_password_obbligatoria">Password è obbligatoria</string>
+    <string name="err_email_obbligatoria">Email obbligatoria</string>
+    <string name="err_password_obbligatoria">Password obbligatoria</string>
     <string name="err_email_non_valida">Email non valida</string>
+    <string name="logohammami">logoHammami</string>
+    <string name="placeholder_gender">Genere</string>
+    <string name="informazioni_di_base">Informazioni di base</string>
+    <string name="placeholder_day">giorno</string>
+    <string name="placeholder_month">mese</string>
+    <string name="placeholder_year">anno</string>
+    <string name="contatti">Contatti</string>
+    <string name="placeholder_email">Email</string>
+    <string name="placeholder_password">Password</string>
+    <string name="crea_una_password_sicura">Crea una password sicura</string>
+    <string name="mostra_password">Mostra password</string>
+    <string name="placeholder_friend_code">Inserisci codice amico</string>
+    <string name="inserisci_data_di_nascita_genere_eventuali_allergie_e_o_invalidit">Inserisci data di nascita, genere, eventuali allergie e/o invalidità</string>
+
+    <string-array name="array_gender">
+        <item>Donna</item>
+        <item>Uomo</item>
+        <item>Preferisco non dirlo</item>
+    </string-array>
+
+    <string-array name="array_month">
+        <item>Gennaio</item>
+        <item>Febbraio</item>
+        <item>Marzo</item>
+        <item>Aprile</item>
+        <item>Maggio</item>
+        <item>Giugno</item>
+        <item>Luglio</item>
+        <item>Agosto</item>
+        <item>Settembre</item>
+        <item>Ottobre</item>
+        <item>Novembre</item>
+        <item>Dicembre</item>
+    </string-array>
+
 
 </resources>
