@@ -9,8 +9,6 @@ import com.example.hammami.viewmodel.HammamiViewModel
 import com.example.hammami.viewmodel.ViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 
-
-
 class LoginRegisterActivity : AppCompatActivity() {
     val viewModel by lazy {
         val firebaseDb = FirebaseDb()

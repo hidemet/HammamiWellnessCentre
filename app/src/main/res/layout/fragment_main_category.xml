@@ -57,7 +57,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/rvNewServices" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/bestDeals"
+                android:id="@+id/rvBestDeals"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -74,10 +74,10 @@
                 android:text="Consigliati"
                 android:textSize="22sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bestDeals" />
+                app:layout_constraintTop_toBottomOf="@+id/rvBestDeals" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recommended"
+                android:id="@+id/rvRecommended"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
