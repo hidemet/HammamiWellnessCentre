@@ -16,13 +16,13 @@ class MainCategoryViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ): ViewModel() {
 
-    private val _newServices = MutableStateFlow<Resource<List<Service>>>(Resource.Unspecified())
+    private val _newServices = MutableStateFlow<Resource<List<Service>>>(Resource.Loading())
     val newServices: StateFlow<Resource<List<Service>>> = _newServices
 
-    private val _bestDeals = MutableStateFlow<Resource<List<Service>>>(Resource.Unspecified())
+    private val _bestDeals = MutableStateFlow<Resource<List<Service>>>(Resource.Loading())
     val bestDeals: StateFlow<Resource<List<Service>>> = _bestDeals
 
-    private val _recommended = MutableStateFlow<Resource<List<Service>>>(Resource.Unspecified())
+    private val _recommended = MutableStateFlow<Resource<List<Service>>>(Resource.Loading())
     val recommended: StateFlow<Resource<List<Service>>> = _recommended
 
     init {

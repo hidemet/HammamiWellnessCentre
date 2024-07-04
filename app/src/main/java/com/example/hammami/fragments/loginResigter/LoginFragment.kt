@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.activities.LoginRegisterActivity
-import com.example.hammami.activities.HomeActivity
+import com.example.hammami.activities.StartActivity
 import com.example.hammami.databinding.FragmentLoginBinding
 import com.example.hammami.util.Resource
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
@@ -113,7 +113,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateToHome() {
-        val intent = Intent(activity, HomeActivity::class.java)
+        val intent = Intent(activity, StartActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
     }
