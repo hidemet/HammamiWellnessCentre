@@ -92,7 +92,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:imeOptions="actionNext"
+                android:inputType="number"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -101,14 +102,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
+            android:inputType="none"
             >
 
             <AutoCompleteTextView
+                android:id="@+id/auto_complete_month"
+                android:hint="@string/placeholder_month"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:entries="@array/array_month"
-                android:hint="@string/placeholder_month" />
+                android:inputType="none"
+                app:simpleItems="@array/month_array" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -122,9 +126,28 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text_view_data_error"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:textColor="@color/md_theme_error"
+        android:textSize="12sp"
+        android:visibility="gone"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+
+        app:layout_constraintTop_toBottomOf="@id/date_inputs"
+        app:layout_constraintStart_toStartOf="@id/guideline_left"
+        app:layout_constraintEnd_toEndOf="@id/guideline_right"
+        />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -134,13 +157,14 @@
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="@id/guideline_right"
         app:layout_constraintStart_toStartOf="@id/guideline_left"
-        app:layout_constraintTop_toBottomOf="@id/date_inputs">
+        app:layout_constraintTop_toBottomOf="@id/text_view_data_error">
 
         <AutoCompleteTextView
-            android:id="@+id/dropDownMenuGender"
+            android:id="@+id/auto_complete_gender"
+            android:inputType="none"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries ="@array/array_gender"
+            app:simpleItems ="@array/gender_array"
             android:hint="@string/placeholder_gender"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -158,7 +182,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
+            android:inputType="text"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -175,7 +201,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="text"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

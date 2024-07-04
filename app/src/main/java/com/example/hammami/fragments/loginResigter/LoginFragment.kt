@@ -1,7 +1,9 @@
 package com.example.hammami.fragments.loginResigter
 
+import ValidationUtil
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +14,10 @@ import com.example.hammami.R
 import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.activities.HomeActivity
 import com.example.hammami.databinding.FragmentLoginBinding
+import com.example.hammami.util.Resource
+import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
-import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.snackbar.Snackbar
 
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
@@ -35,54 +39,82 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.root.hideKeyboardOnOutsideTouch()
+
         binding.buttonLogin.setOnClickListener { onLoginClick() }
         binding.buttonRegister.setOnClickListener { onRegisterClick() }
-        viewModel.loginError.observe(viewLifecycleOwner) { error ->
-            Toast.makeText(activity, "Controlla le informazioni inserite", Toast.LENGTH_LONG).show()
+
+        setupPasswordVisibilityToggle()
+        observeLoginState()
+    }
+
+
+
+    private fun observeLoginState() {
+        viewModel.loginState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is Resource.Loading -> {
+                    showLoading(true)
+                }
+
+                is Resource.Success -> {
+                    showLoading(false)
+                    navigateToHome()
+                }
+
+                is Resource.Error -> {
+                    showLoading(false)
+                    showSnackbar(state.message ?: "Errore durante il login")
+                }
+            }
         }
-        viewModel.login.observe(viewLifecycleOwner) { isLogged ->
-            if (isLogged) {
-                val intent = Intent(activity, HomeActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
+    }
+
+    private fun setupPasswordVisibilityToggle() {
+        binding.checkboxShowPassword.setOnCheckedChangeListener { _, isChecked ->
+            val method = if (isChecked) null else PasswordTransformationMethod.getInstance()
+            binding.textFieldPassword.editText?.transformationMethod = method
+        }
+    }
+
+    private fun showSnackbar(message: String) {
+        view?.let {
+            Snackbar.make(it, message, Snackbar.LENGTH_LONG).apply {
+                setAction("OK") { dismiss() }
+                show()
             }
         }
     }
 
     private fun onLoginClick() {
-        val email = validateAndReturnField(
+        val email = ValidationUtil.validateAndReturnField(
             binding.textFieldEmail,
             getString(R.string.err_email_obbligatoria),
             getString(R.string.err_email_non_valida)
         ) { input: String -> android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches() }
-        val password =
-            validateAndReturnField(binding.textFieldPassword, getString(R.string.err_password_obbligatoria))
-        if (email != null && password != null) {
-            viewModel.loginUser(email, password)
-        }
-    }
+        val password = ValidationUtil.validateAndReturnField(
+            binding.textFieldPassword,
+            getString(R.string.err_password_obbligatoria),
+            getString(R.string.err_password_corta)
+        ) { input: String -> input.length >= 6 }
 
-    private fun validateAndReturnField(
-        field: TextInputLayout,
-        emptyError: String,
-        invalidError: String? = null,
-        validation: ((String) -> Boolean)? = null
-    ): String? {
-        val text = field.editText?.text.toString()
-        var error: String? = null
-        when {
-            text.isBlank() -> error = emptyError
-            validation != null && !validation(text) -> error = invalidError
-        }
-        field.error = error
-        return text.takeIf { error == null }
+        if (email != null && password != null)
+            viewModel.loginUser(email, password)
     }
 
     private fun onRegisterClick() {
-        binding.buttonRegister.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment1)
-        }
+        findNavController().navigate(R.id.action_loginFragment_to_registerFragment1)
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.circularProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.buttonLogin.isEnabled = !isLoading
+    }
+
+    private fun navigateToHome() {
+        val intent = Intent(activity, HomeActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
     }
 }
-
-

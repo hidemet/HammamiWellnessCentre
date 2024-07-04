@@ -12,6 +12,7 @@ android {
     namespace = "com.example.hammami"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "com.example.hammami"
         minSdk = 24
@@ -41,6 +42,7 @@ android {
 
     buildFeatures{
         viewBinding = true
+        dataBinding = true
     }
 }
 

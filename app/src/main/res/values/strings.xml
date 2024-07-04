@@ -44,27 +44,6 @@
     <string name="mostra_password">Mostra password</string>
     <string name="placeholder_friend_code">Inserisci codice amico</string>
     <string name="inserisci_data_di_nascita_genere_eventuali_allergie_e_o_invalidit">Inserisci data di nascita, genere, eventuali allergie e/o invalidità</string>
-
-    <string-array name="array_gender">
-        <item>Donna</item>
-        <item>Uomo</item>
-        <item>Preferisco non dirlo</item>
-    </string-array>
-
-    <string-array name="array_month">
-        <item>Gennaio</item>
-        <item>Febbraio</item>
-        <item>Marzo</item>
-        <item>Aprile</item>
-        <item>Maggio</item>
-        <item>Giugno</item>
-        <item>Luglio</item>
-        <item>Agosto</item>
-        <item>Settembre</item>
-        <item>Ottobre</item>
-        <item>Novembre</item>
-        <item>Dicembre</item>
-    </string-array>
-
+    <string name="err_password_corta">La password deve essere di almeno 6 caratteri</string>
 
 </resources>

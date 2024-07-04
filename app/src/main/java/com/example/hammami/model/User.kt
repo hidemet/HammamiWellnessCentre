@@ -1,17 +1,16 @@
 package com.example.hammami.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class User (
 
-    val firstName: String,
-    val lastName: String,
-    val phoneNumber: String,
-    val email: String,
-    val imagePath:String="",
+    val firstName: String = "",
+    val lastName: String = "",
+    val birthDate: String = "",
+    val gender: String = "",
+    val allergies: String = "",
+    val disabilities: String = "",
+    val phoneNumber: String = "",
+    val email: String = "",
+    val profileImage:String = "",
 
-    ): Parcelable {
-    constructor():this("","","","")
-}
+    )

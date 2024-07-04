@@ -14,11 +14,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginRegisterActivity : AppCompatActivity() {
     val viewModel by lazy {
         val firebaseDb = FirebaseDb()
-        val viewModelFactory = ViewModelFactory(firebaseDb)
-        ViewModelProvider(this, viewModelFactory)[HammamiViewModel::class.java]
+        val viewModelFactory =  ViewModelFactory(firebaseDb)
+        ViewModelProvider(this,viewModelFactory)[HammamiViewModel::class.java]
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_register)
+
     }
 }

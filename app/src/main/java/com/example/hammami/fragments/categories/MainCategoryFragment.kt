@@ -1,5 +1,6 @@
-package com.example.hammami.fragments.categories
 
+package com.example.hammami.fragments.categories
+/*
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -79,4 +80,4 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
             adapter = newServicesAdapter
         }
     }
-}
+}*/

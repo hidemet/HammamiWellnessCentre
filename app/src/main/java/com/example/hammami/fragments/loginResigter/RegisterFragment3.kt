@@ -1,22 +1,26 @@
 package com.example.hammami.fragments.loginResigter
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.databinding.FragmentRegister3Binding
+import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 
-private val TAG = "RegisterFragment3"
+
 class RegisterFragment3 : Fragment() {
-    // FragmentRegisterBinding variabile usata per manipolare gli elementi dell'interfaccia utente
-    // definiti nel relativo layout xml associato a RegisterFragment
     private lateinit var binding: FragmentRegister3Binding
-    lateinit var viewModel: HammamiViewModel
+    private lateinit var viewModel: HammamiViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,21 +32,64 @@ class RegisterFragment3 : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // iniizializiamo il collegamento il modo che il binding sia uguale a FragmentRegisterBinding
-        binding = FragmentRegister3Binding.inflate(inflater, container, false)
+        binding = FragmentRegister3Binding.inflate(layoutInflater)
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.root.hideKeyboardOnOutsideTouch()
+
+        binding.buttonNext.setOnClickListener { onButtonNextClick() }
+        binding.topAppBar.setNavigationOnClickListener { onToolbarBackClick() }
+
+        viewModel.registrationData.observe(viewLifecycleOwner) { data ->
+            binding.textFieldPhoneNumber.editText?.setText(data.phoneNumber)
+            binding.textFieldEmail.editText?.setText(data.email)
+        }
+
+
+
     }
-    /*
-    * Osserva il flusso di dati emesso da RegisterViewModel e reagisce di conseguenza
-    * lifecycleScope.launchWhenStarted{} è un blocco di codice che viene eseguito quando il LifeCycle
-    * del fragment è nello stato STARTED (viene avviato). E' una coroutine. Le corotine sono utilizzate
-    * per esequire operazioni asincrone in Kotlin.
-    */
+
+    private fun onToolbarBackClick() {
+        findNavController().popBackStack()
+    }
+
+    private fun onButtonNextClick() {
+        val phoneNumberPattern = "^\\d{10}$".toRegex()
 
 
+        val phoneNumber = ValidationUtil.validateAndReturnField(
+            binding.textFieldPhoneNumber,
+            "Inserisci il numero di cellulare"
+        ) { input: String -> phoneNumberPattern.matches(input) }
+
+        val email = ValidationUtil.validateAndReturnField(
+            binding.textFieldEmail,
+            getString(R.string.err_email_obbligatoria),
+            getString(R.string.err_email_non_valida)
+        ) { input: String -> android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches() }
+
+        if (phoneNumber != null && email != null) {
+            viewModel.updateRegistrationData { currentData ->
+                currentData.copy(
+                    phoneNumber = phoneNumber,
+                    email = email
+                )
+            }
+            navigateToNextFragment()
+        }
+    }
+
+    private fun navigateToNextFragment() {
+        findNavController().navigate(R.id.action_registerFragment3_to_registerFragment4)
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
 }

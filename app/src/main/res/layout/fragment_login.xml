@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?><!-- app/src/main/res/layout/fragment_login.xml -->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -18,6 +21,20 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.96" />
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/circularProgressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorSize="48dp"
+        app:trackCornerRadius="4dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
     <ImageView
         android:id="@+id/logoHammami"
@@ -73,7 +90,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,17 +108,20 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword" />
+
 
     </com.google.android.material.textfield.TextInputLayout>
 
 
     <CheckBox
-        android:id="@+id/rememberMe"
+        android:id="@+id/checkbox_show_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/ricordami"
+        android:text="@string/mostra_password"
         app:layout_constraintStart_toStartOf="@id/guideline_left"
         app:layout_constraintTop_toBottomOf="@+id/text_field_password" />
 
@@ -113,7 +135,7 @@
 
         app:layout_constraintEnd_toEndOf="@id/guideline_right"
         app:layout_constraintStart_toStartOf="@id/guideline_left"
-        app:layout_constraintTop_toBottomOf="@id/rememberMe" />
+        app:layout_constraintTop_toBottomOf="@id/checkbox_show_password" />
 
     <Button
         android:id="@+id/button_forgot_password"
@@ -164,6 +186,4 @@
             android:layout_marginTop="16dp"
             android:text="@string/Register" />
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.hammami.R
+import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.databinding.FragmentRegister2Binding
+import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
-import com.google.android.material.textfield.TextInputLayout
+
 
 class RegisterFragment2 : Fragment() {
     private lateinit var binding: FragmentRegister2Binding
@@ -17,7 +18,7 @@ class RegisterFragment2 : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = defaultViewModelProviderFactory.create(HammamiViewModel::class.java)
+        viewModel = (activity as LoginRegisterActivity).viewModel
     }
 
     override fun onCreateView(
@@ -32,29 +33,40 @@ class RegisterFragment2 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.root.hideKeyboardOnOutsideTouch()
+
         binding.buttonNext.setOnClickListener { onButtonNextClick() }
         binding.topAppBar.setNavigationOnClickListener { onToolbarBackClick() }
+
+        viewModel.registrationData.observe(viewLifecycleOwner) { data ->
+            binding.textFieldDay.editText?.setText(data.birthDate)
+            binding.textFieldGender.editText?.setText(data.gender)
+            binding.textFieldAllergies.editText?.setText(data.allergies)
+            binding.textFieldDisabilities.editText?.setText(data.disabilities)
+        }
     }
 
     private fun onToolbarBackClick() {
-        viewModel.clearRegisterUserData()
         findNavController().popBackStack()
     }
 
     private fun onButtonNextClick() {
         val birthDate = validateBirthDate()
-        val gender = validateAndReturnField(binding.textFieldGender, "Genere obbligatorio")
+        val gender =
+            ValidationUtil.validateAndReturnField(binding.textFieldGender, "Seleziona il genere")
         val allergies = binding.textFieldAllergies.editText?.text.toString()
         val disabilities = binding.textFieldDisabilities.editText?.text.toString()
 
-
         if (birthDate != null && gender != null) {
-            viewModel.updateRegisterUserData("birthDate", birthDate)
-            viewModel.updateRegisterUserData("gender", gender)
-            viewModel.updateRegisterUserData("allergies", allergies)
-            viewModel.updateRegisterUserData("disabilities", disabilities)
-            // Navigate to the next fragment (you'll need to create the appropriate action in your nav graph)
-            // findNavController().navigate(R.id.action_registerFragment2_to_registerFragment3)
+            viewModel.updateRegistrationData { currentData ->
+                currentData.copy(
+                    birthDate = birthDate,
+                    gender = gender,
+                    allergies = allergies,
+                    disabilities = disabilities
+                )
+            }
+            navigateToNextFragment()
         }
     }
 
@@ -62,32 +74,47 @@ class RegisterFragment2 : Fragment() {
         val day = binding.textFieldDay.editText?.text.toString()
         val month = binding.textFieldMonth.editText?.text.toString()
         val year = binding.textFieldYear.editText?.text.toString()
+        val birthDate = "$day/$month/$year"
 
-        if (day.isBlank() || month.isBlank() || year.isBlank()) {
-            binding.textFieldDay.error = "Inserisci una data di nascita completa"
-            binding.textFieldMonth.error = "Inserisci una data di nascita completa"
-            binding.textFieldYear.error = "Inserisci una data di nascita completa"
-            return null
+        return when {
+            day.isBlank() || month.isBlank() || year.isBlank() -> {
+                showError("Inserisci una data di nascita completa\n")
+                null
+            }
+
+            !isValidDate(day, year) -> {
+                showError("Inserisci una data valida")
+                null
+            }
+
+            else -> {
+                hideError()
+                birthDate
+            }
         }
-
-        // Here you should add more sophisticated date validation
-        return "$day/$month/$year"
     }
 
-    private fun validateAndReturnField(
-        field: TextInputLayout,
-        emptyError: String,
-        invalidError: String? = null,
-        validation: ((String) -> Boolean)? = null
-    ): String? {
-        val text = field.editText?.text.toString()
-        var error: String? = null
-        when {
-            text.isBlank() -> error = emptyError
-            validation != null && !validation(text) -> error = invalidError
-        }
-        field.error = error
-        return text.takeIf { error == null }
+    private fun hideError() {
+        binding.textViewDataError.visibility = View.GONE
     }
 
+    private fun navigateToNextFragment() {
+        findNavController().navigate(RegisterFragment2Directions.actionRegisterFragment2ToRegisterFragment3())
+    }
+
+    private fun showError(errorMessage: String) {
+        binding.apply {
+            textFieldDay.error = ""
+            textFieldMonth.error = ""
+            textFieldYear.error = ""
+            textViewDataError.text = errorMessage
+            textViewDataError.visibility = View.VISIBLE
+        }
+    }
+
+    private fun isValidDate(day: String, year: String): Boolean {
+        val dayInt = day.toIntOrNull()
+        val yearInt = year.toIntOrNull()
+        return yearInt in 1..9999 && dayInt in 1..31
+    }
 }

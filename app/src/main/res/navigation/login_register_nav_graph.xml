@@ -65,7 +65,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment4"
-        android:name="RegisterFragment4"
+        android:name="com.example.hammami.fragments.loginResigter.RegisterFragment4"
         android:label="RegisterFragment4"
         tools:layout="@layout/fragment_register_4"
         >
@@ -75,5 +75,9 @@
         <action
             android:id="@+id/action_registerFragment4_to_registerFragment5"
             app:destination="@id/registerFragment5" />
+
+        <action
+            android:id="@+id/action_registerFragment5_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 </navigation>

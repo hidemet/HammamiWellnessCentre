@@ -1,7 +1,7 @@
 package com.example.hammami.database
 
 import com.example.hammami.model.User
-import com.example.hammami.util.Constants.USER_COLLECTION
+import com.example.hammami.util.Constants.Companion.USER_COLLECTION
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
