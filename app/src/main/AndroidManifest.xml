@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Hammami"
         tools:targetApi="31">
         <activity
-            android:name=".activities.HomeActivity"
+            android:name=".activities.StartActivity"
             android:exported="false" />
         <activity
             android:name=".activities.LoginRegisterActivity"

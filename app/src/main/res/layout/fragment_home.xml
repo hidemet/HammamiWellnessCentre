@@ -13,8 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            >
+            android:layout_alignParentTop="true">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/top_app_bar"
@@ -31,7 +30,6 @@
                     android:layout_marginTop="18dp"
                     android:clipToOutline="true"
                     android:src="@drawable/logo_hammami" />
-
 
             </com.google.android.material.appbar.MaterialToolbar>
 
