@@ -9,19 +9,19 @@ import com.bumptech.glide.Glide
 import com.example.hammami.data.Service
 import com.example.hammami.databinding.ItemHomepageBinding
 
-class NewServicesAdapter: RecyclerView.Adapter<NewServicesAdapter.NewServicesViewHolder>() {
+class RecommendedAdapter: RecyclerView.Adapter<RecommendedAdapter.RecommendedViewHolder>() {
 
-    inner class NewServicesViewHolder(private val binding: ItemHomepageBinding):
+    inner class RecommendedViewHolder(private val binding: ItemHomepageBinding):
         RecyclerView.ViewHolder(binding.root){
 
-            fun bind(service: Service){
-                binding.apply {
-                    Glide.with(itemView).load(service.image).into(imageNewRvItem)
-                    tvNewRvItemName.text = service.name
-                    tvNewItemRvPrice.text = service.price
-                }
+        fun bind(service: Service){
+            binding.apply {
+                Glide.with(itemView).load(service.image).into(imageNewRvItem)
+                tvNewRvItemName.text = service.name
+                tvNewItemRvPrice.text = service.price
             }
         }
+    }
 
     private val diffCallback = object : DiffUtil.ItemCallback<Service>(){
 
@@ -37,8 +37,8 @@ class NewServicesAdapter: RecyclerView.Adapter<NewServicesAdapter.NewServicesVie
 
     val differ = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewServicesViewHolder {
-        return NewServicesViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecommendedViewHolder {
+        return RecommendedViewHolder(
             ItemHomepageBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
@@ -49,7 +49,7 @@ class NewServicesAdapter: RecyclerView.Adapter<NewServicesAdapter.NewServicesVie
         return differ.currentList.size
     }
 
-    override fun onBindViewHolder(holder: NewServicesViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecommendedViewHolder, position: Int) {
         val service = differ.currentList[position]
         holder.bind(service)
     }
