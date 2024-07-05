@@ -127,7 +127,6 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
         }
     }
 
-
     private fun setupRecommendedRv() {
         recommendedAdapter = RecommendedAdapter()
         binding.rvRecommended.apply{

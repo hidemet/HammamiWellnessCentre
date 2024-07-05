@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.hammami.R
+import com.example.hammami.adapter.HomeViewpagerAdapter
 import com.example.hammami.databinding.FragmentHomeBinding
+import com.example.hammami.fragments.categories.MainCategoryFragment
 
 class HomeFragment: Fragment(R.layout.fragment_home) {
 
@@ -17,7 +19,22 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
+        binding = FragmentHomeBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val categoriesFragments = arrayListOf<Fragment>(
+            MainCategoryFragment()
+        )
+
+        /*
+        val viewPager2Adapter =
+            HomeViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
+        binding = viewPager2Adapter
+*/
     }
 
 }
