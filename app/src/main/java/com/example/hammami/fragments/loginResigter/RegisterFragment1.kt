@@ -6,22 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
-import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.databinding.FragmentRegister1Binding
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
-import com.google.android.material.textfield.TextInputLayout
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class RegisterFragment1 : Fragment() {
     private lateinit var binding: FragmentRegister1Binding
-    private lateinit var viewModel: HammamiViewModel
+    private val viewModel: HammamiViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = (activity as LoginRegisterActivity).viewModel
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,24 +36,36 @@ class RegisterFragment1 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.root.hideKeyboardOnOutsideTouch()
-
-        binding.buttonNext.setOnClickListener { onButtonNextClick() }
-        binding.topAppBar.setNavigationOnClickListener { onToolbarBackClick() }
-
-        viewModel.registrationData.observe(viewLifecycleOwner) { data ->
-            binding.textFieldFirstName.editText?.setText(data.firstName)
-            binding.textFieldLastName.editText?.setText(data.lastName)
-        }
+        setupUI()
+        observeViewModel()
 
     }
 
-    private fun onToolbarBackClick() {
+    private fun setupUI() {
+        with(binding) {
+            root.hideKeyboardOnOutsideTouch()
+            buttonNext.setOnClickListener { onNextButtonClick() }
+            topAppBar.setNavigationOnClickListener { onBackButtonClick() }
+        }
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.registrationData.collect { data ->
+                    binding.textFieldFirstName.editText?.setText(data.firstName)
+                    binding.textFieldLastName.editText?.setText(data.lastName)
+                }
+            }
+        }
+    }
+
+    private fun onBackButtonClick() {
         viewModel.clearRegistrationData()
         findNavController().popBackStack()
     }
 
-    private fun onButtonNextClick() {
+    private fun onNextButtonClick(){
         val firstName = validateAndReturnField(binding.textFieldFirstName, "Nome obbligatorio")
         val lastName = validateAndReturnField(binding.textFieldLastName, "Cognome obbligatorio")
 
@@ -65,21 +78,6 @@ class RegisterFragment1 : Fragment() {
         }
     }
 
-    private fun validateAndReturnField(
-        field: TextInputLayout,
-        emptyError: String,
-        invalidError: String? = null,
-        validation: ((String) -> Boolean)? = null
-    ): String? {
-        val text = field.editText?.text.toString()
-        var error: String? = null
-        when {
-            text.isBlank() -> error = emptyError
-            validation != null && !validation(text) -> error = invalidError
-        }
-        field.error = error
-        return text.takeIf { error == null }
-    }
 
     private fun navigateToNextFragment() {
         findNavController().navigate(R.id.action_registerFragment1_to_registerFragment2)
@@ -89,5 +87,6 @@ class RegisterFragment1 : Fragment() {
         viewModel.updateRegistrationData { currentData -> currentData.copy(firstName = firstName, lastName = lastName)}
 
     }
+
 
 }

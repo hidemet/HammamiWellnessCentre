@@ -45,5 +45,13 @@
     <string name="placeholder_friend_code">Inserisci codice amico</string>
     <string name="inserisci_data_di_nascita_genere_eventuali_allergie_e_o_invalidit">Inserisci data di nascita, genere, eventuali allergie e/o invalidità</string>
     <string name="err_password_corta">La password deve essere di almeno 6 caratteri</string>
+    <string name="ok">OK</string>
+    <string name="errore_durante_il_login">Errore durante il login</string>
+    <string name="la_password_stata_resettata_con_successo">La password è stata resettata con successo</string>
+    <string name="errore_durante_il_reset_della_password">Errore durante il reset della password</string>
+    <string name="seleziona_il_genere">Seleziona il genere</string>
+    <string name="inserisci_il_numero_di_cellulare">Inserisci il numero di cellulare</string>
+    <string name="errore_durante_la_registrazione">Errore durante la registrazione</string>
+    <string name="login_effettuato_con_successo">Login effettuato con successo</string>
 
 </resources>

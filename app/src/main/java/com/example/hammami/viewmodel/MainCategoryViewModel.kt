@@ -16,13 +16,13 @@ class MainCategoryViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ): ViewModel() {
 
-    private val _newServices = MutableStateFlow<Resource<List<Service>>>(Resource.Loading())
+    private val _newServices = MutableStateFlow<Resource<List<Service>>>(Resource.Unspecified())
     val newServices: StateFlow<Resource<List<Service>>> = _newServices
 
-    private val _bestDeals = MutableStateFlow<Resource<List<Service>>>(Resource.Loading())
+    private val _bestDeals = MutableStateFlow<Resource<List<Service>>>(Resource.Unspecified())
     val bestDeals: StateFlow<Resource<List<Service>>> = _bestDeals
 
-    private val _recommended = MutableStateFlow<Resource<List<Service>>>(Resource.Loading())
+    private val _recommended = MutableStateFlow<Resource<List<Service>>>(Resource.Unspecified())
     val recommended: StateFlow<Resource<List<Service>>> = _recommended
 
     init {
@@ -31,8 +31,7 @@ class MainCategoryViewModel @Inject constructor(
         fetchRecommended()
     }
 
-    fun fetchNewServices(){
-
+    fun fetchNewServices() {
         viewModelScope.launch {
             _newServices.emit(Resource.Loading())
         }
@@ -43,47 +42,45 @@ class MainCategoryViewModel @Inject constructor(
                 viewModelScope.launch {
                     _newServices.emit(Resource.Success(newServicesList))
                 }
-            }.addOnFailureListener{
+            }.addOnFailureListener {
                 viewModelScope.launch {
-                    _newServices.emit(Resource.Error(it.message.toString()))
+                    _newServices.emit(Resource.Error(it.message ?: "Errore sconosciuto"))
                 }
             }
     }
 
-    fun fetchBestDeals(){
-
+    fun fetchBestDeals() {
         viewModelScope.launch {
-            _newServices.emit(Resource.Loading())
+            _bestDeals.emit(Resource.Loading())
         }
 
         firestore.collection("/Servizi/Benessere/trattamenti")
-            .whereEqualTo("Sezione homepage", "Novità").get().addOnSuccessListener { result ->
-                val newServicesList = result.toObjects(Service::class.java)
+            .whereEqualTo("Sezione homepage", "Offerte").get().addOnSuccessListener { result ->
+                val bestDealsList = result.toObjects(Service::class.java)
                 viewModelScope.launch {
-                    _newServices.emit(Resource.Success(newServicesList))
+                    _bestDeals.emit(Resource.Success(bestDealsList))
                 }
-            }.addOnFailureListener{
+            }.addOnFailureListener {
                 viewModelScope.launch {
-                    _newServices.emit(Resource.Error(it.message.toString()))
+                    _bestDeals.emit(Resource.Error(it.message ?: "Errore sconosciuto"))
                 }
             }
     }
 
-    fun fetchRecommended(){
-
+    fun fetchRecommended() {
         viewModelScope.launch {
-            _newServices.emit(Resource.Loading())
+            _recommended.emit(Resource.Loading())
         }
 
         firestore.collection("/Servizi/Benessere/trattamenti")
-            .whereEqualTo("Sezione homepage", "Novità").get().addOnSuccessListener { result ->
-                val newServicesList = result.toObjects(Service::class.java)
+            .whereEqualTo("Sezione homepage", "Consigliati").get().addOnSuccessListener { result ->
+                val recommendedList = result.toObjects(Service::class.java)
                 viewModelScope.launch {
-                    _newServices.emit(Resource.Success(newServicesList))
+                    _recommended.emit(Resource.Success(recommendedList))
                 }
-            }.addOnFailureListener{
+            }.addOnFailureListener {
                 viewModelScope.launch {
-                    _newServices.emit(Resource.Error(it.message.toString()))
+                    _recommended.emit(Resource.Error(it.message ?: "Errore sconosciuto"))
                 }
             }
     }

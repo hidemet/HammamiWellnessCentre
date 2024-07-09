@@ -7,26 +7,30 @@ import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
-import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.activities.StartActivity
+import com.example.hammami.databinding.BottomSheetForgotPasswordBinding
 import com.example.hammami.databinding.FragmentLoginBinding
 import com.example.hammami.util.Resource
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
-    private lateinit var viewModel: HammamiViewModel
+    private val viewModel: HammamiViewModel by viewModels()
+    private lateinit var bottomSheetDialog: BottomSheetDialog
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = (activity as LoginRegisterActivity).viewModel
-    }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,51 +43,72 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.root.hideKeyboardOnOutsideTouch()
-
-        binding.buttonLogin.setOnClickListener { onLoginClick() }
-        binding.buttonRegister.setOnClickListener { onRegisterClick() }
-
-        setupPasswordVisibilityToggle()
-        observeLoginState()
+        setupUI()
+        observeViewModelStates()
     }
 
-
-
-    private fun observeLoginState() {
-        viewModel.loginState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is Resource.Loading -> {
-                    showLoading(true)
-                }
-
-                is Resource.Success -> {
-                    showLoading(false)
-                    navigateToHome()
-                }
-
-                is Resource.Error -> {
-                    showLoading(false)
-                    showSnackbar(state.message ?: "Errore durante il login")
-                }
-            }
+    private fun setupUI() {
+        with(binding) {
+            root.hideKeyboardOnOutsideTouch()
+            buttonLogin.setOnClickListener { onLoginClick() }
+            buttonRegister.setOnClickListener { onRegisterClick() }
+            buttonForgotPassword.setOnClickListener { showForgotPasswordDialog() }
+            setupPasswordVisibilityToggle()
         }
     }
 
     private fun setupPasswordVisibilityToggle() {
         binding.checkboxShowPassword.setOnCheckedChangeListener { _, isChecked ->
-            val method = if (isChecked) null else PasswordTransformationMethod.getInstance()
-            binding.textFieldPassword.editText?.transformationMethod = method
+            binding.textFieldPassword.editText?.let { editText ->
+                editText.transformationMethod =
+                    if (isChecked) null else PasswordTransformationMethod.getInstance()
+                editText.setSelection(editText.text.length)
+            }
         }
     }
 
-    private fun showSnackbar(message: String) {
-        view?.let {
-            Snackbar.make(it, message, Snackbar.LENGTH_LONG).apply {
-                setAction("OK") { dismiss() }
-                show()
+    private fun observeViewModelStates() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loginState.collect { state ->
+                handleResourceState(state,
+                    onSuccess = {navigateToNext() },
+                    onError = { showSnackbar(it ?: getString(R.string.errore_durante_il_login)) }
+                )
             }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.resetPasswordState.collect { state ->
+                handleResourceState(state,
+                    onSuccess = {
+                        showSnackbar(getString(R.string.la_password_stata_resettata_con_successo))
+                    },
+                    onError = {
+                        showSnackbar(
+                            it ?: getString(R.string.errore_durante_il_reset_della_password))
+                    }
+                )
+            }
+        }
+    }
+
+    private fun <T> handleResourceState(
+        state: Resource<T>,
+        onSuccess: (T) -> Unit,
+        onError: (String?) -> Unit
+    ) {
+        when (state) {
+            is Resource.Loading -> showLoading(true)
+            is Resource.Success -> {
+                showLoading(false)
+                state.data?.let { onSuccess(it) }
+            }
+
+            is Resource.Error -> {
+                showLoading(false)
+                onError(state.message)
+            }
+            is Resource.Unspecified -> Unit
         }
     }
 
@@ -107,14 +132,43 @@ class LoginFragment : Fragment() {
         findNavController().navigate(R.id.action_loginFragment_to_registerFragment1)
     }
 
+    private fun showForgotPasswordDialog() {
+        bottomSheetDialog = BottomSheetDialog(requireContext()).apply {
+            val bottomSheetBinding = BottomSheetForgotPasswordBinding.inflate(layoutInflater)
+            setContentView(bottomSheetBinding.root)
+
+            bottomSheetBinding.buttonCancel.setOnClickListener { dismiss() }
+            bottomSheetBinding.buttonConfirm.setOnClickListener {
+                val email = ValidationUtil.validateAndReturnField(
+                    bottomSheetBinding.textFieldEmail,
+                    getString(R.string.err_email_obbligatoria),
+                    getString(R.string.err_email_non_valida)
+                ) { input: String -> android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches() }
+
+                if (email != null) {
+                    viewModel.resetPassword(email)
+                    dismiss()
+                }
+            }
+        }
+        bottomSheetDialog.show()
+    }
+
     private fun showLoading(isLoading: Boolean) {
         binding.circularProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
         binding.buttonLogin.isEnabled = !isLoading
     }
 
-    private fun navigateToHome() {
-        val intent = Intent(activity, StartActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+            .setAction(getString(R.string.ok)) { }
+            .show()
+    }
+
+    private fun navigateToNext() {
+        Intent(requireActivity(), StartActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(this)
+        }
     }
 }

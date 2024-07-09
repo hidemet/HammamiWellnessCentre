@@ -1,25 +1,28 @@
 package com.example.hammami.fragments.loginResigter
 
+import ValidationUtil.validateAndReturnField
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.example.hammami.activities.LoginRegisterActivity
+import com.example.hammami.R
 import com.example.hammami.databinding.FragmentRegister2Binding
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class RegisterFragment2 : Fragment() {
     private lateinit var binding: FragmentRegister2Binding
-    private lateinit var viewModel: HammamiViewModel
+    private val viewModel: HammamiViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = (activity as LoginRegisterActivity).viewModel
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,27 +36,48 @@ class RegisterFragment2 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.root.hideKeyboardOnOutsideTouch()
+        setupUI()
+        observeViewModel()
 
-        binding.buttonNext.setOnClickListener { onButtonNextClick() }
-        binding.topAppBar.setNavigationOnClickListener { onToolbarBackClick() }
+    }
 
-        viewModel.registrationData.observe(viewLifecycleOwner) { data ->
-            binding.textFieldDay.editText?.setText(data.birthDate)
-            binding.textFieldGender.editText?.setText(data.gender)
-            binding.textFieldAllergies.editText?.setText(data.allergies)
-            binding.textFieldDisabilities.editText?.setText(data.disabilities)
+
+    private fun setupUI() {
+        with(binding) {
+            root.hideKeyboardOnOutsideTouch()
+            buttonNext.setOnClickListener { onNextButtonClick() }
+            topAppBar.setNavigationOnClickListener { onBackButtonClick() }
         }
     }
 
-    private fun onToolbarBackClick() {
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.registrationData.collect { data ->
+                    binding.apply {
+                        textFieldDay.editText?.setText(data.birthDate.split("/").getOrNull(0))
+                        textFieldMonth.editText?.setText(data.birthDate.split("/").getOrNull(1))
+                        textFieldYear.editText?.setText(data.birthDate.split("/").getOrNull(2))
+                        textFieldGender.editText?.setText(data.gender)
+                        textFieldAllergies.editText?.setText(data.allergies)
+                        textFieldDisabilities.editText?.setText(data.disabilities)
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun onBackButtonClick() {
         findNavController().popBackStack()
     }
 
-    private fun onButtonNextClick() {
+    private fun onNextButtonClick() {
         val birthDate = validateBirthDate()
-        val gender =
-            ValidationUtil.validateAndReturnField(binding.textFieldGender, "Seleziona il genere")
+        val gender = validateAndReturnField(
+            binding.textFieldGender,
+            getString(R.string.seleziona_il_genere)
+        )
         val allergies = binding.textFieldAllergies.editText?.text.toString()
         val disabilities = binding.textFieldDisabilities.editText?.text.toString()
 
@@ -74,7 +98,7 @@ class RegisterFragment2 : Fragment() {
         val day = binding.textFieldDay.editText?.text.toString()
         val month = binding.textFieldMonth.editText?.text.toString()
         val year = binding.textFieldYear.editText?.text.toString()
-        val birthDate = "$day/$month/$year"
+
 
         return when {
             day.isBlank() || month.isBlank() || year.isBlank() -> {
@@ -89,7 +113,7 @@ class RegisterFragment2 : Fragment() {
 
             else -> {
                 hideError()
-                birthDate
+                "$day/$month/$year"
             }
         }
     }

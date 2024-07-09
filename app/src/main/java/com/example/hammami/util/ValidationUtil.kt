@@ -1,3 +1,4 @@
+import android.widget.EditText
 import com.google.android.material.textfield.TextInputLayout
 
 // Classe di utilità per la convalida
@@ -17,6 +18,7 @@ object ValidationUtil {
         field.error = error
         return text.takeIf { error == null }
     }
+
 
     fun isValidInput(
         field: TextInputLayout,

@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
 private val TAG = "MainCategoryFragment"
-//@AndroidEntryPoint
+@AndroidEntryPoint
 class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
     private lateinit var binding: FragmentMainCategoryBinding
     private lateinit var newServicesAdapter: NewServicesAdapter
@@ -61,7 +61,7 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
                         newServicesAdapter.differ.submitList(it.data)
                         hideLoading()
                     }
-
+                    is Resource.Unspecified -> Unit
                 }
             }
         }
@@ -83,7 +83,7 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
                         bestDealsAdapter.differ.submitList(it.data)
                         hideLoading()
                     }
-
+                    is Resource.Unspecified -> Unit
                 }
             }
         }
@@ -106,6 +106,8 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
                         hideLoading()
                     }
 
+                    is Resource.Unspecified -> Unit
+
                 }
             }
         }
@@ -126,6 +128,7 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
             adapter = newServicesAdapter
         }
     }
+
 
     private fun setupRecommendedRv() {
         recommendedAdapter = RecommendedAdapter()

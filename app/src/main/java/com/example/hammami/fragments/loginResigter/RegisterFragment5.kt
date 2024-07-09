@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.activities.LoginRegisterActivity
@@ -15,17 +17,15 @@ import com.example.hammami.util.Resource
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 private const val TAG = "RegisterFragment5"
-
+@AndroidEntryPoint
 class RegisterFragment5 : Fragment() {
     private lateinit var binding: FragmentRegister5Binding
-    private lateinit var viewModel: HammamiViewModel
+    private val viewModel: HammamiViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = (activity as LoginRegisterActivity).viewModel
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,15 +39,21 @@ class RegisterFragment5 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.root.hideKeyboardOnOutsideTouch()
-
-        binding.buttonRegister.setOnClickListener { onButtonRegisterClick() }
-        binding.topAppBar.setNavigationOnClickListener { onToolbarBackClick() }
+        setupUI()
 
         observeRegistration()
     }
 
-    private fun onToolbarBackClick() {
+    private fun setupUI() {
+        with(binding) {
+            root.hideKeyboardOnOutsideTouch()
+            buttonRegister.setOnClickListener { onButtonRegisterClick() }
+            topAppBar.setNavigationOnClickListener { onBackButtonClick() }
+        }
+    }
+
+
+    private fun onBackButtonClick() {
         findNavController().popBackStack()
     }
 
@@ -57,21 +63,35 @@ class RegisterFragment5 : Fragment() {
 
 
     private fun observeRegistration() {
-        viewModel.registrationState.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is Resource.Loading -> showLoading(true)
-
-                is Resource.Success -> {
-                    showLoading(false)
-                    showSnackbar("Login effettuato con successo")
-                    navigateToNextFragment()
-                }
-
-                is Resource.Error -> {
-                    showLoading(false)
-                    showSnackbar(response.message ?: "Errore durante la registrazione")
-                }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.registrationState.collect { state ->
+                handleResourceState(state,
+                    onSuccess = {  showSnackbar("Registrazione effettuata con successo")
+                        navigateToNextFragment()
+                    },
+                    onError = { showSnackbar(it ?: getString(R.string.errore_durante_la_registrazione)) }
+                )
             }
+        }
+    }
+
+    private fun <T> handleResourceState(
+        state: Resource<T>,
+        onSuccess: (T) -> Unit,
+        onError: (String?) -> Unit
+    ) {
+        when (state) {
+            is Resource.Loading -> showLoading(true)
+            is Resource.Success -> {
+                showLoading(false)
+                state.data?.let { onSuccess(it) }
+            }
+
+            is Resource.Error -> {
+                showLoading(false)
+                onError(state.message)
+            }
+            is Resource.Unspecified -> Unit
         }
     }
 
@@ -81,16 +101,13 @@ class RegisterFragment5 : Fragment() {
     }
 
     private fun navigateToNextFragment() {
-        findNavController().navigate(R.id.action_registerFragment5_to_loginFragment)
+        findNavController().navigate(RegisterFragment5Directions.actionRegisterFragment5ToLoginFragment())
     }
 
     private fun showSnackbar(message: String) {
-        view?.let {
-            Snackbar.make(it, message, Snackbar.LENGTH_LONG).apply {
-                setAction("OK") { dismiss() }
-                show()
-            }
-        }
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+            .setAction(getString(R.string.ok)) { }
+            .show()
     }
 
 }
