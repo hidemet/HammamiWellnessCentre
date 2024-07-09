@@ -1,7 +1,9 @@
 package com.example.hammami.activities
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil.setContentView
 import androidx.lifecycle.ViewModelProvider
 import com.example.hammami.R
 import com.example.hammami.database.FirebaseDb
