@@ -61,10 +61,7 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
                         newServicesAdapter.differ.submitList(it.data)
                         hideLoading()
                     }
-
-                    is Resource.Unspecified -> {
-                        Unit
-                    }
+                    is Resource.Unspecified -> Unit
                 }
             }
         }
@@ -86,10 +83,7 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
                         bestDealsAdapter.differ.submitList(it.data)
                         hideLoading()
                     }
-
-                    is Resource.Unspecified -> {
-                        Unit
-                    }
+                    is Resource.Unspecified -> Unit
                 }
             }
         }
@@ -112,9 +106,8 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
                         hideLoading()
                     }
 
-                    is Resource.Unspecified -> {
-                        Unit
-                    }
+                    is Resource.Unspecified -> Unit
+
                 }
             }
         }

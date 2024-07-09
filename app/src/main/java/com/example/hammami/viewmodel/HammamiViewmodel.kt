@@ -1,7 +1,5 @@
 package com.example.hammami.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.database.FirebaseDb
@@ -9,56 +7,81 @@ import com.example.hammami.model.RegistrationData
 import com.example.hammami.model.User
 import com.example.hammami.util.Resource
 import com.google.firebase.auth.FirebaseUser
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class HammamiViewModel(
-    private val firebaseDatabase: FirebaseDb
+@HiltViewModel
+class HammamiViewModel @Inject constructor(
+    private val firebaseDb: FirebaseDb
 ) : ViewModel() {
 
-    private val _registrationData = MutableLiveData<RegistrationData>()
-    val registrationData: LiveData<RegistrationData> = _registrationData
+    private val _registrationData = MutableStateFlow(RegistrationData())
+    val registrationData: StateFlow<RegistrationData> = _registrationData
 
-    private val _registrationState = MutableLiveData<Resource<User>>()
-    val registrationState: LiveData<Resource<User>> = _registrationState
+    private val _registrationState = MutableStateFlow<Resource<User>>(Resource.Unspecified())
+    val registrationState: StateFlow<Resource<User>> = _registrationState
 
-    private val _loginState = MutableLiveData<Resource<FirebaseUser>>()
-    val loginState: LiveData<Resource<FirebaseUser>> = _loginState
+    private val _loginState = MutableStateFlow<Resource<FirebaseUser>>(Resource.Unspecified())
+    val loginState: StateFlow<Resource<FirebaseUser>> = _loginState
+
+    private val _resetPasswordState = MutableStateFlow<Resource<String>>(Resource.Unspecified())
+    val resetPasswordState: StateFlow<Resource<String>> = _resetPasswordState
 
     fun updateRegistrationData(update: (RegistrationData) -> RegistrationData) {
-        _registrationData.value = update(_registrationData.value ?: RegistrationData())
+        _registrationData.value = update(_registrationData.value)
     }
 
     fun loginUser(email: String, password: String) {
         viewModelScope.launch {
             _loginState.value = Resource.Loading()
             try {
-                val result = firebaseDatabase.loginUser(email, password).await()
-                _loginState.value = Resource.Success(result.user!!)
+                val result = firebaseDb.loginUser(email, password).await()
+                val user = result.user ?: throw Exception("Login successful but user is null")
+                _loginState.value = Resource.Success(user)
             } catch (e: Exception) {
-                _loginState.value = Resource.Error(e.message ?: "Errore sconosciuto durante il login")
+                _loginState.value =
+                    Resource.Error(e.message ?: "Errore sconosciuto durante il login")
             }
         }
     }
 
     fun createUser() {
-        val user = _registrationData.value?.toUser() ?: return
-        val password = _registrationData.value?.password ?: return
+        val user = _registrationData.value.toUser()
+        val password = _registrationData.value.password
 
         viewModelScope.launch {
             _registrationState.value = Resource.Loading()
             try {
-                val authResult = firebaseDatabase.createUser(user.email, password).await()
+                val authResult = firebaseDb.createUser(user.email, password).await()
                 val uid = authResult.user?.uid ?: throw Exception("UID non disponibile")
-                firebaseDatabase.saveUserInformation(uid, user).await()
+                firebaseDb.saveUserInformation(uid, user).await()
                 _registrationState.value = Resource.Success(user)
             } catch (e: Exception) {
-                _registrationState.value = Resource.Error(e.message ?: "Errore sconosciuto durante la registrazione")
+                _registrationState.value =
+                    Resource.Error(e.message ?: "Errore sconosciuto durante la registrazione")
             }
         }
     }
 
     fun clearRegistrationData() {
         _registrationData.value = RegistrationData()
+    }
+
+    fun resetPassword(email: String) {
+        viewModelScope.launch {
+            _resetPasswordState.value = Resource.Loading()
+            try {
+                firebaseDb.resetPassword(email).await()
+                _resetPasswordState.value = Resource.Success(email)
+            } catch (e: Exception) {
+                _resetPasswordState.value =
+                    Resource.Error(e.message ?: "Errore durante il reset della password")
+            }
+        }
     }
 }

@@ -5,27 +5,26 @@ import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.hammami.R
-import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.databinding.FragmentRegister4Binding
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class RegisterFragment4 : Fragment() {
     private lateinit var binding: FragmentRegister4Binding
-    private lateinit var viewModel: HammamiViewModel
+    private val viewModel: HammamiViewModel by viewModels()
 
     private var passwordEntered = false
     private var confirmPasswordEntered = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = (activity as LoginRegisterActivity).viewModel
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,24 +38,34 @@ class RegisterFragment4 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.root.hideKeyboardOnOutsideTouch()
+        setupUI()
+        observeViewModel()
 
-        binding.buttonNext.setOnClickListener { onButtonNextClick() }
-        binding.topAppBar.setNavigationOnClickListener { onToolbarBackClick() }
+    }
 
-        setupPasswordVisibilityToggle()
-        setupPasswordValidation()
-
-        viewModel.registrationData.observe(viewLifecycleOwner) { data ->
-            binding.textFieldPassword.editText?.setText(data.password)
+    private fun setupUI(){
+        with(binding){
+            root.hideKeyboardOnOutsideTouch()
+            buttonNext.setOnClickListener { onNextButtonClick() }
+            topAppBar.setNavigationOnClickListener { onBackButtonClick() }
+            setupPasswordVisibilityToggle()
+            setupPasswordValidation()
         }
     }
 
-    private fun onToolbarBackClick() {
+    private fun observeViewModel(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.registrationData.collect { data ->
+                binding.textFieldPassword.editText?.setText(data.password)
+            }
+        }
+    }
+
+    private fun onBackButtonClick() {
         findNavController().popBackStack()
     }
 
-    private fun onButtonNextClick() {
+    private fun onNextButtonClick() {
         val password = binding.textFieldPassword.editText?.text.toString()
         val confirmPassword = binding.textFieldConfirmPassword.editText?.text.toString()
 
@@ -111,42 +120,42 @@ class RegisterFragment4 : Fragment() {
 
     private fun setupPasswordVisibilityToggle() {
         binding.checkboxShowPassword.setOnCheckedChangeListener { _, isChecked ->
-            val method = if (isChecked) null else PasswordTransformationMethod.getInstance()
-            binding.textFieldPassword.editText?.transformationMethod = method
-            binding.textFieldConfirmPassword.editText?.transformationMethod = method
-        }
-    }
-
-    private fun setupPasswordValidation() {
-        binding.textFieldPassword.editText?.doAfterTextChanged {
-            if (!passwordEntered && it.toString().isNotEmpty()) {
-                passwordEntered = true
+            binding.textFieldPassword.editText?.let { editText ->
+                editText.transformationMethod =
+                    if (isChecked) null else PasswordTransformationMethod.getInstance()
+                editText.setSelection(editText.text.length)
             }
-            triggerValidation()
-        }
-        binding.textFieldConfirmPassword.editText?.doAfterTextChanged {
-            if (!confirmPasswordEntered && it.toString().isNotEmpty()) {
-                confirmPasswordEntered = true
-            }
-            triggerValidation()
         }
     }
 
-    private fun triggerValidation() {
-        if (passwordEntered && confirmPasswordEntered) {
-            validatePasswords()
-        }
+fun EditText.setupValidation(onTextChanged: (String) -> Unit) {
+    this.doAfterTextChanged {
+        onTextChanged(it.toString())
     }
+}
 
-    private fun validatePasswords() {
-        val password = binding.textFieldPassword.editText?.text.toString()
-        val confirmPassword = binding.textFieldConfirmPassword.editText?.text.toString()
-        if (passwordEntered && confirmPasswordEntered) {
-            validatePasswords(password, confirmPassword)
-        }
+private fun setupPasswordValidation() {
+    binding.textFieldPassword.editText?.setupValidation {
+        passwordEntered = it.isNotEmpty()
+        triggerValidation()
     }
+    binding.textFieldConfirmPassword.editText?.setupValidation {
+        confirmPasswordEntered = it.isNotEmpty()
+        triggerValidation()
+    }
+}
+
+private fun triggerValidation() {
+    validatePasswords()
+}
+
+private fun validatePasswords() {
+    val password = binding.textFieldPassword.editText?.text.toString()
+    val confirmPassword = binding.textFieldConfirmPassword.editText?.text.toString()
+    validatePasswords(password, confirmPassword)
+}
 
     private fun navigateToNextFragment() {
-        findNavController().navigate(R.id.action_registerFragment4_to_registerFragment5)
+        findNavController().navigate(RegisterFragment4Directions.actionRegisterFragment4ToRegisterFragment5())
     }
 }
