@@ -9,6 +9,7 @@ import com.example.hammami.R
 import com.example.hammami.adapter.HomeViewpagerAdapter
 import com.example.hammami.databinding.FragmentHomeBinding
 import com.example.hammami.fragments.categories.MainCategoryFragment
+import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment: Fragment(R.layout.fragment_home) {
 
@@ -30,11 +31,9 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
             MainCategoryFragment()
         )
 
-        /*
-        val viewPager2Adapter =
-            HomeViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
-        binding = viewPager2Adapter
-*/
+        val viewPager2Adapter = HomeViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
+        binding.viewpagerHome.adapter = viewPager2Adapter
+
     }
 
 }
