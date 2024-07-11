@@ -36,8 +36,7 @@ class MainCategoryViewModel @Inject constructor(
             _newServices.emit(Resource.Loading())
         }
 
-        firestore.collection("Servizi").document("Benessere").collection("trattamenti")
-            .whereEqualTo("Sezione homepage", "Novità").get().addOnSuccessListener { result ->
+        firestore.collection("Servizi").document("Benessere").collection("trattamenti").get().addOnSuccessListener { result ->
                 val newServicesList = result.toObjects(Service::class.java)
                 viewModelScope.launch {
                     _newServices.emit(Resource.Success(newServicesList))
