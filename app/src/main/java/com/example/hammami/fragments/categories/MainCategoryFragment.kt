@@ -11,9 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hammami.R
-import com.example.hammami.adapter.BestDealsAdapter
-import com.example.hammami.adapter.NewServicesAdapter
-import com.example.hammami.adapter.RecommendedAdapter
+import com.example.hammami.adapters.BestDealsAdapter
+import com.example.hammami.adapters.NewServicesAdapter
+import com.example.hammami.adapters.RecommendedAdapter
 import com.example.hammami.databinding.FragmentMainCategoryBinding
 import com.example.hammami.util.Resource
 import com.example.hammami.viewmodel.MainCategoryViewModel

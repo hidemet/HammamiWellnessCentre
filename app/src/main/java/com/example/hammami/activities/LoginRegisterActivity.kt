@@ -1,17 +1,23 @@
 package com.example.hammami.activities
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.hammami.R
-import com.example.hammami.database.FirebaseDb
 import com.example.hammami.viewmodel.HammamiViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginRegisterActivity : AppCompatActivity() {
-        private val viewModel: HammamiViewModel by viewModels()
+    private val viewModel: HammamiViewModel by viewModels()
+
+    companion object {
+        fun newIntent(context: Context): Intent {
+            return Intent(context, LoginRegisterActivity::class.java)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

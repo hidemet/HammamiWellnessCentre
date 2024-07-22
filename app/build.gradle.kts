@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.androidx.material3.android)
+
 
 
 
@@ -96,8 +99,14 @@ dependencies {
     //implementation(platform("com.google.firebase:firebase-bom:32.0.0")) // Update to the latest BOM version
     implementation("com.google.firebase:firebase-firestore-ktx") // Add Firestore dependency
 
+    //Coroutines with firebase
+    implementation(libs.kotlinx.coroutines.play.services)
+
     //Navigation component
     val nav_version = "2.5.0"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+
+    // Splash screen
+    implementation("androidx.core:core-splashscreen:1.0.0")
 }

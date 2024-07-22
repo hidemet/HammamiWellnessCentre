@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="158.52dp"
+    android:height="27.12dp"
+    android:viewportWidth="158.52"
+    android:viewportHeight="27.12">
+
+    <group android:name="logo_group">
+        <!-- Tutto il contenuto esistente del tuo logo va qui -->
+    </group>
+</vector>

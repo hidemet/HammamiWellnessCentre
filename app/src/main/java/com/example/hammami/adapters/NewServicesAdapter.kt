@@ -1,26 +1,27 @@
-package com.example.hammami.adapter
+package com.example.hammami.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.hammami.data.Service
 import com.example.hammami.databinding.ItemHomepageBinding
 
-class BestDealsAdapter: RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHolder>() {
+class NewServicesAdapter: RecyclerView.Adapter<NewServicesAdapter.NewServicesViewHolder>() {
 
-    inner class BestDealsViewHolder(private val binding: ItemHomepageBinding): ViewHolder(binding.root){
-        fun bind(service: Service){
-            binding.apply {
-                Glide.with(itemView).load(service.image).into(imageNewRvItem)
-                tvNewRvItemName.text = service.name
-                tvNewItemRvPrice.text = service.price
+    inner class NewServicesViewHolder(private val binding: ItemHomepageBinding):
+        RecyclerView.ViewHolder(binding.root){
+
+            fun bind(service: Service){
+                binding.apply {
+                    Glide.with(itemView).load(service.image).into(imageNewRvItem)
+                    tvNewRvItemName.text = service.name
+                    tvNewItemRvPrice.text = service.price
+                }
             }
         }
-    }
 
     private val diffCallback = object : DiffUtil.ItemCallback<Service>(){
 
@@ -36,8 +37,8 @@ class BestDealsAdapter: RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHolde
 
     val differ = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BestDealsViewHolder {
-        return BestDealsViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewServicesViewHolder {
+        return NewServicesViewHolder(
             ItemHomepageBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
@@ -48,7 +49,7 @@ class BestDealsAdapter: RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHolde
         return differ.currentList.size
     }
 
-    override fun onBindViewHolder(holder: BestDealsAdapter.BestDealsViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: NewServicesViewHolder, position: Int) {
         val service = differ.currentList[position]
         holder.bind(service)
     }

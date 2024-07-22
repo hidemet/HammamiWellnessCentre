@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class RegisterFragment1 : Fragment() {
     private lateinit var binding: FragmentRegister1Binding
-    private val viewModel: HammamiViewModel by viewModels()
+    private val viewModel: HammamiViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -80,7 +80,7 @@ class RegisterFragment1 : Fragment() {
 
 
     private fun navigateToNextFragment() {
-        findNavController().navigate(R.id.action_registerFragment1_to_registerFragment2)
+        findNavController().navigate(RegisterFragment1Directions.actionRegisterFragment1ToRegisterFragment2())
     }
 
     private fun updateRegistrationData(firstName: String, lastName: String) {

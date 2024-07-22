@@ -1,4 +1,4 @@
-package com.example.hammami.adapter
+package com.example.hammami.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

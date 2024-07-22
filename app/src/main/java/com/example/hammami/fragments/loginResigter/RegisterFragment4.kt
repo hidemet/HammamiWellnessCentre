@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.databinding.FragmentRegister4Binding
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class RegisterFragment4 : Fragment() {
     private lateinit var binding: FragmentRegister4Binding
-    private val viewModel: HammamiViewModel by viewModels()
+    private val viewModel: HammamiViewModel by activityViewModels()
 
     private var passwordEntered = false
     private var confirmPasswordEntered = false
@@ -70,10 +70,13 @@ class RegisterFragment4 : Fragment() {
         val confirmPassword = binding.textFieldConfirmPassword.editText?.text.toString()
 
         if (validatePasswords(password, confirmPassword)) {
-            viewModel.updateRegistrationData { currentData ->
-                currentData.copy(password = password)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.updateRegistrationData { currentData ->
+                    currentData.copy(password = password)
+                }
+                kotlinx.coroutines.delay(100)
+                navigateToNextFragment()
             }
-            navigateToNextFragment()
         }
 
     }

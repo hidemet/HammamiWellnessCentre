@@ -5,13 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
-import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.databinding.FragmentRegister5Binding
 import com.example.hammami.util.Resource
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
@@ -24,7 +22,7 @@ private const val TAG = "RegisterFragment5"
 @AndroidEntryPoint
 class RegisterFragment5 : Fragment() {
     private lateinit var binding: FragmentRegister5Binding
-    private val viewModel: HammamiViewModel by viewModels()
+    private val viewModel: HammamiViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -40,7 +38,6 @@ class RegisterFragment5 : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupUI()
-
         observeRegistration()
     }
 
@@ -58,15 +55,15 @@ class RegisterFragment5 : Fragment() {
     }
 
     private fun onButtonRegisterClick() {
-        viewModel.createUser()
+        val currentData = viewModel.registrationData.value
+        Log.d(TAG, "Registration data before creating user: $currentData")
+        viewModel.createUser(currentData.email, currentData.password,currentData.toUser())
     }
-
-
     private fun observeRegistration() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.registrationState.collect { state ->
                 handleResourceState(state,
-                    onSuccess = {  showSnackbar("Registrazione effettuata con successo")
+                    onSuccess = {  showSnackbar(getString(R.string.registrazione_effettuata_con_successo))
                         navigateToNextFragment()
                     },
                     onError = { showSnackbar(it ?: getString(R.string.errore_durante_la_registrazione)) }
