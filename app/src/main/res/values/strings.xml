@@ -53,5 +53,27 @@
     <string name="inserisci_il_numero_di_cellulare">Inserisci il numero di cellulare</string>
     <string name="errore_durante_la_registrazione">Errore durante la registrazione</string>
     <string name="login_effettuato_con_successo">Login effettuato con successo</string>
+    <string name="registrazione_effettuata_con_successo">Registrazione effettuata con successo</string>
+    <string name="l_email_per_reimpostare_la_passowrd_stata_inviata_a">L\'email per reimpostare la passowrd è stata inviata a %1$s</string>
+    <string name="coupon">Coupon</string>
+    <string name="gift_card">Gift Card</string>
+    <string name="impostazioni">Impostazioni</string>
+    <string name="andrea_rossi">Andrea Rossi</string>
+    <string name="_56_punti">56 punti</string>
+    <string name="user_full_name">%1$s %2$s</string>
+    <string name="user_points">%1$s</string>
+    <string name="retry">Riprova</string>
+    <string name="unknown_error">Errore sconosciuto</string>
+    <string name="personal_information">Informazioni personali</string>
+    <string name="birth_date">Data di nascita</string>
+    <string name="allergies">Allergie</string>
+    <string name="disabilities">Disabilità</string>
+    <string name="contacts">Contatti</string>
+    <string name="phone_number">Numero di telefono</string>
+    <string name="email_address">Indirizzo email</string>
+    <string name="security">Sicurezza</string>
+    <string name="password">Password</string>
+    <string name="change_password">Cambia Password</string>
+    <string name="modify">Modifica</string>
 
 </resources>

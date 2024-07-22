@@ -1,6 +1,4 @@
-package com.example.hammami.model
-
-import android.net.Uri
+package com.example.hammami.models
 
 data class RegistrationData(
     var firstName: String = "",
@@ -24,6 +22,7 @@ data class RegistrationData(
         disabilities = disabilities,
         email = email,
         phoneNumber = phoneNumber,
-        profileImage = profileImage
+        profileImage = profileImage,
+        points = "0"
     )
 }

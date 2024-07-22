@@ -1,4 +1,4 @@
-package com.example.hammami.model
+package com.example.hammami.models
 
 
 data class User (
@@ -12,5 +12,6 @@ data class User (
     val phoneNumber: String = "",
     val email: String = "",
     val profileImage:String = "",
+    val points: String = "0",
 
     )

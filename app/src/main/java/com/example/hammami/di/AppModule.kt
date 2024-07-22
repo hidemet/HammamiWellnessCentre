@@ -1,11 +1,17 @@
 package com.example.hammami.di
 
+import com.example.hammami.util.PreferencesManager
+import android.content.Context
 import com.example.hammami.database.FirebaseDb
+import com.example.hammami.models.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -35,4 +41,25 @@ object AppModule {
     fun provideFirebaseDb(auth: FirebaseAuth, firestore: FirebaseFirestore): FirebaseDb {
         return FirebaseDb(auth, firestore)
     }
+
+
+    @Provides
+    @Singleton
+    fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager {
+        return PreferencesManager(context)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        firebaseAuth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        preferencesManager: PreferencesManager
+    ): UserRepository = UserRepository(firebaseAuth,firestore, preferencesManager)
+
+    @Provides
+    @Singleton
+    fun provideStorageReference(): StorageReference = FirebaseStorage.getInstance().reference
+
 }

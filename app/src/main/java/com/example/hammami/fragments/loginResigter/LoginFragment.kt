@@ -8,11 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
-import com.example.hammami.activities.StartActivity
+import com.example.hammami.activities.MainActivity
 import com.example.hammami.databinding.BottomSheetForgotPasswordBinding
 import com.example.hammami.databinding.FragmentLoginBinding
 import com.example.hammami.util.Resource
@@ -26,8 +26,10 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
-    private val viewModel: HammamiViewModel by viewModels()
+    private val viewModel: HammamiViewModel by activityViewModels()
     private lateinit var bottomSheetDialog: BottomSheetDialog
+
+    private var resetPasswordEmail: String? = null
 
 
 
@@ -81,7 +83,11 @@ class LoginFragment : Fragment() {
             viewModel.resetPasswordState.collect { state ->
                 handleResourceState(state,
                     onSuccess = {
-                        showSnackbar(getString(R.string.la_password_stata_resettata_con_successo))
+                        showSnackbar(
+                            getString(
+                                R.string.l_email_per_reimpostare_la_passowrd_stata_inviata_a,
+                                resetPasswordEmail
+                            ))
                     },
                     onError = {
                         showSnackbar(
@@ -91,6 +97,7 @@ class LoginFragment : Fragment() {
             }
         }
     }
+
 
     private fun <T> handleResourceState(
         state: Resource<T>,
@@ -133,8 +140,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun showForgotPasswordDialog() {
+        val bottomSheetBinding = BottomSheetForgotPasswordBinding.inflate(layoutInflater)
         bottomSheetDialog = BottomSheetDialog(requireContext()).apply {
-            val bottomSheetBinding = BottomSheetForgotPasswordBinding.inflate(layoutInflater)
             setContentView(bottomSheetBinding.root)
 
             bottomSheetBinding.buttonCancel.setOnClickListener { dismiss() }
@@ -147,12 +154,14 @@ class LoginFragment : Fragment() {
 
                 if (email != null) {
                     viewModel.resetPassword(email)
+                    resetPasswordEmail = email
                     dismiss()
                 }
             }
         }
         bottomSheetDialog.show()
     }
+
 
     private fun showLoading(isLoading: Boolean) {
         binding.circularProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
@@ -166,7 +175,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateToNext() {
-        Intent(requireActivity(), StartActivity::class.java).apply {
+        Intent(requireActivity(), MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(this)
         }

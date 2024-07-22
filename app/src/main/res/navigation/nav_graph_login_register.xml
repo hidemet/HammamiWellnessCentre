@@ -12,7 +12,8 @@
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_registerFragment1"
-            app:destination="@id/registerFragment1" />
+            app:destination="@id/registerFragment1"
+            app:enterAnim="@anim/from_bottom" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment1"
@@ -53,6 +54,9 @@
         <action
             android:id="@+id/action_registerFragment4_to_registerFragment5"
             app:destination="@id/registerFragment5" />
+        <action
+            android:id="@+id/action_registerFragment4_self"
+            app:destination="@id/registerFragment4" />
     </fragment>
 
     <fragment
