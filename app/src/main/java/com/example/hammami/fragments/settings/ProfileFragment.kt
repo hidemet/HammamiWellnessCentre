@@ -52,7 +52,7 @@ class ProfileFragment : Fragment() {
                 findNavController().popBackStack()
             }
             editProfileButton.setOnClickListener {
-                EditProfileFragment().show(parentFragmentManager, "EditProfileFragment")
+                //EditProfileFragment().show(parentFragmentManager, "EditProfileFragment")
             }
         }
     }
