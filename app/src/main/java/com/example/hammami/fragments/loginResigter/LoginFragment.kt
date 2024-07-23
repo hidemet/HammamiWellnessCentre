@@ -1,38 +1,31 @@
 package com.example.hammami.fragments.loginResigter
 
-import ValidationUtil
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.activities.MainActivity
 import com.example.hammami.databinding.BottomSheetForgotPasswordBinding
 import com.example.hammami.databinding.FragmentLoginBinding
-import com.example.hammami.util.Resource
+import com.example.hammami.fragments.BaseFragment
+import com.example.hammami.util.StringValidators
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class LoginFragment : Fragment() {
+class LoginFragment : BaseFragment() {
     private lateinit var binding: FragmentLoginBinding
     private val viewModel: HammamiViewModel by activityViewModels()
     private lateinit var bottomSheetDialog: BottomSheetDialog
 
     private var resetPasswordEmail: String? = null
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,13 +36,7 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupUI()
-        observeViewModelStates()
-    }
-
-    private fun setupUI() {
+    override fun setupUI() {
         with(binding) {
             root.hideKeyboardOnOutsideTouch()
             buttonLogin.setOnClickListener { onLoginClick() }
@@ -61,78 +48,49 @@ class LoginFragment : Fragment() {
 
     private fun setupPasswordVisibilityToggle() {
         binding.checkboxShowPassword.setOnCheckedChangeListener { _, isChecked ->
-            binding.textFieldPassword.editText?.let { editText ->
-                editText.transformationMethod =
-                    if (isChecked) null else PasswordTransformationMethod.getInstance()
-                editText.setSelection(editText.text.length)
-            }
+            val transformationMethod =
+                if (isChecked) null else PasswordTransformationMethod.getInstance()
+            binding.textFieldPassword.editText?.transformationMethod = transformationMethod
         }
     }
 
-    private fun observeViewModelStates() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loginState.collect { state ->
-                handleResourceState(state,
-                    onSuccess = {navigateToNext() },
-                    onError = { showSnackbar(it ?: getString(R.string.errore_durante_il_login)) }
-                )
-            }
-        }
+    override fun observeFlows() {
+        viewModel.loginState.collectResource(
+            onSuccess = { navigateToNext() },
+            onError = { showSnackbar(it ?: getString(R.string.errore_durante_il_login)) }
+        )
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.resetPasswordState.collect { state ->
-                handleResourceState(state,
-                    onSuccess = {
-                        showSnackbar(
-                            getString(
-                                R.string.l_email_per_reimpostare_la_passowrd_stata_inviata_a,
-                                resetPasswordEmail
-                            ))
-                    },
-                    onError = {
-                        showSnackbar(
-                            it ?: getString(R.string.errore_durante_il_reset_della_password))
-                    }
+        viewModel.resetPasswordState.collectResource(
+            onSuccess = {
+                showSnackbar(
+                    getString(
+                        R.string.l_email_per_reimpostare_la_passowrd_stata_inviata_a,
+                        resetPasswordEmail
+                    )
+                )
+            },
+            onError = {
+                showSnackbar(
+                    it ?: getString(R.string.errore_durante_il_reset_della_password)
                 )
             }
-        }
+        )
     }
 
-
-    private fun <T> handleResourceState(
-        state: Resource<T>,
-        onSuccess: (T) -> Unit,
-        onError: (String?) -> Unit
-    ) {
-        when (state) {
-            is Resource.Loading -> showLoading(true)
-            is Resource.Success -> {
-                showLoading(false)
-                state.data?.let { onSuccess(it) }
-            }
-
-            is Resource.Error -> {
-                showLoading(false)
-                onError(state.message)
-            }
-            is Resource.Unspecified -> Unit
-        }
+    override fun showLoading(isLoading: Boolean) {
+        binding.circularProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.buttonLogin.isEnabled = !isLoading
     }
 
     private fun onLoginClick() {
-        val email = ValidationUtil.validateAndReturnField(
-            binding.textFieldEmail,
-            getString(R.string.err_email_obbligatoria),
-            getString(R.string.err_email_non_valida)
-        ) { input: String -> android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches() }
-        val password = ValidationUtil.validateAndReturnField(
-            binding.textFieldPassword,
-            getString(R.string.err_password_obbligatoria),
-            getString(R.string.err_password_corta)
-        ) { input: String -> input.length >= 6 }
+        val isEmailValid = ValidationUtil.validateField(binding.textFieldEmail, StringValidators.Email)
+        val isPasswordValid = ValidationUtil.validateField(binding.textFieldPassword, StringValidators.Password)
 
-        if (email != null && password != null)
+        if (isEmailValid && isPasswordValid) {
+            val email = binding.textFieldEmail.editText?.text.toString()
+            val password = binding.textFieldPassword.editText?.text.toString()
             viewModel.loginUser(email, password)
+        }
     }
 
     private fun onRegisterClick() {
@@ -146,13 +104,8 @@ class LoginFragment : Fragment() {
 
             bottomSheetBinding.buttonCancel.setOnClickListener { dismiss() }
             bottomSheetBinding.buttonConfirm.setOnClickListener {
-                val email = ValidationUtil.validateAndReturnField(
-                    bottomSheetBinding.textFieldEmail,
-                    getString(R.string.err_email_obbligatoria),
-                    getString(R.string.err_email_non_valida)
-                ) { input: String -> android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches() }
-
-                if (email != null) {
+                if (ValidationUtil.validateField(bottomSheetBinding.textFieldEmail, StringValidators.Email)) {
+                    val email = bottomSheetBinding.textFieldEmail.editText?.text.toString()
                     viewModel.resetPassword(email)
                     resetPasswordEmail = email
                     dismiss()
@@ -162,17 +115,6 @@ class LoginFragment : Fragment() {
         bottomSheetDialog.show()
     }
 
-
-    private fun showLoading(isLoading: Boolean) {
-        binding.circularProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.buttonLogin.isEnabled = !isLoading
-    }
-
-    private fun showSnackbar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
-            .setAction(getString(R.string.ok)) { }
-            .show()
-    }
 
     private fun navigateToNext() {
         Intent(requireActivity(), MainActivity::class.java).apply {

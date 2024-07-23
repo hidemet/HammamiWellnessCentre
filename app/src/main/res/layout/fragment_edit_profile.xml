@@ -32,7 +32,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/personal_information"
+                android:text="@string/basic_profile_information"
                 android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:layout_marginBottom="16dp"/>
 

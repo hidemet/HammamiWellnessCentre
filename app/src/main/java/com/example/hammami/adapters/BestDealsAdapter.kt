@@ -17,7 +17,7 @@ class BestDealsAdapter: RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHolde
             binding.apply {
                 Glide.with(itemView).load(service.image).into(imageNewRvItem)
                 tvNewRvItemName.text = service.name
-                tvNewItemRvPrice.text = service.price
+                tvNewItemRvPrice.text = service.price.toString()
             }
         }
     }
