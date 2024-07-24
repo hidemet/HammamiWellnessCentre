@@ -34,19 +34,25 @@ class MainCategoryViewModel @Inject constructor(
     fun fetchNewServices() {
         viewModelScope.launch {
             _newServices.emit(Resource.Loading())
-        }
+            val allServices = mutableListOf<Service>()
 
-        firestore.collection("/Servizi/Benessere/trattamenti")
-            .whereEqualTo("Sezione homepage", "Novità").get().addOnSuccessListener { result ->
-                val newServicesList = result.toObjects(Service::class.java)
-                viewModelScope.launch {
-                    _newServices.emit(Resource.Success(newServicesList))
+            firestore.collection("/Servizi/Estetica/Trattamento corpo")
+                .whereEqualTo("Sezione homepage", "Novità").get().addOnSuccessListener { result ->
+                    allServices.addAll(result.toObjects(Service::class.java))
+                }.addOnFailureListener {
+                    // Handle error
                 }
-            }.addOnFailureListener {
-                viewModelScope.launch {
-                    _newServices.emit(Resource.Error(it.message ?: "Errore sconosciuto"))
+
+            firestore.collection("/Servizi/Benessere/trattamenti")
+                .whereEqualTo("Sezione homepage", "Novità").get().addOnSuccessListener { result ->
+                    allServices.addAll(result.toObjects(Service::class.java))
+                    viewModelScope.launch {
+                        _newServices.emit(Resource.Success(allServices))
+                    }
+                }.addOnFailureListener {
+                    // Handle error
                 }
-            }
+        }
     }
 
     fun fetchBestDeals() {
