@@ -58,6 +58,7 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
                     }
 
                     is Resource.Success -> {
+                        Log.d(TAG, "Received new services: ${it.data}")
                         newServicesAdapter.differ.submitList(it.data)
                         hideLoading()
                     }

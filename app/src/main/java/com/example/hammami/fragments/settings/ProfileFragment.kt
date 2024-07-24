@@ -14,6 +14,7 @@ import com.example.hammami.R
 import com.example.hammami.adapters.ProfileOptionAdapter
 import com.example.hammami.databinding.FragmentProfileBinding
 import com.example.hammami.models.ItemProfileOption
+import com.example.hammami.models.User
 import com.example.hammami.util.Resource
 import com.example.hammami.viewmodel.ProfileViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -94,15 +95,14 @@ class ProfileFragment : Fragment() {
                     is Resource.Unspecified -> {
                         // Handle unspecified state if needed
                     }
+
                 }
             }
         }
     }
 
-    private fun updateUserInfo(user: com.example.hammami.models.User) {
-        val fullName = getString(R.string.user_full_name, user.firstName, user.lastName)
-        binding.userName.text = fullName
-        binding.userPoints.text = getString(R.string.user_points, user.points)
+    private fun updateUserInfo(user: User) {
+       // user.populateProfileFields(binding)
     }
 
     private fun showLoading(isLoading: Boolean) {

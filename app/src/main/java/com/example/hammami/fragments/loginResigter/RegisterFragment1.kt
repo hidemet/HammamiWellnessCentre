@@ -1,25 +1,23 @@
 package com.example.hammami.fragments.loginResigter
 
-import ValidationUtil.validateAndReturnField
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.example.hammami.R
 import com.example.hammami.databinding.FragmentRegister1Binding
+import com.example.hammami.fragments.BaseFragment
+import com.example.hammami.models.RegistrationData
+import com.example.hammami.util.StringValidators
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
 import com.example.hammami.viewmodel.HammamiViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class RegisterFragment1 : Fragment() {
+class RegisterFragment1 : BaseFragment() {
     private lateinit var binding: FragmentRegister1Binding
     private val viewModel: HammamiViewModel by activityViewModels()
 
@@ -33,59 +31,63 @@ class RegisterFragment1 : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setupUI()
-        observeViewModel()
-
-    }
-
-    private fun setupUI() {
+    override fun setupUI() {
         with(binding) {
             root.hideKeyboardOnOutsideTouch()
             buttonNext.setOnClickListener { onNextButtonClick() }
-            topAppBar.setNavigationOnClickListener { onBackButtonClick() }
+            topAppBar.setNavigationOnClickListener { onBackClick() }
         }
     }
 
-    private fun observeViewModel() {
+
+    override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.registrationData.collect { data ->
-                    binding.textFieldFirstName.editText?.setText(data.firstName)
-                    binding.textFieldLastName.editText?.setText(data.lastName)
-                }
+            viewModel.registrationData.collect { data ->
+                updateUIWithRegistrationData(data)
             }
         }
     }
 
-    private fun onBackButtonClick() {
-        viewModel.clearRegistrationData()
-        findNavController().popBackStack()
-    }
-
-    private fun onNextButtonClick(){
-        val firstName = validateAndReturnField(binding.textFieldFirstName, "Nome obbligatorio")
-        val lastName = validateAndReturnField(binding.textFieldLastName, "Cognome obbligatorio")
-
-
-        if (firstName != null && lastName != null) {
-
-                updateRegistrationData(firstName,lastName)
-                navigateToNextFragment()
-
+    private fun updateUIWithRegistrationData(data: RegistrationData) {
+        binding.apply {
+            textFieldFirstName.editText?.setText(data.firstName)
+            textFieldLastName.editText?.setText(data.lastName)
         }
     }
 
+
+
+
+    private fun onNextButtonClick() {
+        if (validateAllFields()) {
+            updateRegistrationData()
+            navigateToNextFragment()
+        }
+    }
+
+    private fun validateAllFields(): Boolean {
+        val isFirstNameValid =
+            ValidationUtil.validateField(binding.textFieldFirstName, StringValidators.NotBlank)
+        val isLastNameValid =
+            ValidationUtil.validateField(binding.textFieldLastName, StringValidators.NotBlank)
+
+        return isFirstNameValid && isLastNameValid
+    }
 
     private fun navigateToNextFragment() {
         findNavController().navigate(RegisterFragment1Directions.actionRegisterFragment1ToRegisterFragment2())
     }
 
-    private fun updateRegistrationData(firstName: String, lastName: String) {
-        viewModel.updateRegistrationData { currentData -> currentData.copy(firstName = firstName, lastName = lastName)}
 
+    private fun updateRegistrationData() {
+        val firstName = binding.textFieldFirstName.editText?.text.toString()
+        val lastName = binding.textFieldLastName.editText?.text.toString()
+
+        viewModel.updateRegistrationData { currentData ->
+            currentData.copy(
+                firstName = firstName, lastName = lastName
+            )
+        }
     }
 
 

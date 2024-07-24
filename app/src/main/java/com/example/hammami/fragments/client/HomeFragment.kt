@@ -7,8 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
+import androidx.viewpager2.widget.ViewPager2
 import com.example.hammami.R
-import com.example.hammami.adapter.HomeViewpagerAdapter
+import com.example.hammami.adapters.HomeViewpagerAdapter
 import com.example.hammami.databinding.FragmentHomeBinding
 import com.example.hammami.fragments.categories.MainCategoryFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,11 +19,13 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
 
     private lateinit var binding: FragmentHomeBinding
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomeBinding.inflate(inflater)
         return binding.root
     }
@@ -35,6 +38,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
         )
 
         val viewPager2Adapter = HomeViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
+        binding.viewpagerHome.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.viewpagerHome.adapter = viewPager2Adapter
 
         //binding = FragmentHomeBinding.bind(view)
