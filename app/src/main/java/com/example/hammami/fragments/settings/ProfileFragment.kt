@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.hammami.R
 import com.example.hammami.adapters.ProfileOptionAdapter
 import com.example.hammami.databinding.FragmentProfileBinding
@@ -81,7 +82,7 @@ class ProfileFragment : Fragment() {
                     is Resource.Success -> {
                         showLoading(false)
                         userResource.data?.let { user ->
-                            updateUserInfo(user)
+                            updateUIWithUserData(user)
                         }
                     }
 
@@ -92,18 +93,26 @@ class ProfileFragment : Fragment() {
                         )
                     }
 
-                    is Resource.Unspecified -> {
-                        // Handle unspecified state if needed
-                    }
+                    is Resource.Unspecified -> Unit
 
                 }
             }
         }
     }
 
-    private fun updateUserInfo(user: User) {
-       // user.populateProfileFields(binding)
+    private fun updateUIWithUserData(user: User) {
+        binding.apply {
+            userName.text = "${user.firstName} ${user.lastName}"
+            userPoints.text = "${user.points} punti"
+
+            // Carica l'immagine dell'utente usando Glide
+            Glide.with(this@ProfileFragment)
+                .load(user.profileImage) // URL o percorso dell'immagine
+                .error(R.drawable.ic_profile) // Immagine di fallback in caso di errore
+                .into(profileImage) // ImageView dove verrà caricata l'immagine
+        }
     }
+
 
     private fun showLoading(isLoading: Boolean) {
         binding.linearProgressIndicator.isVisible = isLoading

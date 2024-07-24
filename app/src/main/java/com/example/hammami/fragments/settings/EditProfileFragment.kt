@@ -13,12 +13,13 @@ import com.example.hammami.models.User
 import com.example.hammami.util.RegisterFieldsState
 import com.example.hammami.util.RegisterValidation
 import com.example.hammami.util.Resource
+import com.example.hammami.util.StringValidators
 import com.example.hammami.viewmodel.EditProfileViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-
 
 @AndroidEntryPoint
 class EditProfileFragment : DialogFragment() {
@@ -27,6 +28,15 @@ class EditProfileFragment : DialogFragment() {
     private val binding get() = _binding!!
 
     private val viewModel: EditProfileViewModel by viewModels()
+
+    private lateinit var firstNameEditText: TextInputEditText
+    private lateinit var lastNameEditText: TextInputEditText
+    private lateinit var dayEditText: TextInputEditText
+    private lateinit var monthEditText: TextInputEditText // Added declaration
+    private lateinit var yearEditText: TextInputEditText
+    private lateinit var genderEditText: TextInputEditText // Added declaration
+    private lateinit var allergiesEditText: TextInputEditText
+    private lateinit var disabilitiesEditText: TextInputEditText
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,13 +55,17 @@ class EditProfileFragment : DialogFragment() {
     }
 
     private fun setupUI() {
-        binding.topAppBar.setNavigationOnClickListener {
-            dismiss()
-        }
+        firstNameEditText = binding.firstNameInputLayout.editText as TextInputEditText
+        lastNameEditText = binding.lastNameInputLayout.editText as TextInputEditText
+        dayEditText = binding.dayInputLayout.editText as TextInputEditText
+        monthEditText = binding.monthInputLayout.editText as TextInputEditText // Correctly initialized
+        yearEditText = binding.yearInputLayout.editText as TextInputEditText
+        genderEditText = binding.genderTextInputLayout.editText as TextInputEditText // Correctly initialized
+        allergiesEditText = binding.allergiesTextInputLayout.editText as TextInputEditText
+        disabilitiesEditText = binding.disabilitiesTextInputLayout.editText as TextInputEditText
 
-        binding.saveButton.setOnClickListener {
-            saveUserData()
-        }
+        binding.saveButton.setOnClickListener { onSaveButtonClick() }
+        binding.topAppBar.setNavigationOnClickListener { onBackClick() }
     }
 
     private fun observeViewModel() {
@@ -61,71 +75,69 @@ class EditProfileFragment : DialogFragment() {
                     is Resource.Success -> {
                         showLoading(false)
                         userResource.data?.let { user ->
-                            updateUserInfo(user)
+                            updateUIWithUserData(user)
                         }
                     }
-
                     is Resource.Loading -> showLoading(true)
                     is Resource.Error -> {
                         showLoading(false)
                         showError(userResource.message ?: getString(R.string.unknown_error))
                     }
-
                     is Resource.Unspecified -> {}
                 }
             }
         }
+    }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.validationState.collectLatest { state ->
-                state?.let { showValidationErrors(it) }
-            }
+    private fun updateUIWithUserData(user: User) {
+        binding.apply {
+            firstNameEditText.setText(user.firstName)
+            lastNameEditText.setText(user.lastName)
+            val (day, month, year) = user.birthDate.split("/")
+            dayEditText.setText(day)
+            monthEditText.setText(month)
+            yearEditText.setText(year)
+            genderEditText.setText(user.gender)
+            allergiesEditText.setText(user.allergies)
+            disabilitiesEditText.setText(user.disabilities)
         }
     }
 
-    private fun updateUserInfo(user: User) {
-        with(user) {
-            val (day, month, year) = birthDate.toFormattedDate()
-            with(binding) {
-                firstNameEditText.setText(firstName)
-                lastNameEditText.setText(lastName)
-                dayEditText.setText(day)
-                monthAutoCompleteTextView.setText(month, false)
-                yearEditText.setText(year)
-                genderAutoCompleteTextView.setText(gender, false)
-                allergiesEditText.setText(allergies)
-                disabilitiesEditText.setText(disabilities)
-            }
-        }
-
-    }
-
-    private fun String.toFormattedDate(): Triple<String, String, String> {
-        val parts = this.split("/")
-        return Triple(parts.getOrNull(0) ?: "", parts.getOrNull(1) ?: "", parts.getOrNull(2) ?: "")
-    }
-
-    private fun saveUserData() {
-        with(binding) {
-            val updatedUser = User(
-                firstName = firstNameEditText.text.toString(),
-                lastName = lastNameEditText.text.toString(),
-                birthDate = "${dayEditText.text}/${monthAutoCompleteTextView.text}/${yearEditText.text}",
-                gender = genderAutoCompleteTextView.text.toString(),
-                allergies = allergiesEditText.text.toString(),
-                disabilities = disabilitiesEditText.text.toString(),
-            )
-
-            viewModel.validateAndUpdateUser(updatedUser)
+    private fun onSaveButtonClick() {
+        if (validateAllFields()) {
+            val updatedUser = createUpdatedUser()
+            viewModel.updateUser(updatedUser)
         }
     }
 
-    private fun showValidationErrors(state: RegisterFieldsState) {
-        with(binding) {
-            firstNameInputLayout.error = (state.firstName as? RegisterValidation.Failed)?.message
-            lastNameInputLayout.error = (state.lastName as? RegisterValidation.Failed)?.message
-            // Show other validation errors...
-        }
+    private fun onBackClick() {
+        dismiss()
+    }
+
+    private fun validateAllFields(): Boolean {
+        val isFirstNameValid = ValidationUtil.validateField(binding.firstNameInputLayout, StringValidators.NotBlank)
+        val isLastNameValid = ValidationUtil.validateField(binding.lastNameInputLayout, StringValidators.NotBlank)
+        val isBirthDateValid = ValidationUtil.validateBirthDate(
+            binding.dayInputLayout,
+            binding.monthInputLayout,
+            binding.yearInputLayout,
+            binding.dataErrorTextView
+        )
+        val isGenderValid = ValidationUtil.validateField(binding.genderTextInputLayout, StringValidators.NotBlank)
+
+        return isFirstNameValid && isLastNameValid && isBirthDateValid && isGenderValid
+    }
+
+    private fun createUpdatedUser(): User {
+        val birthDate = "${dayEditText.text}/${monthEditText.text}/${yearEditText.text}"
+        return User(
+            firstName = firstNameEditText.text.toString(),
+            lastName = lastNameEditText.text.toString(),
+            birthDate = birthDate,
+            gender = genderEditText.text.toString(),
+            allergies = allergiesEditText.text.toString(),
+            disabilities = disabilitiesEditText.text.toString()
+        )
     }
 
     private fun showLoading(isLoading: Boolean) {

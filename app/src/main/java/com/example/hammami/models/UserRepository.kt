@@ -29,57 +29,61 @@ class UserRepository @Inject constructor(
             firebaseAuth.currentUser?.let { user ->
                 fetchUserData(user.uid)
             } ?: run {
-                _authState.value = Resource.Error("User not authenticated")
+                _authState.value = Resource.Error("Utente non autenticato")
                 preferencesManager.setLoggedIn(false)
             }
         } else {
-            _authState.value = Resource.Error("User not logged in")
+            _authState.value = Resource.Error("Utente non registrato")
         }
 
         firebaseAuth.addAuthStateListener { auth ->
             auth.currentUser?.let { user ->
                 fetchUserData(user.uid)
             } ?: run {
-                _authState.value = Resource.Error("User not authenticated")
+                _authState.value = Resource.Error("Utente non autenticato")
                 preferencesManager.setLoggedIn(false)
             }
         }
     }
 
     private fun fetchUserData(uid: String) {
+        if(firebaseAuth.currentUser == null) {
+            _authState.value = Resource.Error("Utente non autenticato")
+            return
+        }
         firestore.collection("users").document(uid).get()
             .addOnSuccessListener { document ->
                 val user = document.toObject(User::class.java)
                 if (user != null) {
                     _authState.value = Resource.Success(user)
                 } else {
-                    _authState.value = Resource.Error("User data not found")
+                    _authState.value = Resource.Error("Dati utente non trovati")
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("UserRepository", "Error fetching user data", e)
-                _authState.value = Resource.Error("Failed to fetch user data: ${e.message}")
+                Log.e("UserRepository", "Errore nel recupero dei dati utente", e)
+                _authState.value = Resource.Error("Fallimento nel recupero dei dati utente: ${e.message}")
             }
     }
 
     suspend fun signIn(email: String, password: String): Resource<User> {
         return try {
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            val user = result.user ?: throw Exception("Login successful but user is null")
+            val user = result.user ?: throw Exception("Il login ha avuto successo ma l'utente è null")
             preferencesManager.setLoggedIn(true)
             fetchUserData(user.uid)
             _authState.value
         } catch (e: Exception) {
-            Log.e("UserRepository", "Error during sign in", e)
+            Log.e("UserRepository", "Errore durante l'accesso", e)
             preferencesManager.setLoggedIn(false)
-            Resource.Error(e.message ?: "Unknown error during login")
+            Resource.Error(e.message ?: "Errore sconosciuto durante il login")
         }
     }
 
     suspend fun signOut() {
         firebaseAuth.signOut()
         preferencesManager.setLoggedIn(false)
-        _authState.value = Resource.Error("User has been logged out")
+        _authState.value = Resource.Error("L'utente è stato disconnesso")
     }
 
     suspend fun signUp(email: String, password: String, userData: User): Resource<User> {
@@ -152,5 +156,9 @@ class UserRepository @Inject constructor(
             Log.e("UserRepository", "Error updating user data", e)
             Resource.Error(e.message ?: "Unknown error during update")
         }
+    }
+
+     fun getCurrentUser(): Resource<User> {
+        return _authState.value
     }
 }

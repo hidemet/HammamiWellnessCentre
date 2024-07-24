@@ -2,21 +2,18 @@ package com.example.hammami.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hammami.database.FirebaseDb
 import com.example.hammami.models.RegistrationData
 import com.example.hammami.models.User
 import com.example.hammami.models.UserRepository
 import com.example.hammami.util.Resource
-import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
-class HammamiViewModel @Inject constructor(
+class LoginRegisterViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 

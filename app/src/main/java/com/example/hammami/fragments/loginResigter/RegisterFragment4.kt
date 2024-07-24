@@ -15,14 +15,14 @@ import com.example.hammami.fragments.BaseFragment
 import com.example.hammami.models.RegistrationData
 import com.example.hammami.util.ValidationResult
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
-import com.example.hammami.viewmodel.HammamiViewModel
+import com.example.hammami.viewmodel.LoginRegisterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class RegisterFragment4 : BaseFragment() {
     private lateinit var binding: FragmentRegister4Binding
-    private val viewModel: HammamiViewModel by activityViewModels()
+    private val viewModel: LoginRegisterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

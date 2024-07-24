@@ -20,7 +20,7 @@ import com.example.hammami.viewmodel.MainCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
-private val TAG = "MainCategoryFragment"
+private const val TAG = "MainCategoryFragment"
 @AndroidEntryPoint
 class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
     private lateinit var binding: FragmentMainCategoryBinding
@@ -33,7 +33,7 @@ class MainCategoryFragment: Fragment(R.layout.fragment_main_category) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMainCategoryBinding.inflate(inflater)
         return binding.root
     }

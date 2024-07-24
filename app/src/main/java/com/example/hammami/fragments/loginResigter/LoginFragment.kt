@@ -15,14 +15,14 @@ import com.example.hammami.databinding.FragmentLoginBinding
 import com.example.hammami.fragments.BaseFragment
 import com.example.hammami.util.StringValidators
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
-import com.example.hammami.viewmodel.HammamiViewModel
+import com.example.hammami.viewmodel.LoginRegisterViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginFragment : BaseFragment() {
     private lateinit var binding: FragmentLoginBinding
-    private val viewModel: HammamiViewModel by activityViewModels()
+    private val viewModel: LoginRegisterViewModel by activityViewModels()
     private lateinit var bottomSheetDialog: BottomSheetDialog
 
     private var resetPasswordEmail: String? = null

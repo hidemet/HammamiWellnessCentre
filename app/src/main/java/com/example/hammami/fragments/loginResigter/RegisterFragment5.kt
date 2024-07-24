@@ -11,14 +11,14 @@ import com.example.hammami.R
 import com.example.hammami.databinding.FragmentRegister5Binding
 import com.example.hammami.fragments.BaseFragment
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
-import com.example.hammami.viewmodel.HammamiViewModel
+import com.example.hammami.viewmodel.LoginRegisterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "RegisterFragment5"
 @AndroidEntryPoint
 class RegisterFragment5 : BaseFragment() {
     private lateinit var binding: FragmentRegister5Binding
-    private val viewModel: HammamiViewModel by activityViewModels()
+    private val viewModel: LoginRegisterViewModel by activityViewModels()
 
 
     override fun onCreateView(

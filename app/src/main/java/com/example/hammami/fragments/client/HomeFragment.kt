@@ -15,10 +15,9 @@ import com.example.hammami.fragments.categories.MainCategoryFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment: Fragment(R.layout.fragment_home) {
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var binding: FragmentHomeBinding
-
 
 
     override fun onCreateView(
@@ -37,7 +36,8 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
             MainCategoryFragment()
         )
 
-        val viewPager2Adapter = HomeViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
+        val viewPager2Adapter =
+            HomeViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
         binding.viewpagerHome.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.viewpagerHome.adapter = viewPager2Adapter
 
@@ -49,16 +49,18 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
                     // Handle settings icon press
                     true
                 }
+
                 R.id.profile -> {
-                    Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_profileFragment)
+                    Navigation.findNavController(view)
+                        .navigate(R.id.action_homeFragment_to_profileFragment)
                     true
                 }
+
                 else -> false
             }
         }
 
     }
-
 
 
 }

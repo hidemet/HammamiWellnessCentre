@@ -12,19 +12,20 @@ import com.example.hammami.databinding.ItemHomepageBinding
 import com.google.firebase.storage.FirebaseStorage
 
 private val TAG = "NewServicesAdapter"
+
 class NewServicesAdapter : RecyclerView.Adapter<NewServicesAdapter.NewServicesViewHolder>() {
 
     inner class NewServicesViewHolder(private val binding: ItemHomepageBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(service: Service) {
-            Log.d(TAG, "Binding service: $service")
             binding.apply {
                 service.image?.let { imageRef ->
                     FirebaseStorage.getInstance().reference.child(imageRef.path).downloadUrl.addOnSuccessListener { uri ->
+                        Log.d(TAG, "Successfully got download URL: $uri")
                         Glide.with(itemView).load(uri).into(imageNewRvItem)
                     }.addOnFailureListener { exception ->
-                        Log.e(TAG, "Error loading image: ${exception.message}")
+                        Log.e(TAG, "Failed to get download URL: ${exception.message}", exception)
                     }
                 }
                 tvNewRvItemName.text = service.name
