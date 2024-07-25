@@ -1,6 +1,7 @@
 package com.example.hammami.fragments.settings
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,7 +55,12 @@ class ProfileFragment : Fragment() {
                 findNavController().popBackStack()
             }
             editProfileButton.setOnClickListener {
-                //EditProfileFragment().show(parentFragmentManager, "EditProfileFragment")
+                try {
+                    EditProfileFragment().show(parentFragmentManager, "EditProfileFragment")
+                } catch (e: Exception) {
+                    Log.e("ProfileFragment", "Errore nel mostrare EditProfileFragment", e)
+                    // Gestisci l'errore, magari mostrando un messaggio all'utente
+                }
             }
         }
     }

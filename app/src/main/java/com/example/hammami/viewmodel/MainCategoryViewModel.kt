@@ -1,5 +1,6 @@
 package com.example.hammami.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.data.Service
@@ -10,7 +11,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
+private const val TAG = "MainCategoryViewModel"
 @HiltViewModel
 class MainCategoryViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
@@ -27,8 +30,8 @@ class MainCategoryViewModel @Inject constructor(
 
     init {
         fetchNewServices()
-        fetchBestDeals()
-        fetchRecommended()
+     // fetchBestDeals()
+       // fetchRecommended()
     }
 
     fun fetchNewServices() {
@@ -36,22 +39,20 @@ class MainCategoryViewModel @Inject constructor(
             _newServices.emit(Resource.Loading())
             val allServices = mutableListOf<Service>()
 
-            firestore.collection("/Servizi/Estetica/Trattamento corpo")
-                .whereEqualTo("Sezione homepage", "Novità").get().addOnSuccessListener { result ->
-                    allServices.addAll(result.toObjects(Service::class.java))
-                }.addOnFailureListener {
-                    // Handle error
-                }
+            try {
+                val esteticaSnapshot = firestore.collection("/Servizi/Estetica/Trattamento corpo")
+                    .whereEqualTo("Sezione homepage", "Novità").get().await()
+                allServices.addAll(esteticaSnapshot.toObjects(Service::class.java))
 
-            firestore.collection("/Servizi/Benessere/trattamenti")
-                .whereEqualTo("Sezione homepage", "Novità").get().addOnSuccessListener { result ->
-                    allServices.addAll(result.toObjects(Service::class.java))
-                    viewModelScope.launch {
-                        _newServices.emit(Resource.Success(allServices))
-                    }
-                }.addOnFailureListener {
-                    // Handle error
-                }
+                val benessereSnapshot = firestore.collection("/Servizi/Benessere/trattamenti")
+                    .whereEqualTo("Sezione homepage", "Novità").get().await()
+                allServices.addAll(benessereSnapshot.toObjects(Service::class.java))
+
+                _newServices.emit(Resource.Success(allServices))
+            } catch (e: Exception) {
+                Log.e(TAG, "Errore nel recupero dei nuovi servizi: ${e.message}", e)
+                _newServices.emit(Resource.Error(e.message ?: "Si è verificato un errore sconosciuto"))
+            }
         }
     }
 

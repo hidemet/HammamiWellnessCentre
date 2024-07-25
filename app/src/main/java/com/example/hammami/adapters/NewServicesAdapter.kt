@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.hammami.R
 import com.example.hammami.data.Service
 import com.example.hammami.databinding.ItemHomepageBinding
 import com.google.firebase.storage.FirebaseStorage
@@ -18,20 +19,23 @@ class NewServicesAdapter : RecyclerView.Adapter<NewServicesAdapter.NewServicesVi
     inner class NewServicesViewHolder(private val binding: ItemHomepageBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+
         fun bind(service: Service) {
             binding.apply {
-                service.image?.let { imageRef ->
-                    FirebaseStorage.getInstance().reference.child(imageRef.path).downloadUrl.addOnSuccessListener { uri ->
-                        Log.d(TAG, "Successfully got download URL: $uri")
+                if (service.image != null) {
+                    FirebaseStorage.getInstance().reference.child(service.image!!.path).downloadUrl.addOnSuccessListener { uri ->
                         Glide.with(itemView).load(uri).into(imageNewRvItem)
                     }.addOnFailureListener { exception ->
-                        Log.e(TAG, "Failed to get download URL: ${exception.message}", exception)
+                        Log.e(TAG, "Impossibile ottenere l'URL di download: ${exception.message}", exception)
+                        // Carica un'immagine placeholder o nascondi l'ImageView
+                        imageNewRvItem.setImageResource(R.drawable.placeholder_image)
                     }
+                } else {
+                    // Carica un'immagine placeholder o nascondi l'ImageView
+                    imageNewRvItem.setImageResource(R.drawable.placeholder_image)
                 }
                 tvNewRvItemName.text = service.name
                 tvNewItemRvPrice.text = "${service.price} €"
-                // If you want to display the duration, you can add it here
-                // For example: tvNewItemRvDuration.text = "Duration: ${service.length}"
             }
         }
     }
