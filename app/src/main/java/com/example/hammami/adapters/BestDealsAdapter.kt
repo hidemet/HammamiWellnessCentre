@@ -21,15 +21,7 @@ class BestDealsAdapter : RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHold
         fun bind(service: Service) {
             binding.apply {
                 if (service.image != null) {
-                    FirebaseStorage.getInstance().reference.child(service.image!!.path).downloadUrl.addOnSuccessListener { uri ->
-                        Glide.with(itemView).load(uri).into(imageNewRvItem)
-                        println(service.image!!.path)
-                    }.addOnFailureListener { exception ->
-                        Log.e(TAG, "Impossibile ottenere l'URL di download: ${exception.message}", exception)
-                        // Carica un'immagine placeholder o nascondi l'ImageView
-                        println(service.image!!.path)
-                        imageNewRvItem.setImageResource(R.drawable.ic_appuntamenti)
-                    }
+                        Glide.with(itemView).load(service.image).into(imageNewRvItem)
                 } else {
                     // Carica un'immagine placeholder o nascondi l'ImageView
                     imageNewRvItem.setImageResource(R.drawable.placeholder_image)

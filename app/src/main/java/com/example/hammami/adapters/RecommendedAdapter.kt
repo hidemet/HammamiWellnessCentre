@@ -21,15 +21,7 @@ class RecommendedAdapter : RecyclerView.Adapter<RecommendedAdapter.RecommendedVi
         fun bind(service: Service) {
             binding.apply {
                 if (service.image != null) {
-                    FirebaseStorage.getInstance().reference.child("gs:/hammami-9adc7.appspot.com/Immagini/massaggio4mani.jpg").downloadUrl.addOnSuccessListener { uri ->
-                        Glide.with(itemView).load("gs:/hammami-9adc7.appspot.com/Immagini/massaggio4mani.jpg).into(imageNewRvItem").into(imageNewRvItem)
-                        println(service.image!!.path)
-                    }.addOnFailureListener { exception ->
-                        Log.e(TAG, "Impossibile ottenere l'URL di download: ${exception.message}", exception)
-                        // Carica un'immagine placeholder o nascondi l'ImageView
-                        println(service.image!!.path)
-                        imageNewRvItem.setImageResource(R.drawable.ic_appuntamenti)
-                    }
+                    Glide.with(itemView).load(service.image).into(imageNewRvItem)
                 } else {
                     // Carica un'immagine placeholder o nascondi l'ImageView
                     imageNewRvItem.setImageResource(R.drawable.placeholder_image)
