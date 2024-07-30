@@ -20,9 +20,9 @@
                 android:id="@+id/imageNewRvItem"
                 android:layout_width="match_parent"
                 android:layout_height="153dp"
-                app:srcCompat="@drawable/massaggio4mani"
                 android:scaleType="centerCrop"
-                />
+                app:srcCompat="@drawable/placeholder_image"
+                android:visibility="visible"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -36,8 +36,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Massaggio prova"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    />
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
                 <TextView
                     android:id="@+id/tvNewItemRvPrice"
                     android:layout_width="wrap_content"
@@ -45,8 +45,7 @@
                     android:layout_marginTop="2dp"
                     android:text="100 €"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    />
+                    android:textColor="?android:attr/textColorSecondary" />
 
             </LinearLayout>
 
