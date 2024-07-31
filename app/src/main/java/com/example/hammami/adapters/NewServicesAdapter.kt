@@ -18,18 +18,10 @@ class NewServicesAdapter : RecyclerView.Adapter<NewServicesAdapter.NewServicesVi
 
     inner class NewServicesViewHolder(private val binding: ItemHomepageBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-
         fun bind(service: Service) {
             binding.apply {
                 if (service.image != null) {
-                    FirebaseStorage.getInstance().reference.child(service.image!!.path).downloadUrl.addOnSuccessListener { uri ->
-                        Glide.with(itemView).load(uri).into(imageNewRvItem)
-                    }.addOnFailureListener { exception ->
-                        Log.e(TAG, "Impossibile ottenere l'URL di download: ${exception.message}", exception)
-                        // Carica un'immagine placeholder o nascondi l'ImageView
-                        imageNewRvItem.setImageResource(R.drawable.placeholder_image)
-                    }
+                    Glide.with(itemView).load(service.image).into(imageNewRvItem)
                 } else {
                     // Carica un'immagine placeholder o nascondi l'ImageView
                     imageNewRvItem.setImageResource(R.drawable.placeholder_image)

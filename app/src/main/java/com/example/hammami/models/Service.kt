@@ -9,7 +9,7 @@ data class Service(
     @get:PropertyName("Prezzo") @set:PropertyName("Prezzo") var price: Float? = null,
     @get:PropertyName("Prezzo scontato") @set:PropertyName("Prezzo scontato") var discountPrice: Float? = null,
     @get:PropertyName("Descrizione") @set:PropertyName("Descrizione") var description: String = "",
-    @get:PropertyName("Immagine") @set:PropertyName("Immagine") var image: DocumentReference? = null,
+    @get:PropertyName("Immagine") @set:PropertyName("Immagine") var image: String? = null,
     @get:PropertyName("Durata") @set:PropertyName("Durata") var length: Long? = null,
     @get:PropertyName("Categoria") @set:PropertyName("Categoria") var category: String? = null,
     @get:PropertyName("Recensioni") @set:PropertyName("Recensioni") var reviews: List<DocumentReference>? = null,

@@ -30,23 +30,34 @@ class MainCategoryViewModel @Inject constructor(
 
     init {
         fetchNewServices()
-     // fetchBestDeals()
-       // fetchRecommended()
+        fetchBestDeals()
+        fetchRecommended()
     }
 
     fun fetchNewServices() {
         viewModelScope.launch {
-            _newServices.emit(Resource.Loading())
             val allServices = mutableListOf<Service>()
 
             try {
-                val esteticaSnapshot = firestore.collection("/Servizi/Estetica/Trattamento corpo")
+                val esteticaTrattamentoCorpoSnapshot = firestore.collection("/Servizi/Estetica/Trattamento corpo")
                     .whereEqualTo("Sezione homepage", "Novità").get().await()
-                allServices.addAll(esteticaSnapshot.toObjects(Service::class.java))
+                allServices.addAll(esteticaTrattamentoCorpoSnapshot.toObjects(Service::class.java))
+
+                val esteticaEpilazioneSnapshot = firestore.collection("/Servizi/Estetica/Epilazione corpo con cera")
+                    .whereEqualTo("Sezione homepage", "Novità").get().await()
+                allServices.addAll(esteticaEpilazioneSnapshot.toObjects(Service::class.java))
+
+                val esteticaTrattamentoVisoSnaphot = firestore.collection("/Servizi/Estetica/Trattamento viso")
+                    .whereEqualTo("Sezione homepage", "Novità").get().await()
+                allServices.addAll(esteticaTrattamentoVisoSnaphot.toObjects(Service::class.java))
 
                 val benessereSnapshot = firestore.collection("/Servizi/Benessere/trattamenti")
                     .whereEqualTo("Sezione homepage", "Novità").get().await()
                 allServices.addAll(benessereSnapshot.toObjects(Service::class.java))
+
+                val massaggiSnaphot = firestore.collection("/Servizi/Massaggi/trattamenti")
+                    .whereEqualTo("Sezione homepage", "Novità").get().await()
+                allServices.addAll(massaggiSnaphot.toObjects(Service::class.java))
 
                 _newServices.emit(Resource.Success(allServices))
             } catch (e: Exception) {
@@ -58,37 +69,67 @@ class MainCategoryViewModel @Inject constructor(
 
     fun fetchBestDeals() {
         viewModelScope.launch {
-            _bestDeals.emit(Resource.Loading())
-        }
+            val allServices = mutableListOf<Service>()
 
-        firestore.collection("/Servizi/Benessere/trattamenti")
-            .whereEqualTo("Sezione homepage", "Offerte").get().addOnSuccessListener { result ->
-                val bestDealsList = result.toObjects(Service::class.java)
-                viewModelScope.launch {
-                    _bestDeals.emit(Resource.Success(bestDealsList))
-                }
-            }.addOnFailureListener {
-                viewModelScope.launch {
-                    _bestDeals.emit(Resource.Error(it.message ?: "Errore sconosciuto"))
-                }
+            try {
+                val esteticaTrattamentoCorpoSnapshot = firestore.collection("/Servizi/Estetica/Trattamento corpo")
+                    .whereEqualTo("Sezione homepage", "Offerte").get().await()
+                allServices.addAll(esteticaTrattamentoCorpoSnapshot.toObjects(Service::class.java))
+
+                val esteticaEpilazioneSnapshot = firestore.collection("/Servizi/Estetica/Epilazione corpo con cera")
+                    .whereEqualTo("Sezione homepage", "Offerte").get().await()
+                allServices.addAll(esteticaEpilazioneSnapshot.toObjects(Service::class.java))
+
+                val esteticaTrattamentoVisoSnaphot = firestore.collection("/Servizi/Estetica/Trattamento viso")
+                    .whereEqualTo("Sezione homepage", "Offerte").get().await()
+                allServices.addAll(esteticaTrattamentoVisoSnaphot.toObjects(Service::class.java))
+
+                val benessereSnapshot = firestore.collection("/Servizi/Benessere/trattamenti")
+                    .whereEqualTo("Sezione homepage", "Offerte").get().await()
+                allServices.addAll(benessereSnapshot.toObjects(Service::class.java))
+
+                val massaggiSnaphot = firestore.collection("/Servizi/Massaggi/trattamenti")
+                    .whereEqualTo("Sezione homepage", "Offerte").get().await()
+                allServices.addAll(massaggiSnaphot.toObjects(Service::class.java))
+
+                _bestDeals.emit(Resource.Success(allServices))
+            } catch (e: Exception) {
+                Log.e(TAG, "Errore nel recupero dei nuovi servizi: ${e.message}", e)
+                _bestDeals.emit(Resource.Error(e.message ?: "Si è verificato un errore sconosciuto"))
             }
+        }
     }
 
     fun fetchRecommended() {
         viewModelScope.launch {
-            _recommended.emit(Resource.Loading())
-        }
+            val allServices = mutableListOf<Service>()
 
-        firestore.collection("/Servizi/Benessere/trattamenti")
-            .whereEqualTo("Sezione homepage", "Consigliati").get().addOnSuccessListener { result ->
-                val recommendedList = result.toObjects(Service::class.java)
-                viewModelScope.launch {
-                    _recommended.emit(Resource.Success(recommendedList))
-                }
-            }.addOnFailureListener {
-                viewModelScope.launch {
-                    _recommended.emit(Resource.Error(it.message ?: "Errore sconosciuto"))
-                }
+            try {
+                val esteticaTrattamentoCorpoSnapshot = firestore.collection("/Servizi/Estetica/Trattamento corpo")
+                    .whereEqualTo("Sezione homepage", "Consigliati").get().await()
+                allServices.addAll(esteticaTrattamentoCorpoSnapshot.toObjects(Service::class.java))
+
+                val esteticaEpilazioneSnapshot = firestore.collection("/Servizi/Estetica/Epilazione corpo con cera")
+                    .whereEqualTo("Sezione homepage", "Consigliati").get().await()
+                allServices.addAll(esteticaEpilazioneSnapshot.toObjects(Service::class.java))
+
+                val esteticaTrattamentoVisoSnaphot = firestore.collection("/Servizi/Estetica/Trattamento viso")
+                    .whereEqualTo("Sezione homepage", "Consigliati").get().await()
+                allServices.addAll(esteticaTrattamentoVisoSnaphot.toObjects(Service::class.java))
+
+                val benessereSnapshot = firestore.collection("/Servizi/Benessere/trattamenti")
+                    .whereEqualTo("Sezione homepage", "Consigliati").get().await()
+                allServices.addAll(benessereSnapshot.toObjects(Service::class.java))
+
+                val massaggiSnaphot = firestore.collection("/Servizi/Massaggi/trattamenti")
+                    .whereEqualTo("Sezione homepage", "Consigliati").get().await()
+                allServices.addAll(massaggiSnaphot.toObjects(Service::class.java))
+
+                _recommended.emit(Resource.Success(allServices))
+            } catch (e: Exception) {
+                Log.e(TAG, "Errore nel recupero dei nuovi servizi: ${e.message}", e)
+                _recommended.emit(Resource.Error(e.message ?: "Si è verificato un errore sconosciuto"))
             }
+        }
     }
 }
