@@ -43,15 +43,26 @@
             tools:layout="@layout/fragment_gift_cards" />
         <fragment
             android:id="@+id/profileFragment"
-            android:name="com.example.hammami.fragments.settings.ProfileFragment"
+            android:name="com.example.hammami.fragments.settings.UserProfileFragment"
             android:label="Profile"
-            tools:layout="@layout/fragment_profile">
+            tools:layout="@layout/fragment_user_profile">
             <argument
                 android:name="itemProfileOption"
                 app:argType="com.example.hammami.models.ItemProfileOption" />
             <action
                 android:id="@+id/action_profileFragment_to_giftCardsFragment"
                 app:destination="@id/giftCardsFragment" />
+            <action
+                android:id="@+id/action_profileFragment_to_editUserProfileFragment"
+                app:destination="@id/editUserProfileFragment" />
         </fragment>
+
+        <fragment
+            android:id="@+id/editUserProfileFragment"
+            android:name="com.example.hammami.fragments.settings.EditUserProfileFragment"
+            android:label="EditUserProfileFragment"
+            tools:layout="@layout/fragment_edit_user_profile"
+            />
     </navigation>
+
 </navigation>

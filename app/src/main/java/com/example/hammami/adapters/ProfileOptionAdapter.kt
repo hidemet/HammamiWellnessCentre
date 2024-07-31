@@ -22,7 +22,7 @@ class ProfileOptionAdapter(private val options: List<ItemProfileOption>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_profile_option, parent, false)
+            .inflate(R.layout.item_user_profile_option, parent, false)
         return ViewHolder(view)
     }
 

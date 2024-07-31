@@ -1,6 +1,7 @@
-package com.example.hammami.models
+package com.example.hammami.database
 
 import android.util.Log
+import com.example.hammami.models.User
 import com.example.hammami.util.PreferencesManager
 import com.example.hammami.util.Resource
 import com.google.firebase.auth.FirebaseAuth

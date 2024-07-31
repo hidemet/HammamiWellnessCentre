@@ -3,7 +3,7 @@ package com.example.hammami.di
 import com.example.hammami.util.PreferencesManager
 import android.content.Context
 import com.example.hammami.database.FirebaseDb
-import com.example.hammami.models.UserRepository
+import com.example.hammami.database.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage

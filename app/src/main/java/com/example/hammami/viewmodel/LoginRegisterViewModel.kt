@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.models.RegistrationData
 import com.example.hammami.models.User
-import com.example.hammami.models.UserRepository
+import com.example.hammami.database.UserRepository
 import com.example.hammami.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

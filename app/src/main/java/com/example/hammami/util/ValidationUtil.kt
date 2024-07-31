@@ -4,8 +4,7 @@ import com.example.hammami.util.StringValidators
 import com.example.hammami.util.ValidationResult
 import com.example.hammami.util.Validator
 import com.google.android.material.textfield.TextInputLayout
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+
 
 // Classe di utilità per la convalida
 object ValidationUtil {
@@ -34,14 +33,16 @@ object ValidationUtil {
         val month = monthField.editText?.text.toString()
         val year = yearField.editText?.text.toString()
 
+
+
+
+
         return when (val result = StringValidators.BirthDate.validate(Triple(day, month, year))) {
             is ValidationResult.Valid -> {
-                val date = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
                 errorTextView.visibility = View.GONE
                 dayField.error = null
                 monthField.error = null
                 yearField.error = null
-                DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
                 true
             }
 

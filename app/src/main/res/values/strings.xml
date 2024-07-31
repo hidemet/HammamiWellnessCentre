@@ -76,5 +76,6 @@
     <string name="change_password">Cambia Password</string>
     <string name="modify">Modifica</string>
     <string name="basic_profile_information">Informazioni di base</string>
+    <string name="profile_updated_successfully">Informazioni profilo aggiornate con successo!</string>
 
 </resources>

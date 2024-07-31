@@ -3,7 +3,7 @@ package com.example.hammami.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.models.User
-import com.example.hammami.models.UserRepository
+import com.example.hammami.database.UserRepository
 import com.example.hammami.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EditProfileViewModel @Inject constructor(
+class EditUserProfileViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
@@ -26,8 +26,13 @@ class EditProfileViewModel @Inject constructor(
 
     private fun loadUserData() {
         viewModelScope.launch {
+            _userState.value = Resource.Loading()
             _userState.value = userRepository.getCurrentUser()
         }
+    }
+
+    fun refreshUser() {
+        loadUserData()
     }
 
     fun updateUser(updatedUser: User) {
@@ -36,7 +41,5 @@ class EditProfileViewModel @Inject constructor(
             _userState.value = userRepository.updateUserData(updatedUser)
         }
     }
-
-
 }
 

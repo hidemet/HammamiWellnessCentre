@@ -37,10 +37,12 @@ abstract class BaseFragment : Fragment() {
                         onComplete()
                         state.data?.let { onSuccess(it) }
                     }
+
                     is Resource.Error -> {
                         onComplete()
                         onError(state.message)
                     }
+
                     is Resource.Unspecified -> Unit
                 }
             }
@@ -55,11 +57,16 @@ abstract class BaseFragment : Fragment() {
         findNavController().popBackStack()
     }
 
-    protected fun showSnackbar(message: String) {
+
+    protected fun showSnackbar(message: String, actionText: String? = null, action: (() -> Unit)? = null) {
         view?.let {
-            Snackbar.make(it, message, Snackbar.LENGTH_LONG)
-                .setAction(getString(android.R.string.ok)) { }
-                .show()
+            val snackbar = Snackbar.make(it, message, Snackbar.LENGTH_LONG)
+            if (actionText != null && action != null) {
+                snackbar.setAction(actionText) {
+                    action()
+                }
+            }
+            snackbar.show()
         }
     }
 }
