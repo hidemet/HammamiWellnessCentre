@@ -11,6 +11,6 @@ import com.example.hammami.R
 import com.example.hammami.adapters.InfoAdapter
 import com.example.hammami.models.InfoHammami
 
-class AboutUsFragment: Fragment(R.layout.vediamodopo) {
+class AboutUsFragment: Fragment(R.layout.fragment_about_us) {
 
 }
