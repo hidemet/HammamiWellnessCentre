@@ -652,6 +652,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/indirizzo"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
                             app:layout_constraintBottom_toBottomOf="@id/cardContattiUno"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -691,17 +692,18 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@id/tvCellulare"
-                            android:src="@drawable/telefono"/>
+                            android:src="@drawable/call_24px"/>
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvCellulare"
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginEnd="16dp"
                             android:text="@string/numero_cellulare"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
-                            app:layout_constraintStart_toEndOf="ic_cellulare"
+                            android:textAlignment="center"
+                            app:layout_constraintStart_toEndOf="@id/ic_cellulare"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/cardContattiDue"
                             app:layout_constraintBottom_toBottomOf="@id/cardContattiDue"/>
@@ -750,10 +752,11 @@
                             android:layout_marginEnd="16dp"
                             android:text="@string/email_hammami"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
                             app:layout_constraintStart_toEndOf="@id/ic_email"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/cardContattiTre"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
+                            app:layout_constraintBottom_toBottomOf="@id/cardContattiTre"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -788,6 +791,7 @@
                             android:layout_marginStart="16dp"
                             android:layout_marginEnd="16dp"
                             android:text="I nostri social"
+                            android:textAlignment="center"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
