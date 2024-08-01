@@ -23,7 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "CentreMemberFragment"
-@AndroidEntryPoint
+
 class CentreMemberFragment /* : Fragment(R.layout.fragment_centre_member) */ {
 /*
     private lateinit var binding: FragmentCentreMemberBinding
