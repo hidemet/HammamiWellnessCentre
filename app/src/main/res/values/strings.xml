@@ -84,4 +84,7 @@
     <string name="indirizzo">Via Guido Puletti 6, Sant’Eufemia, Brescia</string>
     <string name="email_hammami">info@hammami.it</string>
     <string name="numero_cellulare">+39 377 096 6340</string>
+    <string name="estetica">Estetica</string>
+    <string name="benessere">Benessere</string>
+    <string name="massaggi">Massaggi</string>
 </resources>
