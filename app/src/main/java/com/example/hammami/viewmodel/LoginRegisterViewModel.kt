@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.models.RegistrationData
 import com.example.hammami.models.User
-import com.example.hammami.database.UserRepository
+import com.example.hammami.database.UserProfileRepository
 import com.example.hammami.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginRegisterViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userProfileRepository: UserProfileRepository
 ) : ViewModel() {
 
     private val _registrationData = MutableStateFlow(RegistrationData())
@@ -36,13 +36,13 @@ class LoginRegisterViewModel @Inject constructor(
     fun loginUser(email: String, password: String) {
         viewModelScope.launch {
             _loginState.value = Resource.Loading()
-            _loginState.value = userRepository.signIn(email, password)
+            _loginState.value = userProfileRepository.signIn(email, password)
         }
     }
 
     fun logoutUser() {
         viewModelScope.launch {
-            userRepository.signOut()
+            userProfileRepository.signOut()
             _loginState.value = Resource.Unspecified()
         }
     }
@@ -50,7 +50,7 @@ class LoginRegisterViewModel @Inject constructor(
     fun createUser(email: String, password: String, userData: User) {
         viewModelScope.launch {
             _registrationState.value = Resource.Loading()
-            _registrationState.value = userRepository.signUp(email, password, userData)
+            _registrationState.value = userProfileRepository.signUp(email, password, userData)
         }
     }
 
@@ -61,7 +61,7 @@ class LoginRegisterViewModel @Inject constructor(
     fun resetPassword(email: String) {
         viewModelScope.launch {
             _resetPasswordState.value = Resource.Loading()
-            _resetPasswordState.value = userRepository.resetPassword(email)
+            _resetPasswordState.value = userProfileRepository.resetPassword(email)
         }
     }
 }

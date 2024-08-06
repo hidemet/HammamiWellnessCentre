@@ -17,7 +17,9 @@ abstract class BaseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
         observeFlows()
+
     }
+
 
     abstract fun setupUI()
 
@@ -26,20 +28,19 @@ abstract class BaseFragment : Fragment() {
     protected fun <T> Flow<Resource<T>>.collectResource(
         onSuccess: (T) -> Unit,
         onError: (String?) -> Unit,
-        onLoading: () -> Unit = { showLoading(true) },
-        onComplete: () -> Unit = { showLoading(false) }
+        onLoading: () -> Unit = { showLoading(true) }
     ) {
         viewLifecycleOwner.lifecycleScope.launch {
             collect { state ->
                 when (state) {
                     is Resource.Loading -> onLoading()
                     is Resource.Success -> {
-                        onComplete()
+                        showLoading(false)
                         state.data?.let { onSuccess(it) }
                     }
 
                     is Resource.Error -> {
-                        onComplete()
+                        showLoading(false)
                         onError(state.message)
                     }
 
@@ -50,23 +51,24 @@ abstract class BaseFragment : Fragment() {
     }
 
     protected open fun showLoading(isLoading: Boolean) {
-        // Override this in child fragments to implement specific loading behavior
+        // Implementazione di default vuota, da sovrascrivere nei fragment figli se necessario
     }
 
-    protected fun onBackClick() {
-        findNavController().popBackStack()
-    }
+    protected fun onBackClick() = findNavController().popBackStack()
 
 
-    protected fun showSnackbar(message: String, actionText: String? = null, action: (() -> Unit)? = null) {
+    protected fun showSnackbar(
+        message: String,
+        actionText: String? = null,
+        action: (() -> Unit)? = null
+    ) {
         view?.let {
-            val snackbar = Snackbar.make(it, message, Snackbar.LENGTH_LONG)
-            if (actionText != null && action != null) {
-                snackbar.setAction(actionText) {
-                    action()
+            Snackbar.make(it, message, Snackbar.LENGTH_LONG).apply {
+                if (actionText != null && action != null) {
+                    setAction(actionText) { action() }
                 }
+                show()
             }
-            snackbar.show()
         }
     }
 }

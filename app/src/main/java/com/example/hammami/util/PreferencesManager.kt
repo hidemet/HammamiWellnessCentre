@@ -9,9 +9,10 @@ import javax.inject.Singleton
 class PreferencesManager @Inject constructor(@ApplicationContext context: Context) {
     private val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
 
-    fun isLoggedIn(): Boolean = sharedPreferences.getBoolean("isLoggedIn", false)
+    fun isUserLoggedIn(): Boolean = sharedPreferences.getBoolean("isUserLoggedIn", false)
 
     fun setLoggedIn(isLoggedIn: Boolean) {
-        sharedPreferences.edit().putBoolean("isLoggedIn", isLoggedIn).apply()
+        sharedPreferences.edit().putBoolean("isUserLoggedIn", isLoggedIn).apply()
     }
+
 }

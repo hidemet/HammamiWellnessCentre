@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import com.example.hammami.database.UserRepository
+import com.example.hammami.database.UserProfileRepository
 
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userProfileRepository: UserProfileRepository
 ) : ViewModel() {
     // Logica specifica per la Home...
 }

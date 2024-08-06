@@ -124,12 +124,27 @@
                         android:text="@string/birth_date"
                         android:textAppearance="?attr/textAppearanceTitleMedium" />
 
+
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/birth_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="date"
                         android:text="01/01/2000"
+                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Genere"
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/gender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:text="Maschio"
                         android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                     <com.google.android.material.textview.MaterialTextView

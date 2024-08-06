@@ -11,19 +11,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.view.WindowManager
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.hammami.R
-import com.example.hammami.databinding.DialogEditPersonalInfoBinding
+import com.example.hammami.databinding.DialogEditContactInfoBinding
+import com.example.hammami.databinding.DialogReauthenticationBinding
 import com.example.hammami.models.User
 import com.example.hammami.util.Resource
 import com.example.hammami.util.StringValidators
 import com.example.hammami.util.hideKeyboard
 import com.example.hammami.viewmodel.EditUserProfileViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -31,12 +34,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class EditPersonalInfoDialogFragment : DialogFragment() {
+class EditContactInfoDialogFragment : DialogFragment() {
 
-    private var _binding: DialogEditPersonalInfoBinding? = null
+    private var _binding: DialogEditContactInfoBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: EditUserProfileViewModel by viewModels()
+    private val viewModel: EditUserProfileViewModel by activityViewModels()
 
     private var isDataModified = false
 
@@ -46,21 +49,22 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
             window?.requestFeature(Window.FEATURE_NO_TITLE)
         }
 
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
-        _binding = DialogEditPersonalInfoBinding.inflate(inflater, container, false)
+        _binding = DialogEditContactInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("EditPersonalInfoDialog", "onViewCreated called")
         setupUI()
         observeViewModel()
         setupTextChangeListeners()
     }
-
 
     private fun setupUI() {
         with(binding) {
@@ -72,9 +76,9 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
 
     private fun setupTextChangeListeners() {
         binding.apply {
-            listOf(firstNameEditText, lastNameEditText, dayEditText, monthAutoCompleteTextView,
-                yearEditText, genderAutoCompleteTextView, allergiesEditText, disabilitiesEditText)
-                .forEach { it.addTextChangedListener { onTextChanged() } }
+            listOf(phoneNumberEditText, emailEditText).forEach {
+                it.addTextChangedListener { onTextChanged() }
+            }
         }
     }
 
@@ -86,12 +90,13 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
         binding.saveButton.isEnabled = true
     }
 
+
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 //                launch {
 //                    viewModel.user.collectLatest { user ->
-//                        user.let { updateUIWithUserData(it) }
+//                        user?.let { updateUIWithUserData(it) }
 //                    }
 //                }
                 launch {
@@ -109,7 +114,6 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
                             is EditUserProfileViewModel.ProfileUpdateResult.Success -> {
                                 showSnackbarAndDismiss(result.message)
                             }
-
                             is EditUserProfileViewModel.ProfileUpdateResult.Error -> {
                                 showError(result.message)
                             }
@@ -120,73 +124,80 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
         }
     }
 
+    private fun updateUIWithUserData(user: User) {
+        binding.apply {
+            phoneNumberEditText.setText(user.phoneNumber)
+            emailEditText.setText(user.email)
+        }
+        isDataModified = false
+        binding.saveButton.visibility = View.GONE
+    }
+
+    private fun onSaveButtonClick() {
+        if (validateFields()) {
+            hideKeyboard()
+            viewModel.user.value.let { currentUser ->
+                val updatedUser = currentUser.data?.let { createUpdatedUser(it) }
+                if (updatedUser != null) {
+                    if (updatedUser.email != currentUser.data.email) {
+                        showReAuthDialog(updatedUser)
+                    } else {
+                        updateProfile(updatedUser)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun validateFields(): Boolean {
+        val isPhoneNumberValid = ValidationUtil.validateField(
+            binding.phoneNumberInputLayout,
+            StringValidators.PhoneNumber
+        )
+        val isEmailValid = ValidationUtil.validateField(
+            binding.emailInputLayout,
+            StringValidators.Email
+        )
+        return isPhoneNumberValid && isEmailValid
+    }
+
+    private fun createUpdatedUser(currentUser: User): User {
+        return currentUser.copy(
+            phoneNumber = binding.phoneNumberEditText.text.toString(),
+            email = binding.emailEditText.text.toString()
+        )
+    }
+
+    private fun showReAuthDialog(updatedUser: User) {
+        val dialogView = DialogReauthenticationBinding.inflate(layoutInflater)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.reauthentication_required)
+            .setView(dialogView.root)
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                val password = dialogView.passwordEditText.text.toString()
+                if (password.isNotEmpty()) {
+                    updateProfile(updatedUser, password)
+                } else {
+                    showError(getString(R.string.password_required))
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun updateProfile(updatedUser: User, currentPassword: String? = null) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.updateUserProfile(updatedUser, requireContext(), currentPassword)
+        }
+    }
+
     private fun showSnackbarAndDismiss(message: String) {
         viewModel.fetchUserProfile()
-        hideKeyboard()
         Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
         lifecycleScope.launch {
             delay(3000)
             dismiss()
         }
-    }
-
-private fun updateUIWithUserData(user: User) {
-    binding.apply {
-        firstNameEditText.setText(user.firstName)
-        lastNameEditText.setText(user.lastName)
-        val (day, month, year) = user.birthDate.split("/")
-        dayEditText.setText(day)
-        yearEditText.setText(year)
-        monthAutoCompleteTextView.setText(month, false)
-        genderAutoCompleteTextView.setText(user.gender, false)
-        allergiesEditText.setText(user.allergies)
-        disabilitiesEditText.setText(user.disabilities)
-    }
-    isDataModified = false
-    binding.saveButton.visibility = View.GONE
-}
-    private fun onSaveButtonClick() {
-        if (validateAllFields()) {
-            val updatedUser = createUpdatedUser(viewModel.user.value.data!!)
-            Log.d("EditUserProfile", "Saving updated user from dialog: $updatedUser")
-            hideKeyboard()
-            viewModel.updateUserProfile(updatedUser, requireContext())
-            Log.d("EditUserProfile", "Called updateUserProfile")
-        }
-    }
-
-    private fun validateAllFields(): Boolean {
-        val isFirstNameValid =
-            ValidationUtil.validateField(binding.firstNameInputLayout, StringValidators.NotBlank)
-        val isLastNameValid =
-            ValidationUtil.validateField(binding.lastNameInputLayout, StringValidators.NotBlank)
-        val isBirthDateValid = ValidationUtil.validateBirthDate(
-            binding.dayInputLayout,
-            binding.monthInputLayout,
-            binding.yearInputLayout,
-            binding.dataErrorTextView
-        )
-        val isGenderValid =
-            ValidationUtil.validateField(binding.genderTextInputLayout, StringValidators.NotBlank)
-
-        return isFirstNameValid && isLastNameValid && isBirthDateValid && isGenderValid
-    }
-
-    private fun createUpdatedUser(currentUser: User): User {
-        val birthDate =
-            "${binding.dayEditText.text}/${binding.monthAutoCompleteTextView.text}/${binding.yearEditText.text}"
-        return currentUser.copy(
-            firstName = binding.firstNameEditText.text.toString(),
-            lastName = binding.lastNameEditText.text.toString(),
-            birthDate = birthDate,
-            gender = binding.genderAutoCompleteTextView.text.toString(),
-            allergies = binding.allergiesEditText.text.toString(),
-            disabilities = binding.disabilitiesEditText.text.toString()
-        )
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        // Implement your loading UI logic here
     }
 
     private fun showError(message: String) {
@@ -201,9 +212,9 @@ private fun updateUIWithUserData(user: User) {
         }
     }
 
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
 }

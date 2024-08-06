@@ -62,6 +62,17 @@
             android:name="com.example.hammami.fragments.settings.EditUserProfileFragment"
             android:label="EditUserProfileFragment"
             tools:layout="@layout/fragment_edit_user_profile"
+            >
+            <action
+                android:id="@+id/action_editUserProfileFragment_to_editPersonalInfoFragment"
+                app:destination="@id/editPersonalInfroFragment" />
+        </fragment>
+
+        <fragment
+            android:id="@+id/editPersonalInfroFragment"
+            android:name="com.example.hammami.fragments.settings.EditPersonalInfoFragment"
+            android:label="EditPersonalInfoFragment"
+            tools:layout="@layout/dialog_edit_personal_info"
             />
     </navigation>
 

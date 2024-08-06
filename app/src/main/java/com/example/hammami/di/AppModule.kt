@@ -3,7 +3,7 @@ package com.example.hammami.di
 import com.example.hammami.util.PreferencesManager
 import android.content.Context
 import com.example.hammami.database.FirebaseDb
-import com.example.hammami.database.UserRepository
+import com.example.hammami.database.UserProfileRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -56,7 +56,7 @@ object AppModule {
         firebaseAuth: FirebaseAuth,
         firestore: FirebaseFirestore,
         preferencesManager: PreferencesManager
-    ): UserRepository = UserRepository(firebaseAuth,firestore, preferencesManager)
+    ): UserProfileRepository = UserProfileRepository(firebaseAuth,firestore, preferencesManager)
 
     @Provides
     @Singleton

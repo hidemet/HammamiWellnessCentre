@@ -5,8 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -17,13 +16,13 @@ import com.example.hammami.models.User
 import com.example.hammami.viewmodel.EditUserProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class EditUserProfileFragment : BaseFragment() {
-
     private var _binding: FragmentEditUserProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: EditUserProfileViewModel by viewModels()
+    private val viewModel: EditUserProfileViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +33,7 @@ class EditUserProfileFragment : BaseFragment() {
         return binding.root
     }
 
+
     override fun setupUI() {
         binding.apply {
             topAppBar.setNavigationOnClickListener {
@@ -41,7 +41,6 @@ class EditUserProfileFragment : BaseFragment() {
             }
 
             editPersonalInfoButton.setOnClickListener {
-                Log.d("EditUserProfileFragment", "Edit Personal Info button clicked")
                 openEditPersonalInfoDialog()
             }
 
@@ -52,25 +51,97 @@ class EditUserProfileFragment : BaseFragment() {
             changePasswordButton.setOnClickListener {
                 openChangePasswordDialog()
             }
+
+            editProfileImageButton.setOnClickListener {
+                onEditProfileImageClick()
+                showSnackbar("Change profile image functionality not implemented yet")
+            }
         }
     }
 
+    private fun onEditProfileImageClick() {
+            // Implement this method
+    }
+
+
+//    override fun observeFlows() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewModel.userProfileState.collect { resource ->
+//                Log.d("EditUserProfile", "Received user profile state: $resource")
+//                when (resource) {
+//                    is Resource.Success -> {
+//                        showLoading(false)
+//                        resource.data?.let { user ->
+//                            Log.d("EditUserProfile", "Updating UI with user data: $user")
+//                            updateUIWithUserData(user)
+//                        }
+//                    }
+//                    is Resource.Loading -> showLoading(true)
+//                    is Resource.Error -> {
+//                        showLoading(false)
+//                        showSnackbar(resource.message ?: getString(R.string.unknown_error))
+//                    }
+//                    is Resource.Unspecified -> {}
+//                }
+//            }
+//        }
+//
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewModel.profileUpdateEvent.collect { result ->
+//                Log.d("EditUserProfile", "Received profile update event: $result")
+//                when (result) {
+//                    is EditUserProfileViewModel.ProfileUpdateResult.Success -> {
+//                        showSnackbar(result.message)
+//                        viewModel.fetchUserProfile()
+//                    }
+//                    is EditUserProfileViewModel.ProfileUpdateResult.Error -> {
+//                        showSnackbar(result.message)
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+//    override fun observeFlows() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewModel.currentUser.collect { user ->
+//                Log.d("EditUserProfile", "Received updated user: $user")
+//                user?.let { updateUIWithUserData(it) }
+//            }
+//        }
+//
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewModel.profileUpdateEvent.collect { result ->
+//                Log.d("EditUserProfile", "Received profile update event: $result")
+//                when (result) {
+//                    is EditUserProfileViewModel.ProfileUpdateResult.Success -> {
+//                        showSnackbar(result.message)
+//                        viewModel.fetchUserProfile()
+//                    }
+//                    is EditUserProfileViewModel.ProfileUpdateResult.Error -> {
+//                        showSnackbar(result.message)
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
     override fun observeFlows() {
-        viewModel.userState.collectResource(
+        viewModel.user.collectResource(
             onSuccess = { user ->
                 updateUIWithUserData(user)
             },
             onError = { errorMessage ->
-                showSnackbar(errorMessage ?: "An error occurred")
-            },
-            onLoading = {
-                showLoading(true)
-            },
-            onComplete = {
-                showLoading(false)
+                showSnackbar(errorMessage ?: getString(R.string.unknown_error))
             }
         )
     }
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchUserProfile()
+    }
+
 
     override fun showLoading(isLoading: Boolean) {
         binding.linearProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
@@ -78,17 +149,21 @@ class EditUserProfileFragment : BaseFragment() {
     }
 
     private fun updateUIWithUserData(user: User) {
+
+        if (!isAdded || view == null) {
+            Log.w("EditUserProfile", "Fragment not added or view is null. Skipping UI update.")
+            return
+        }
+
         binding.apply {
             firstName.text = user.firstName
             lastName.text = user.lastName
             birthDate.text = user.birthDate
             allergies.text = user.allergies.ifEmpty { "-" }
+            gender.text = user.gender
             disabilities.text = user.disabilities.ifEmpty { "-" }
             phoneNumberValue.text = user.phoneNumber
             emailAddressValue.text = user.email
-
-
-            // Gestione dell'immagine del profilo con Glide
 
             if (user.profileImage.isNotEmpty()) {
                 Glide.with(this@EditUserProfileFragment)
@@ -99,32 +174,35 @@ class EditUserProfileFragment : BaseFragment() {
                             .error(R.drawable.default_profile_image)
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                     )
-                    .into(profileImageView) // Assicurati di avere un ImageView con questo id nel tuo layout
+                    .into(profileImageView)
             } else {
-                // Imposta un'immagine predefinita
                 profileImageView.setImageResource(R.drawable.default_profile_image)
             }
         }
-
+        Log.d("EditUserProfile", "UI updated with user data: $user")
 
     }
 
     private fun openEditPersonalInfoDialog() {
         try {
             EditPersonalInfoDialogFragment().show(parentFragmentManager, "EditPersonalInfoDialog")
-            Log.d("EditUserProfileFragment", "Dialog show() called")
+
         } catch (e: Exception) {
-            Log.e("ProfileFragment", "Errore nel mostrare EditProfileFragment", e)
-            showSnackbar("Errore nel mostrare la schermata di modifica delle informazioni personali")
+            showSnackbar(getString(R.string.error_showing_edit_profile))
         }
     }
 
     private fun openEditContactsDialog() {
-        //EditContactsDialogFragment().show(parentFragmentManager, "EditContactsDialog")
+        try {
+            EditContactInfoDialogFragment().show(parentFragmentManager, "EditContactInfoDialog")
+        } catch (e: Exception) {
+            showSnackbar(getString(R.string.error_showing_edit_profile))
+        }
     }
 
     private fun openChangePasswordDialog() {
-        //  ChangePasswordDialogFragment().show(parentFragmentManager, "ChangePasswordDialog")
+        // Implement this method
+        showSnackbar("Change password functionality not implemented yet")
     }
 
     override fun onDestroyView() {
