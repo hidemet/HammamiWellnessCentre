@@ -1,7 +1,42 @@
 package com.example.hammami.fragments.client
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
 import com.example.hammami.R
+import com.example.hammami.adapters.BenessereViewpagerAdapter
+import com.example.hammami.adapters.HomeViewpagerAdapter
+import com.example.hammami.databinding.FragmentHomeBinding
+import com.example.hammami.databinding.FragmentServiziBenessereBinding
+import com.example.hammami.fragments.categories.BenessereFragment
+import com.example.hammami.fragments.categories.MainCategoryFragment
 
-class SearchFragment: Fragment(R.layout.fragment_search) {
+class SearchFragment: Fragment(R.layout.fragment_servizi_benessere) {
+
+    private lateinit var binding: FragmentServiziBenessereBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentServiziBenessereBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val categoriesFragments = arrayListOf<Fragment>(
+            BenessereFragment()
+        )
+
+        val viewPager2Adapter =
+            BenessereViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
+        binding.viewpagerBenessere.orientation = ViewPager2.ORIENTATION_VERTICAL
+        binding.viewpagerBenessere.adapter = viewPager2Adapter
+    }
 }
