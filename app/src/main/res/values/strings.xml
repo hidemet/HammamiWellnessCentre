@@ -15,7 +15,7 @@
     <string name="placeholder_first_name">Nome</string>
     <string name="placeholder_last_name">Cognome</string>
     <string name="placeholder_phone_number">Numero di cellulare</string>
-    <string name="avanti">Avanti</string>
+    <string name="next">Procedi</string>
     <string name="proseguiamo">Proseguiamo con la registrazione!</string>
     <string name="inserisci_info_personali_2">Inserisci il tuo sesso, data di nascita, eventuali allergie e/o invalidità</string>
     <string name="placeholder_allergy">Eventuali allergie</string>
@@ -95,4 +95,12 @@
     <string name="confirm">Conferma</string>
     <string name="password_required">Inserisci la password.</string>
     <string name="cancel">Cancella</string>
+    <string name="choose_image_source">Da dove vuoi caricare immagine?</string>
+    <string name="upload_failed">Image upload failed</string>
+    <string name="new_password">Password nuova</string>
+    <string name="save_button">Salva</string>
+    <string-array name="image_sources">
+        <item>Galleria</item>
+        <item>Camera</item>
+    </string-array>
 </resources>

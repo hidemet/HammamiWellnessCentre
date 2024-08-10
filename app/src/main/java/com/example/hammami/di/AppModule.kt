@@ -1,5 +1,6 @@
 package com.example.hammami.di
 
+import android.app.Application
 import com.example.hammami.util.PreferencesManager
 import android.content.Context
 import com.example.hammami.database.FirebaseDb
@@ -42,6 +43,14 @@ object AppModule {
         return FirebaseDb(auth, firestore)
     }
 
+    @Provides
+    fun provideIntroductionSP(
+        application: Application
+    ) = application.getSharedPreferences("introduction", Context.MODE_PRIVATE)
+
+    @Provides
+    @Singleton
+    fun provideStorage() = FirebaseStorage.getInstance().reference
 
     @Provides
     @Singleton
@@ -55,8 +64,9 @@ object AppModule {
     fun provideUserRepository(
         firebaseAuth: FirebaseAuth,
         firestore: FirebaseFirestore,
-        preferencesManager: PreferencesManager
-    ): UserProfileRepository = UserProfileRepository(firebaseAuth,firestore, preferencesManager)
+        preferencesManager: PreferencesManager,
+        application: Application
+    ): UserProfileRepository = UserProfileRepository(firebaseAuth,firestore, preferencesManager, application)
 
     @Provides
     @Singleton

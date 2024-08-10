@@ -1,21 +1,24 @@
 package com.example.hammami.database
 
+import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.util.Log
 import com.example.hammami.models.User
 import com.example.hammami.util.PreferencesManager
 import com.example.hammami.util.Resource
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +26,8 @@ import javax.inject.Singleton
 class UserProfileRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager,
+    private val application: Application
 ) {
     private val _authState = MutableStateFlow<Resource<User>>(Resource.Loading())
     val authState: StateFlow<Resource<User>> = _authState
@@ -107,27 +111,57 @@ class UserProfileRepository @Inject constructor(
         }
     }
 
-    suspend fun resetPassword(email: String): Resource<Unit> {
+
+    suspend fun changePassword(currentPassword: String, newPassword: String): Resource<Unit> {
         return try {
-            firebaseAuth.sendPasswordResetEmail(email).await()
+            val user = firebaseAuth.currentUser ?: throw Exception("User not authenticated")
+
+            // Riautenticazione
+            val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+            user.reauthenticate(credential).await()
+
+            // Cambio password
+            user.updatePassword(newPassword).await()
+
             Resource.Success(Unit)
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Resource.Error("The current password is incorrect or the authentication has expired.")
         } catch (e: Exception) {
-            Log.e("UserRepository", "Error sending password reset email", e)
-            Resource.Error(e.message ?: "Failed to send password reset email")
+            Resource.Error("Failed to change password: ${e.message}")
         }
     }
 
-    suspend fun deleteUserProfile(): Resource<Unit> {
+    suspend fun refreshUserToken(): Resource<Unit> {
         return try {
-            val userId = firebaseAuth.currentUser?.uid
-                ?: return Resource.Error("User not authenticated")
-
-            firestore.collection("users").document(userId).delete().await()
+            val user = firebaseAuth.currentUser ?: throw Exception("User not authenticated")
+            user.getIdToken(true).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Resource.Error("Failed to refresh user token: ${e.message}")
         }
     }
+
+        suspend fun resetPassword(email: String): Resource<Unit> {
+            return try {
+                firebaseAuth.sendPasswordResetEmail(email).await()
+                Resource.Success(Unit)
+            } catch (e: Exception) {
+                Log.e("UserRepository", "Error sending password reset email", e)
+                Resource.Error(e.message ?: "Failed to send password reset email")
+            }
+        }
+
+        suspend fun deleteUserProfile(): Resource<Unit> {
+            return try {
+                val userId = firebaseAuth.currentUser?.uid
+                    ?: return Resource.Error("User not authenticated")
+
+                firestore.collection("users").document(userId).delete().await()
+                Resource.Success(Unit)
+            } catch (e: Exception) {
+                Resource.Error(e.message ?: "An unknown error occurred")
+            }
+        }
 
 //    suspend fun refreshUser() {
 //        try {
@@ -154,13 +188,13 @@ class UserProfileRepository @Inject constructor(
 //    }
 
 
-    fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
+        fun isNetworkAvailable(context: Context): Boolean {
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val network = connectivityManager.activeNetwork ?: return false
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        }
 
 //    suspend fun updateUserProfile(
 //        updatedUser: User,
@@ -191,7 +225,7 @@ class UserProfileRepository @Inject constructor(
 //        }
 //    }
 
-    //    suspend fun updateUserProfile(
+        //    suspend fun updateUserProfile(
 //        updatedUser: User,
 //        context: Context,
 //    ): Resource<User> {
@@ -233,36 +267,36 @@ class UserProfileRepository @Inject constructor(
 //            Resource.Error(e.message ?: "Failed to update user profile")
 //        }
 //    }
-    suspend fun updateUserProfile(
-        updatedUser: User,
-        context: Context,
-        currentPassword: String? = null
-    ): Resource<User> {
-        if (!isNetworkAvailable(context)) {
-            return Resource.Error("No internet connection")
-        }
-        return try {
-            val currentUser = firebaseAuth.currentUser ?: throw Exception("User not authenticated")
-            val uid = currentUser.uid
-
-            if (currentPassword != null && updatedUser.email != currentUser.email) {
-                val credential =
-                    EmailAuthProvider.getCredential(currentUser.email!!, currentPassword)
-                currentUser.reauthenticate(credential).await()
-                currentUser.verifyBeforeUpdateEmail(updatedUser.email).await()
-                currentUser.sendEmailVerification().await()
+        suspend fun updateUserProfile(
+            updatedUser: User,
+            currentPassword: String? = null
+        ): Resource<User> {
+            if (!isNetworkAvailable(application)) {
+                return Resource.Error("No internet connection")
             }
+            return try {
+                val currentUser =
+                    firebaseAuth.currentUser ?: throw Exception("User not authenticated")
+                val uid = currentUser.uid
 
-            firestore.collection("users").document(uid).set(updatedUser).await()
+                if (currentPassword != null && updatedUser.email != currentUser.email) {
+                    val credential =
+                        EmailAuthProvider.getCredential(currentUser.email!!, currentPassword)
+                    currentUser.reauthenticate(credential).await()
+                    currentUser.verifyBeforeUpdateEmail(updatedUser.email).await()
+                    currentUser.sendEmailVerification().await()
+                }
 
-            val updateResource = Resource.Success(updatedUser)
-            _authState.value = updateResource
-            refreshUser()
-            updateResource
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to update user profile")
+                firestore.collection("users").document(uid).set(updatedUser).await()
+
+                val updateResource = Resource.Success(updatedUser)
+                _authState.value = updateResource
+                refreshUser()
+                updateResource
+            } catch (e: Exception) {
+                Resource.Error(e.message ?: "Failed to update user profile")
+            }
         }
-    }
 
 //    private suspend fun performUpdate(updatedUser: User, currentPassword: String): Resource<User> {
 //        return try {
@@ -352,54 +386,80 @@ class UserProfileRepository @Inject constructor(
 //            }
 //    }
 
-    fun fetchCurrentUserProfile(): Resource<User> {
-        return try {
-            val currentUser = firebaseAuth.currentUser
-            if (currentUser != null) {
-                fetchUserData(currentUser.uid)
-                _authState.value
-            } else {
-                Resource.Error("User not authenticated")
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to fetch current user profile")
-        }
-    }
-
-    private fun fetchUserData(uid: String) {
-        firestore.collection("users").document(uid).get()
-            .addOnSuccessListener { document ->
-                val user = document.toObject(User::class.java)
-                if (user != null) {
-                    _authState.value = Resource.Success(user)
+        fun fetchCurrentUserProfile(): Resource<User> {
+            return try {
+                val currentUser = firebaseAuth.currentUser
+                if (currentUser != null) {
+                    fetchUserData(currentUser.uid)
+                    _authState.value
                 } else {
-                    _authState.value = Resource.Error("User data not found")
+                    Resource.Error("User not authenticated")
                 }
+            } catch (e: Exception) {
+                Resource.Error(e.message ?: "Failed to fetch current user profile")
             }
-            .addOnFailureListener { e ->
-                _authState.value = Resource.Error("Failed to fetch user data: ${e.message}")
-            }
-    }
+        }
 
-    suspend fun refreshUser() {
-        try {
-            if (firebaseAuth.currentUser != null) {
-                if (firebaseAuth.currentUser?.getIdToken(true)?.await() != null) {
-                    firebaseAuth.currentUser?.let { user ->
-                        fetchUserData(user.uid)
-                    } ?: run {
-                        _authState.value = Resource.Error("User not authenticated after token refresh")
+        private fun fetchUserData(uid: String) {
+            firestore.collection("users").document(uid).get()
+                .addOnSuccessListener { document ->
+                    val user = document.toObject(User::class.java)
+                    if (user != null) {
+                        _authState.value = Resource.Success(user)
+                    } else {
+                        _authState.value = Resource.Error("User data not found")
+                    }
+                }
+                .addOnFailureListener { e ->
+                    _authState.value = Resource.Error("Failed to fetch user data: ${e.message}")
+                }
+        }
+
+        suspend fun refreshUser() {
+            try {
+                if (firebaseAuth.currentUser != null) {
+                    if (firebaseAuth.currentUser?.getIdToken(true)?.await() != null) {
+                        firebaseAuth.currentUser?.let { user ->
+                            fetchUserData(user.uid)
+                        } ?: run {
+                            _authState.value =
+                                Resource.Error("User not authenticated after token refresh")
+                        }
+                    } else {
+                        _authState.value = Resource.Error("Failed to refresh auth token")
                     }
                 } else {
-                    _authState.value = Resource.Error("Failed to refresh auth token")
+                    _authState.value = Resource.Error("User is not signed in")
                 }
-            } else {
-                _authState.value = Resource.Error("User is not signed in")
+            } catch (e: Exception) {
+                _authState.value = Resource.Error("Error in refreshUser: ${e.message}")
             }
-        } catch (e: Exception) {
-            _authState.value = Resource.Error("Error in refreshUser: ${e.message}")
         }
+
+        suspend fun uploadProfileImage(imageUri: Uri): Resource<String> {
+            return try {
+                val filename = UUID.randomUUID().toString()
+                val ref = FirebaseStorage.getInstance().getReference("/profile_images/$filename")
+                ref.putFile(imageUri).await()
+                val downloadUrl = ref.downloadUrl.await().toString()
+                Resource.Success(downloadUrl)
+            } catch (e: Exception) {
+                Resource.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+
+        suspend fun updateUserProfileImage(imageUrl: String, user: User): Resource<Unit> {
+            return try {
+                val currentUser =
+                    firebaseAuth.currentUser ?: throw Exception("User not authenticated")
+                val uid = currentUser.uid
+                val updatedUser = user.copy(profileImage = imageUrl)
+                firestore.collection("users").document(uid).set(updatedUser).await()
+                Resource.Success(Unit)
+            } catch (e: Exception) {
+                Resource.Error(e.message ?: "Failed to update user profile")
+            }
+        }
+
+
     }
-
-
-}

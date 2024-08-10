@@ -1,0 +1,51 @@
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:checkable="true"
+    style="@style/Widget.Material3.CardView.Elevated">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Valore del coupon"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <TextView
+                android:id="@+id/couponValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100 €"
+                android:textAppearance="?attr/textAppearanceHeadlineLarge" />
+
+            <TextView
+                android:id="@+id/couponTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Coupon"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/couponPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(20 punti)"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:gravity="end"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

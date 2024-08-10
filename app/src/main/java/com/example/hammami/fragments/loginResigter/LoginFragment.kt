@@ -10,7 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.activities.MainActivity
-import com.example.hammami.databinding.BottomSheetForgotPasswordBinding
+import com.example.hammami.databinding.BottomSheetResetPasswordBinding
 import com.example.hammami.databinding.FragmentLoginBinding
 import com.example.hammami.fragments.BaseFragment
 import com.example.hammami.util.StringValidators
@@ -98,7 +98,7 @@ class LoginFragment : BaseFragment() {
     }
 
     private fun showForgotPasswordDialog() {
-        val bottomSheetBinding = BottomSheetForgotPasswordBinding.inflate(layoutInflater)
+        val bottomSheetBinding = BottomSheetResetPasswordBinding.inflate(layoutInflater)
         bottomSheetDialog = BottomSheetDialog(requireContext()).apply {
             setContentView(bottomSheetBinding.root)
 

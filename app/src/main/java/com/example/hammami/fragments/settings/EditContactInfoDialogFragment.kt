@@ -102,8 +102,19 @@ class EditContactInfoDialogFragment : DialogFragment() {
                 launch {
                     viewModel.user.collectLatest { resource ->
                         when (resource) {
-                            is Resource.Success -> resource.data?.let { updateUIWithUserData(it) }
-                            is Resource.Error -> showError(resource.message ?: "Error fetching user data")
+                            is Resource.Loading -> showLoading(true)
+                            is Resource.Success -> {
+                                resource.data?.let { updateUIWithUserData(it) }
+                                showLoading(false)
+                            }
+
+                            is Resource.Error -> {
+                                showError(
+                                    resource.message ?: "Error fetching user data"
+                                )
+                                showLoading(false)
+                            }
+
                             else -> {}
                         }
                     }
@@ -114,6 +125,7 @@ class EditContactInfoDialogFragment : DialogFragment() {
                             is EditUserProfileViewModel.ProfileUpdateResult.Success -> {
                                 showSnackbarAndDismiss(result.message)
                             }
+
                             is EditUserProfileViewModel.ProfileUpdateResult.Error -> {
                                 showError(result.message)
                             }
@@ -202,6 +214,11 @@ class EditContactInfoDialogFragment : DialogFragment() {
 
     private fun showError(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.contentScrollView.visibility = if (isLoading) View.GONE else View.VISIBLE
     }
 
     override fun onStart() {

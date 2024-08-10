@@ -41,6 +41,12 @@
             android:name="com.example.hammami.fragments.settings.GiftCardsFragment"
             android:label="GiftCardsFragment"
             tools:layout="@layout/fragment_gift_cards" />
+
+        <fragment
+            android:id="@+id/couponFragment"
+            android:name="com.example.hammami.fragments.settings.CouponFragment"
+            android:label="couponFragment"
+            tools:layout="@layout/fragment_coupon" />
         <fragment
             android:id="@+id/profileFragment"
             android:name="com.example.hammami.fragments.settings.UserProfileFragment"
@@ -55,6 +61,9 @@
             <action
                 android:id="@+id/action_profileFragment_to_editUserProfileFragment"
                 app:destination="@id/editUserProfileFragment" />
+            <action
+                android:id="@+id/action_profileFragment_to_couponFragment"
+                app:destination="@id/couponFragment" />
         </fragment>
 
         <fragment
@@ -63,17 +72,8 @@
             android:label="EditUserProfileFragment"
             tools:layout="@layout/fragment_edit_user_profile"
             >
-            <action
-                android:id="@+id/action_editUserProfileFragment_to_editPersonalInfoFragment"
-                app:destination="@id/editPersonalInfroFragment" />
         </fragment>
 
-        <fragment
-            android:id="@+id/editPersonalInfroFragment"
-            android:name="com.example.hammami.fragments.settings.EditPersonalInfoFragment"
-            android:label="EditPersonalInfoFragment"
-            tools:layout="@layout/dialog_edit_personal_info"
-            />
     </navigation>
 
 </navigation>

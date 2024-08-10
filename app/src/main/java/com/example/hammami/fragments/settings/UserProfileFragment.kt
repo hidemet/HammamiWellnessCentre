@@ -29,6 +29,7 @@ class UserProfileFragment : BaseFragment() {
 
     private val viewModel: UserProfileViewModel by viewModels()
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,6 +66,11 @@ class UserProfileFragment : BaseFragment() {
                 "Gift Card",
                 R.drawable.ic_gift_card,
                 navigationDestination = R.id.giftCardsFragment
+            ),
+            ItemProfileOption(
+                "Coupon",
+                R.drawable.ic_coupon,
+                navigationDestination = R.id.couponFragment
             )
         )
 
