@@ -1,0 +1,152 @@
+package com.example.hammami.fragments.categories
+
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hammami.R
+import com.example.hammami.adapters.BenessereAdapter
+import com.example.hammami.adapters.EsteticaAdapter
+import com.example.hammami.databinding.FragmentBenessereBinding
+import com.example.hammami.databinding.FragmentEsteticaBinding
+import com.example.hammami.util.Resource
+import com.example.hammami.viewmodel.BenessereViewModel
+import com.example.hammami.viewmodel.EsteticaViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+
+private const val TAG = "EsteticaViewModel"
+
+@AndroidEntryPoint
+class EsteticaFragment: Fragment(R.layout.fragment_estetica) {
+    private lateinit var binding: FragmentEsteticaBinding
+    private lateinit var esteticaAdapter: EsteticaAdapter
+    private val viewModel by viewModels<EsteticaViewModel>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentEsteticaBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupEpilazioneRv()
+        setupTrattCorpoRv()
+        setupTrattVisoRv()
+
+        lifecycleScope.launchWhenStarted{
+            viewModel.allEpilazione.collectLatest {
+                when (it){
+                    is Resource.Loading -> {
+                        showLoading()
+                    }
+
+                    is Resource.Error -> {
+                        hideLoading()
+                        Log.e(TAG, it.message.toString())
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    is Resource.Success -> {
+                        Log.d(TAG, "Received new services: ${it.data}")
+                        esteticaAdapter.differ.submitList(it.data)
+                        hideLoading()
+                    }
+                    is Resource.Unspecified -> Unit
+                }
+            }
+        }
+
+        lifecycleScope.launchWhenStarted{
+            viewModel.allTrattCorpo.collectLatest {
+                when (it){
+                    is Resource.Loading -> {
+                        showLoading()
+                    }
+
+                    is Resource.Error -> {
+                        hideLoading()
+                        Log.e(TAG, it.message.toString())
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    is Resource.Success -> {
+                        Log.d(TAG, "Received new services: ${it.data}")
+                        esteticaAdapter.differ.submitList(it.data)
+                        hideLoading()
+                    }
+                    is Resource.Unspecified -> Unit
+                }
+            }
+        }
+
+        lifecycleScope.launchWhenStarted{
+            viewModel.allTrattViso.collectLatest {
+                when (it){
+                    is Resource.Loading -> {
+                        showLoading()
+                    }
+
+                    is Resource.Error -> {
+                        hideLoading()
+                        Log.e(TAG, it.message.toString())
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    is Resource.Success -> {
+                        Log.d(TAG, "Received new services: ${it.data}")
+                        esteticaAdapter.differ.submitList(it.data)
+                        hideLoading()
+                    }
+                    is Resource.Unspecified -> Unit
+                }
+            }
+        }
+    }
+
+    private fun hideLoading() {
+        binding.mainProgressBar.visibility = View.GONE
+    }
+
+    private fun showLoading() {
+        binding.mainProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun setupEpilazioneRv() {
+        esteticaAdapter = EsteticaAdapter()
+        binding.rvEpilazione.apply{
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = esteticaAdapter
+        }
+    }
+
+    private fun setupTrattCorpoRv() {
+        esteticaAdapter = EsteticaAdapter()
+        binding.rvTrattCorpo.apply{
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = esteticaAdapter
+        }
+    }
+
+    private fun setupTrattVisoRv() {
+        esteticaAdapter = EsteticaAdapter()
+        binding.rvTrattViso.apply{
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = esteticaAdapter
+        }
+    }
+}
