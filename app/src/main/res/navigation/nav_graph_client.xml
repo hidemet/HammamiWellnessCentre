@@ -20,7 +20,11 @@
         android:id="@+id/searchFragment"
         android:name="com.example.hammami.fragments.client.SearchFragment"
         android:label="SearchFragment"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_catalogo_servizi_benessere"
+            app:destination="@id/catalogo_servizi_benessere" />
+    </fragment>
 
     <fragment
         android:id="@+id/aboutUsFragment"
@@ -53,5 +57,14 @@
                 android:id="@+id/action_profileFragment_to_giftCardsFragment"
                 app:destination="@id/giftCardsFragment" />
         </fragment>
+    </navigation>
+
+    <navigation android:id="@+id/catalogo_servizi_benessere"
+        app:startDestination="@id/serviziBenessere">
+        <fragment
+            android:id="@+id/serviziBenessere"
+            android:name="com.example.hammami.fragments.categories.BenessereFragment"
+            android:label="BenessereFragment"
+            tools:layout="@layout/fragment_servizi_benessere" />
     </navigation>
 </navigation>

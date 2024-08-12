@@ -5,17 +5,42 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hammami.R
 import com.example.hammami.adapters.BenessereViewpagerAdapter
 import com.example.hammami.adapters.HomeViewpagerAdapter
 import com.example.hammami.databinding.FragmentHomeBinding
+import com.example.hammami.databinding.FragmentSearchBinding
 import com.example.hammami.databinding.FragmentServiziBenessereBinding
 import com.example.hammami.fragments.categories.BenessereFragment
 import com.example.hammami.fragments.categories.MainCategoryFragment
 
-class SearchFragment: Fragment(R.layout.fragment_servizi_benessere) {
+class SearchFragment: Fragment(R.layout.fragment_search) {
 
+    private lateinit var binding: FragmentSearchBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentSearchBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.Benessere.setOnClickListener{
+            Navigation.findNavController(view)
+                .navigate(R.id.action_searchFragment_to_catalogo_servizi_benessere)
+        }
+        }
+
+
+
+    /*
     private lateinit var binding: FragmentServiziBenessereBinding
 
     override fun onCreateView(
@@ -39,4 +64,5 @@ class SearchFragment: Fragment(R.layout.fragment_servizi_benessere) {
         binding.viewpagerBenessere.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.viewpagerBenessere.adapter = viewPager2Adapter
     }
+     */
 }

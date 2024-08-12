@@ -10,13 +10,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.example.hammami.R
 import com.example.hammami.adapters.BenessereAdapter
+import com.example.hammami.adapters.BenessereViewpagerAdapter
 import com.example.hammami.adapters.BestDealsAdapter
 import com.example.hammami.adapters.NewServicesAdapter
 import com.example.hammami.adapters.RecommendedAdapter
 import com.example.hammami.databinding.FragmentBenessereBinding
 import com.example.hammami.databinding.FragmentMainCategoryBinding
+import com.example.hammami.databinding.FragmentServiziBenessereBinding
 import com.example.hammami.util.Resource
 import com.example.hammami.viewmodel.BenessereViewModel
 import com.example.hammami.viewmodel.MainCategoryViewModel
@@ -27,6 +30,7 @@ private const val TAG = "BenessereViewModel"
 @AndroidEntryPoint
 class BenessereFragment: Fragment(R.layout.fragment_benessere) {
     private lateinit var binding: FragmentBenessereBinding
+    private lateinit var bindingViewPager: FragmentServiziBenessereBinding //non ne sono sicuro, è una prova
     private lateinit var benessereAdapter: BenessereAdapter
     private val viewModel by viewModels<BenessereViewModel>()
 
@@ -41,6 +45,15 @@ class BenessereFragment: Fragment(R.layout.fragment_benessere) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val categoriesFragments = arrayListOf<Fragment>(
+            BenessereFragment()
+        )
+
+        val viewPager2Adapter =
+            BenessereViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
+        bindingViewPager.viewpagerBenessere.orientation = ViewPager2.ORIENTATION_VERTICAL
+        bindingViewPager.viewpagerBenessere.adapter = viewPager2Adapter
 
         setupBenessereRv()
         lifecycleScope.launchWhenStarted{
