@@ -1,10 +1,13 @@
 package com.example.hammami.fragments.settings
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +17,7 @@ import com.example.hammami.databinding.FragmentCouponBinding
 import com.example.hammami.fragments.BaseFragment
 import com.example.hammami.viewmodel.UserProfileViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -53,14 +57,12 @@ class CouponFragment : BaseFragment() {
             adapter = couponAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
-
-        viewModel.loadCoupons()
     }
 
     private fun showConfirmationDialog(value: Int) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Conferma")
-            .setMessage("Vuoi riscattare un buono da $value € con i tuoi ${value * 5} pt?")
+            .setMessage("Vuoi riscattare un buono da $value € con i tuoi ${value * 5} punti?")
             .setPositiveButton("Conferma") { _, _ ->
                 viewModel.onCouponSelected(value)
             }
@@ -70,10 +72,20 @@ class CouponFragment : BaseFragment() {
 
     private fun showGeneratedCouponDialog(couponCode: String) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_generated_coupon, null)
-        val couponTextView = dialogView.findViewById<TextInputEditText>(R.id.textFieldCouponCode)
-        val proceedButton = dialogView.findViewById<Button>(R.id.buttonProceed)
+        val couponTextView = dialogView.findViewById<TextInputEditText>(R.id.textFieldCouponCode).apply {
+            setText(couponCode)
+            setOnClickListener {
+                val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("Coupon Code", couponCode)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(requireContext(), "Codice coupon copiato negli appunti", Toast.LENGTH_SHORT).show()
+            }
+        }
 
-        couponTextView.setText(couponCode)
+        MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .create()
+            .show()
     }
 
     override fun observeFlows() {
@@ -95,12 +107,19 @@ class CouponFragment : BaseFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.generatedCoupon.collect { couponCode ->
-                couponCode?.let {
-                    showGeneratedCouponDialog(it)
+            viewModel.couponGenerationResult.collectResource(
+                onSuccess = { coupon ->
+                    showGeneratedCouponDialog(coupon.code)
+                },
+                onError = { errorMessage ->
+                    showSnackbar(errorMessage ?: "Errore sconosciuto")
                 }
-            }
+            )
         }
+    }
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {

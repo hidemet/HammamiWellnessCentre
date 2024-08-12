@@ -6,12 +6,14 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.util.Log
+import com.example.hammami.models.Coupon
 import com.example.hammami.models.User
 import com.example.hammami.util.PreferencesManager
 import com.example.hammami.util.Resource
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,7 +63,10 @@ class UserProfileRepository @Inject constructor(
         }
     }
 
-
+fun getCurrentUserId(): String? {
+    val currentUser = firebaseAuth.currentUser
+    return currentUser?.uid
+}
     suspend fun signIn(email: String, password: String): Resource<User> {
         return try {
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
@@ -462,4 +467,36 @@ class UserProfileRepository @Inject constructor(
         }
 
 
+    fun addCouponToUser(userId: String, coupon: Coupon) {
+        val couponRef = firestore.collection("coupons").document()
+        val couponId = couponRef.id
+
+        firestore.runBatch { batch ->
+            batch.set(couponRef, coupon.copy(id = couponId))
+            batch.update(firestore.collection("users").document(userId),
+                "activeCoupons", FieldValue.arrayUnion(couponId))
+        }
     }
+
+    fun getActiveCouponsForUser(userId: String) {
+        firestore.collection("users").document(userId).get()
+            .addOnSuccessListener { userDocument ->
+                val user = userDocument.toObject(User::class.java)
+                val activeCouponIds = user?.activeCoupons ?: emptyList()
+
+                if (activeCouponIds.isNotEmpty()) {
+                    firestore.collection("coupons")
+                        .whereIn("id", activeCouponIds)
+                        .get()
+                        .addOnSuccessListener { coupons ->
+                            // Process active coupons
+                        }
+                }
+            }
+    }
+
+
+
+
+
+}
