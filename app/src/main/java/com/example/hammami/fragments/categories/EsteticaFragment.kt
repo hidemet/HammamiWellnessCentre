@@ -26,7 +26,9 @@ private const val TAG = "EsteticaViewModel"
 @AndroidEntryPoint
 class EsteticaFragment: Fragment(R.layout.fragment_estetica) {
     private lateinit var binding: FragmentEsteticaBinding
-    private lateinit var esteticaAdapter: EsteticaAdapter
+    private lateinit var epilazioneAdapter: EsteticaAdapter
+    private lateinit var trattCorpoAdapter: EsteticaAdapter
+    private lateinit var trattVisoAdapter: EsteticaAdapter
     private val viewModel by viewModels<EsteticaViewModel>()
 
     override fun onCreateView(
@@ -60,7 +62,7 @@ class EsteticaFragment: Fragment(R.layout.fragment_estetica) {
 
                     is Resource.Success -> {
                         Log.d(TAG, "Received new services: ${it.data}")
-                        esteticaAdapter.differ.submitList(it.data)
+                        epilazioneAdapter.differ.submitList(it.data)
                         hideLoading()
                     }
                     is Resource.Unspecified -> Unit
@@ -83,7 +85,7 @@ class EsteticaFragment: Fragment(R.layout.fragment_estetica) {
 
                     is Resource.Success -> {
                         Log.d(TAG, "Received new services: ${it.data}")
-                        esteticaAdapter.differ.submitList(it.data)
+                        trattCorpoAdapter.differ.submitList(it.data)
                         hideLoading()
                     }
                     is Resource.Unspecified -> Unit
@@ -106,7 +108,7 @@ class EsteticaFragment: Fragment(R.layout.fragment_estetica) {
 
                     is Resource.Success -> {
                         Log.d(TAG, "Received new services: ${it.data}")
-                        esteticaAdapter.differ.submitList(it.data)
+                        trattVisoAdapter.differ.submitList(it.data)
                         hideLoading()
                     }
                     is Resource.Unspecified -> Unit
@@ -124,29 +126,29 @@ class EsteticaFragment: Fragment(R.layout.fragment_estetica) {
     }
 
     private fun setupEpilazioneRv() {
-        esteticaAdapter = EsteticaAdapter()
+        epilazioneAdapter = EsteticaAdapter()
         binding.rvEpilazione.apply{
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = esteticaAdapter
+            adapter = epilazioneAdapter
         }
     }
 
     private fun setupTrattCorpoRv() {
-        esteticaAdapter = EsteticaAdapter()
+        trattCorpoAdapter = EsteticaAdapter()
         binding.rvTrattCorpo.apply{
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = esteticaAdapter
+            adapter = trattCorpoAdapter
         }
     }
 
     private fun setupTrattVisoRv() {
-        esteticaAdapter = EsteticaAdapter()
+        trattVisoAdapter = EsteticaAdapter()
         binding.rvTrattViso.apply{
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = esteticaAdapter
+            adapter = trattVisoAdapter
         }
     }
 }

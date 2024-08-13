@@ -40,6 +40,7 @@ class BenessereFragment: Fragment(R.layout.fragment_benessere) {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentBenessereBinding.inflate(inflater)
+        bindingViewPager = FragmentServiziBenessereBinding.inflate(inflater)
         return binding.root
     }
 

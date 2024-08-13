@@ -24,6 +24,12 @@
         <action
             android:id="@+id/action_searchFragment_to_catalogo_servizi_benessere"
             app:destination="@id/catalogo_servizi_benessere" />
+        <action
+            android:id="@+id/action_searchFragment_to_catalogo_servizi_estetica"
+            app:destination="@id/catalogo_servizi_estetica" />
+        <action
+            android:id="@+id/action_searchFragment_to_catalogo_servizi_massaggi"
+            app:destination="@id/catalogo_servizi_massaggi" />
     </fragment>
 
     <fragment
@@ -66,5 +72,23 @@
             android:name="com.example.hammami.fragments.categories.BenessereFragment"
             android:label="BenessereFragment"
             tools:layout="@layout/fragment_servizi_benessere" />
+    </navigation>
+
+    <navigation android:id="@+id/catalogo_servizi_estetica"
+        app:startDestination="@id/serviziEstetica">
+        <fragment
+            android:id="@+id/serviziEstetica"
+            android:name="com.example.hammami.fragments.categories.EsteticaFragment"
+            android:label="EsteticaFragment"
+            tools:layout="@layout/fragment_servizi_estetica" />
+    </navigation>
+
+    <navigation android:id="@+id/catalogo_servizi_massaggi"
+        app:startDestination="@id/serviziMassaggi">
+        <fragment
+            android:id="@+id/serviziMassaggi"
+            android:name="com.example.hammami.fragments.categories.MassaggiFragment"
+            android:label="MassaggiFragment"
+            tools:layout="@layout/fragment_servizi_massaggi" />
     </navigation>
 </navigation>

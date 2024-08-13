@@ -42,7 +42,7 @@ class EsteticaViewModel @Inject constructor(
             try {
                 val epilazioneSnapshot = firestore.collection("/Servizi/Estetica/Epilazione corpo con cera").get().await()
                 allServices.addAll(epilazioneSnapshot.toObjects(Service::class.java))
-
+                System.out.println("Sono dentro AllEpilazione()")
                 _allEpilazione.emit(Resource.Success(allServices))
             } catch (e: Exception) {
                 Log.e(TAG, "Errore nel recupero dei nuovi servizi: ${e.message}", e)

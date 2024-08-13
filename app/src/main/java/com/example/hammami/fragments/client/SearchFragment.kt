@@ -8,9 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hammami.R
-import com.example.hammami.adapters.BenessereViewpagerAdapter
-import com.example.hammami.adapters.HomeViewpagerAdapter
-import com.example.hammami.databinding.FragmentHomeBinding
 import com.example.hammami.databinding.FragmentSearchBinding
 import com.example.hammami.databinding.FragmentServiziBenessereBinding
 import com.example.hammami.fragments.categories.BenessereFragment
@@ -36,7 +33,17 @@ class SearchFragment: Fragment(R.layout.fragment_search) {
             Navigation.findNavController(view)
                 .navigate(R.id.action_searchFragment_to_catalogo_servizi_benessere)
         }
+
+        binding.Estetica.setOnClickListener{
+            Navigation.findNavController(view)
+                .navigate(R.id.action_searchFragment_to_catalogo_servizi_estetica)
         }
+
+        binding.Massaggi.setOnClickListener{
+            Navigation.findNavController(view)
+                .navigate(R.id.action_searchFragment_to_catalogo_servizi_massaggi)
+        }
+    }
 
 
 
