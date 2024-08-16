@@ -1,5 +1,6 @@
 package com.example.hammami.fragments.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.hammami.R
+import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.adapters.ProfileOptionAdapter
 import com.example.hammami.databinding.FragmentUserProfileBinding
 import com.example.hammami.fragments.BaseFragment
@@ -47,7 +49,18 @@ class UserProfileFragment : BaseFragment() {
         binding.editProfileButton.setOnClickListener {
             findNavController().navigate(UserProfileFragmentDirections.actionProfileFragmentToEditUserProfileFragment())
         }
+
+        binding.logoutButton.setOnClickListener {
+            viewModel.signOut()
+            navigateToLoginFragment()
+        }
     }
+
+    private fun navigateToLoginFragment() {
+        val intent = Intent(requireContext(), LoginRegisterActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        requireActivity().finish()    }
 
     override fun observeFlows() {
         viewModel.user.collectResource(

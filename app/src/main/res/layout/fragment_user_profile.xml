@@ -11,7 +11,7 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
-            app:title="Profilo"
+            app:title="Profilo utente"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
@@ -40,21 +40,21 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_margin="8dp">
 
 
             <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Material3.CardView.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="8dp"
+                    >
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/profileImage"
@@ -92,7 +92,6 @@
                         android:layout_marginTop="8dp"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
-                        android:padding="0dp"
                         android:text="Modifica profilo" />
 
                 </LinearLayout>
@@ -103,9 +102,19 @@
                 android:id="@+id/optionsList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_user_profile_option" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logoutButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Logout utente"
+                android:layout_gravity="center|center_horizontal"
+                android:layout_marginTop="48dp"
+                app:icon="@drawable/ic_logout"
+                style="@style/Widget.Material3.Button"/>
 
         </LinearLayout>
 

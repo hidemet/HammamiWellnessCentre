@@ -103,4 +103,5 @@
         <item>Galleria</item>
         <item>Camera</item>
     </string-array>
+    <string name="points_text">%d punti</string>
 </resources>

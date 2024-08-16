@@ -305,6 +305,16 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteUserButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_gravity="center"
+                android:text="Cancella profilo utente"
+                style="@style/Widget.Material3.Button"
+                app:icon="@drawable/ic_delete" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

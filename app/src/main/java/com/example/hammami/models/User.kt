@@ -11,6 +11,6 @@ data class User(
     var phoneNumber: String = "",
     var email: String = "",
     var profileImage: String = "",
-    var points: String = "0",
-    var activeCoupons: List<String> = emptyList()
+    var points: Int = 0,
+    var coupons: List<Coupon> = emptyList()
 )

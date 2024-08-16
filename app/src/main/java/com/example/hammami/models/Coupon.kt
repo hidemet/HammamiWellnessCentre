@@ -1,15 +1,9 @@
 package com.example.hammami.models
 
-import java.time.LocalDateTime
+import com.google.firebase.Timestamp
 
 data class Coupon(
-    val id: String = "",
-    val userId: String,
-    val code: String,
-    val value: Int,
-    val creationDate: LocalDateTime,
-    val expirationDate: LocalDateTime,
-    val isActive: Boolean = true,
-    val isRedeemed: Boolean = false,
-    val redemptionDate: LocalDateTime? = null
+    val code: String = "",
+    val value: Int = 0,
+    val expirationDate: Timestamp = Timestamp.now()
 )

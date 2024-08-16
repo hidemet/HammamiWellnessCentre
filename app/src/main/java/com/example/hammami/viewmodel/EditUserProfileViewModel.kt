@@ -25,13 +25,12 @@ class EditUserProfileViewModel @Inject constructor(
     private val userProfileRepository: UserProfileRepository
 ) : ViewModel() {
 
-//    private val _currentUser = MutableStateFlow<User?>(null)
-//    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
-
     private val _passwordChangeEvent = MutableSharedFlow<PasswordChangeResult>()
     val passwordChangeEvent: SharedFlow<PasswordChangeResult> = _passwordChangeEvent.asSharedFlow()
 
-    // Nuovo SharedFlow per notificare gli aggiornamenti del profilo
+    private val _deleteUserEvent = MutableSharedFlow<DeleteUserResult>()
+    val deleteUserEvent: SharedFlow<DeleteUserResult> = _deleteUserEvent.asSharedFlow()
+
     private val _profileUpdateEvent = MutableSharedFlow<ProfileUpdateResult>()
     val profileUpdateEvent: SharedFlow<ProfileUpdateResult> = _profileUpdateEvent.asSharedFlow()
 
@@ -41,18 +40,7 @@ class EditUserProfileViewModel @Inject constructor(
         initialValue = Resource.Loading()
     )
 
-//    fun refreshUser() {
-//        viewModelScope.launch {
-//            userProfileRepository.refreshUser()
-//        }
-//    }
-
-//    init {
-//        fetchUserProfile()
-//    }
-
-
-    fun updateUserProfile(updatedUser: User, context: Context, currentPassword: String? = null) {
+    fun updateUserProfile(updatedUser: User, currentPassword: String? = null) {
         viewModelScope.launch {
             try {
                 val result = if (currentPassword != null) {
@@ -97,7 +85,7 @@ class EditUserProfileViewModel @Inject constructor(
         }
     }
 
-        fun updateUserProfileImage(imageUrl: String, user: User) {
+        fun updateUserProfileImage(imageUrl: String, user: User) {jac
             viewModelScope.launch {
                 val result = userProfileRepository.updateUserProfileImage(imageUrl, user)
                 if (result is Resource.Success) {
@@ -125,78 +113,11 @@ class EditUserProfileViewModel @Inject constructor(
             )
         }
 
-//    fun fetchUserProfile() {
-//        viewModelScope.launch {
-//            Log.d("EditUserProfile", "Fetching user profile")
-//            _userProfileState.value = Resource.Loading()
-//            _userProfileState.value = userProfileRepository.fetchCurrentUserProfile()
-//            Log.d("EditUserProfile", "Fetched user profile: ${_userProfileState.value}")
-//        }
-//    }
-
-//    fun updateUserProfile(updatedUser: User, context: Context, currentPassword: String) {
-//        viewModelScope.launch {
-//            val result = userProfileRepository.updateUserProfile(updatedUser, context, currentPassword)
-//            handleUpdateResult(result, updatedUser)
-//        }
-//
-//    }
-
-//    fun fetchUserProfile() {
-//        viewModelScope.launch {
-//            when (val result = userProfileRepository.fetchCurrentUserProfile()) {
-//                is Resource.Success -> {
-//                    Log.d("EditUserProfile", "Fetched user profile: ${result.data}")
-//                    _currentUser.value = result.data
-//                }
-//                is Resource.Error -> {
-//                    Log.e("EditUserProfile", "Error fetching user profile: ${result.message}")
-//                }
-//                else -> {}
-//            }
-//        }
-//    }
-
         fun fetchUserProfile() {
             viewModelScope.launch {
                 userProfileRepository.refreshUser()
             }
         }
-//    private suspend fun handleUpdateResult(result: Resource<User>, updatedUser: User) {
-//        when (result) {
-//            is Resource.Success -> {
-//                if (updatedUser.email != result.data?.email) {
-//                    _profileUpdateEvent.emit(ProfileUpdateResult.Success("Profilo aggiornato con successo. Controlla la tua email per confermare la modifica."))
-//                } else {
-//                    _profileUpdateEvent.emit(ProfileUpdateResult.Success("Profilo aggiornato con successo."))
-//                }
-//            }
-//
-//            is Resource.Error -> _profileUpdateEvent.emit(
-//                ProfileUpdateResult.Error(
-//                    result.message ?: "An unknown error occurred"
-//                )
-//            )
-//
-//            else -> {} // Handle other cases if necessary
-//        }
-//    }
-
-
-//    fun changePassword(currentPassword: String, newPassword: String) {
-//        viewModelScope.launch {
-//            try {
-//                val result = userProfileRepository.changePassword(currentPassword, newPassword)
-//                if (result is Resource.Success) {
-//                    _passwordChangeEvent.emit(PasswordChangeResult.Success("Password changed successfully"))
-//                } else if (result is Resource.Error) {
-//                    _passwordChangeEvent.emit(PasswordChangeResult.Error(result.message ?: "Error changing password"))
-//                }
-//            } catch (e: Exception) {
-//                _passwordChangeEvent.emit(PasswordChangeResult.Error("Failed to change password: ${e.message}"))
-//            }
-//        }
-//    }
 
 fun resetPassword(email: String) {
     viewModelScope.launch {
@@ -213,11 +134,47 @@ fun resetPassword(email: String) {
     }
 }
 
+
+    fun deleteUserProfile() {
+        viewModelScope.launch {
+            try {
+                when (val result = userProfileRepository.deleteUserProfile()) {
+                    is Resource.Success -> {
+                        when (val authResult = userProfileRepository.deleteUserFromFirebaseAuth()) {
+                            is Resource.Success -> {
+                                userProfileRepository.signOut()
+                                _deleteUserEvent.emit(DeleteUserResult.Success("Account eliminato con successo"))
+                            }
+                            is Resource.Error -> {
+                                _deleteUserEvent.emit(DeleteUserResult.Error(authResult.message ?: "Errore durante l'eliminazione dell'account da Firebase Authentication"))
+                            }
+
+                            is Resource.Loading -> TODO()
+                            is Resource.Unspecified -> TODO()
+                        }
+                    }
+                    is Resource.Error -> {
+                        _deleteUserEvent.emit(DeleteUserResult.Error(result.message ?: "Errore durante l'eliminazione dell'account"))
+                    }
+                    is Resource.Loading -> TODO()
+                    is Resource.Unspecified -> TODO()
+                }
+            } catch (e: Exception) {
+                _deleteUserEvent.emit(DeleteUserResult.Error("Errore durante l'eliminazione dell'account: ${e.message}"))
+            }
+        }
+    }
+
     sealed class PasswordChangeResult {
         data class Success(val message: String) : PasswordChangeResult()
         data class Error(val message: String) : PasswordChangeResult()
     }
 
+
+    sealed class DeleteUserResult {
+        data class Success(val message: String) : DeleteUserResult()
+        data class Error(val message: String) : DeleteUserResult()
+    }
 
     sealed class ProfileUpdateResult {
         data class Success(val message: String) : ProfileUpdateResult()

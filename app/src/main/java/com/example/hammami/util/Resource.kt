@@ -1,5 +1,10 @@
 package com.example.hammami.util
 
+import com.example.hammami.models.Coupon
+
+typealias CouponListResource = Resource<List<Coupon>>
+typealias IntListResource = Resource<List<Int>>
+
 sealed class Resource<T> (
     val data: T?= null,
     val message: String?= null

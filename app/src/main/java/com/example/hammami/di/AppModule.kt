@@ -5,6 +5,7 @@ import com.example.hammami.util.PreferencesManager
 import android.content.Context
 import com.example.hammami.database.FirebaseDb
 import com.example.hammami.database.UserProfileRepository
+import com.example.hammami.util.ClipboardManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -56,6 +57,12 @@ object AppModule {
     @Singleton
     fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager {
         return PreferencesManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideClipboardManager(@ApplicationContext context: Context): ClipboardManager {
+        return ClipboardManager(context)
     }
 
 

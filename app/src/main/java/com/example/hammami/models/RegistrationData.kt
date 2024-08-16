@@ -23,6 +23,6 @@ data class RegistrationData(
         email = email,
         phoneNumber = phoneNumber,
         profileImage = profileImage,
-        points = "0"
+        points = 0
     )
 }

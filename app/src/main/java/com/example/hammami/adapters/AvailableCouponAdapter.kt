@@ -3,13 +3,13 @@ package com.example.hammami.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.hammami.databinding.ItemCouponBinding
-class CouponAdapter(
+import com.example.hammami.databinding.ItemAvailableCouponBinding
+class AvailableCouponAdapter(
     private var couponValues: List<Int>,
     private val onItemClick: (Int) -> Unit
-) : RecyclerView.Adapter<CouponAdapter.CouponViewHolder>() {
+) : RecyclerView.Adapter<AvailableCouponAdapter.CouponViewHolder>() {
 
-    inner class CouponViewHolder(private val binding: ItemCouponBinding) :
+    inner class CouponViewHolder(private val binding: ItemAvailableCouponBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(value: Int) {
             binding.couponValue.text = "$value €"
@@ -23,7 +23,7 @@ class CouponAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CouponViewHolder {
         val binding =
-            ItemCouponBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemAvailableCouponBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CouponViewHolder(binding)
     }
 

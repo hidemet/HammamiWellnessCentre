@@ -22,8 +22,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import android.Manifest
+import android.content.Intent
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.hammami.activities.LoginRegisterActivity
 import com.example.hammami.databinding.BottomSheetResetPasswordBinding
 import com.example.hammami.util.StringValidators
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -95,8 +97,53 @@ class EditUserProfileFragment : BaseFragment() {
             editProfileImageButton.setOnClickListener {
                 showImageSourceDialog()
             }
+
+            deleteUserButton.setOnClickListener {
+                showDeleteUserConfirmationDialog()
+
+            }
         }
     }
+
+    private fun showDeleteUserConfirmationDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Attenzione: Eliminazione Account")
+            .setMessage("Stai per eliminare definitivamente il tuo account. Questa azione è irreversibile. \n\n" +
+                    "Perderai tutti i tuoi dati e non potrai più accedere al servizio.")
+            .setNegativeButton("Non eliminare") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("Sì, elimina") { _, _ ->
+                deleteUserAccount()
+            }
+            .show()    }
+
+    private fun deleteUserAccount() {
+        viewModel.deleteUserProfile()
+        observeDeleteUserEvent()
+    }
+
+    private fun observeDeleteUserEvent() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.deleteUserEvent.collect { result ->
+                when (result) {
+                    is EditUserProfileViewModel.DeleteUserResult.Success -> {
+                        showSnackbar(result.message)
+                        navigateToLoginFragment()
+                    }
+                    is EditUserProfileViewModel.DeleteUserResult.Error -> {
+                        showSnackbar(result.message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun navigateToLoginFragment() {
+        val intent = Intent(requireContext(), LoginRegisterActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        requireActivity().finish()    }
 
     private fun showImageSourceDialog() {
         MaterialAlertDialogBuilder(requireContext())
@@ -125,82 +172,6 @@ class EditUserProfileFragment : BaseFragment() {
     private fun handleImageResult(uri: Uri) {
         viewModel.uploadProfileImage(uri)
     }
-
-//    private fun updateProfileImage(imageUrl: String) {
-//        Glide.with(this)
-//            .load(imageUrl)
-//            .apply(RequestOptions()
-//                .placeholder(R.drawable.default_profile_image)
-//                .error(R.drawable.default_profile_image)
-//                .diskCacheStrategy(DiskCacheStrategy.ALL))
-//            .into(binding.profileImageView)
-//
-//        viewModel.updateUserProfileImage(imageUrl, requireContext())
-//    }
-
-
-//    override fun observeFlows() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewModel.userProfileState.collect { resource ->
-//                Log.d("EditUserProfile", "Received user profile state: $resource")
-//                when (resource) {
-//                    is Resource.Success -> {
-//                        showLoading(false)
-//                        resource.data?.let { user ->
-//                            Log.d("EditUserProfile", "Updating UI with user data: $user")
-//                            updateUIWithUserData(user)
-//                        }
-//                    }
-//                    is Resource.Loading -> showLoading(true)
-//                    is Resource.Error -> {
-//                        showLoading(false)
-//                        showSnackbar(resource.message ?: getString(R.string.unknown_error))
-//                    }
-//                    is Resource.Unspecified -> {}
-//                }
-//            }
-//        }
-//
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewModel.profileUpdateEvent.collect { result ->
-//                Log.d("EditUserProfile", "Received profile update event: $result")
-//                when (result) {
-//                    is EditUserProfileViewModel.ProfileUpdateResult.Success -> {
-//                        showSnackbar(result.message)
-//                        viewModel.fetchUserProfile()
-//                    }
-//                    is EditUserProfileViewModel.ProfileUpdateResult.Error -> {
-//                        showSnackbar(result.message)
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-//    override fun observeFlows() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewModel.currentUser.collect { user ->
-//                Log.d("EditUserProfile", "Received updated user: $user")
-//                user?.let { updateUIWithUserData(it) }
-//            }
-//        }
-//
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewModel.profileUpdateEvent.collect { result ->
-//                Log.d("EditUserProfile", "Received profile update event: $result")
-//                when (result) {
-//                    is EditUserProfileViewModel.ProfileUpdateResult.Success -> {
-//                        showSnackbar(result.message)
-//                        viewModel.fetchUserProfile()
-//                    }
-//                    is EditUserProfileViewModel.ProfileUpdateResult.Error -> {
-//                        showSnackbar(result.message)
-//                    }
-//                }
-//            }
-//        }
-//    }
-
 
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
