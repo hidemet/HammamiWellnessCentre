@@ -85,7 +85,7 @@ class EditUserProfileViewModel @Inject constructor(
         }
     }
 
-        fun updateUserProfileImage(imageUrl: String, user: User) {jac
+        fun updateUserProfileImage(imageUrl: String, user: User) {
             viewModelScope.launch {
                 val result = userProfileRepository.updateUserProfileImage(imageUrl, user)
                 if (result is Resource.Success) {
