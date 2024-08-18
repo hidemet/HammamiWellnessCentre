@@ -40,8 +40,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseDb(auth: FirebaseAuth, firestore: FirebaseFirestore): FirebaseDb {
-        return FirebaseDb(auth, firestore)
+    fun provideFirebaseDb(auth: FirebaseAuth, firestore: FirebaseFirestore, storage: FirebaseStorage): FirebaseDb {
+        return FirebaseDb(auth, firestore, storage)
     }
 
     @Provides
@@ -66,14 +66,6 @@ object AppModule {
     }
 
 
-    @Provides
-    @Singleton
-    fun provideUserRepository(
-        firebaseAuth: FirebaseAuth,
-        firestore: FirebaseFirestore,
-        preferencesManager: PreferencesManager,
-        application: Application
-    ): UserProfileRepository = UserProfileRepository(firebaseAuth,firestore, preferencesManager, application)
 
     @Provides
     @Singleton

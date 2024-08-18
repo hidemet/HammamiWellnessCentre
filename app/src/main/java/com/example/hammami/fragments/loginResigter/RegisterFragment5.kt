@@ -1,7 +1,6 @@
 package com.example.hammami.fragments.loginResigter
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,29 +10,36 @@ import com.example.hammami.R
 import com.example.hammami.databinding.FragmentRegister5Binding
 import com.example.hammami.fragments.BaseFragment
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
-import com.example.hammami.viewmodel.LoginRegisterViewModel
+import com.example.hammami.viewmodel.RegisterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val TAG = "RegisterFragment5"
 @AndroidEntryPoint
 class RegisterFragment5 : BaseFragment() {
-    private lateinit var binding: FragmentRegister5Binding
-    private val viewModel: LoginRegisterViewModel by activityViewModels()
-
+    private var _binding: FragmentRegister5Binding? = null
+    private val binding get() = _binding!!
+    private val viewModel: RegisterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentRegister5Binding.inflate(layoutInflater)
+        _binding = FragmentRegister5Binding.inflate(inflater, container, false)
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun setupUI() {
+        binding.root.hideKeyboardOnOutsideTouch()
+        setupClickListeners()
+    }
+
+    private fun setupClickListeners() {
         with(binding) {
-            root.hideKeyboardOnOutsideTouch()
             buttonRegister.setOnClickListener { onButtonRegisterClick() }
             topAppBar.setNavigationOnClickListener { onBackClick() }
         }
@@ -42,28 +48,32 @@ class RegisterFragment5 : BaseFragment() {
     override fun observeFlows() {
         viewModel.registrationState.collectResource(
             onSuccess = {
+                showLoading(false)
                 showSnackbar(getString(R.string.registrazione_effettuata_con_successo))
-                navigateToNextFragment()
+                navigateToLoginFragment()
             },
-            onError = { showSnackbar(it ?: getString(R.string.errore_durante_la_registrazione)) }
+            onError = {
+                showLoading(false)
+                showSnackbar(it ?: getString(R.string.errore_durante_la_registrazione))
+            },
+            onLoading = { showLoading(true) }
         )
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.linearProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.buttonRegister.isEnabled = !isLoading
+        binding.apply {
+            progressCircular.visibility = if (isLoading) View.VISIBLE else View.GONE
+            buttonRegister.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
+            buttonRegister.isEnabled = !isLoading
+        }
     }
-
 
     private fun onButtonRegisterClick() {
         val currentData = viewModel.registrationData.value
-        Log.d(TAG, "Registration data before creating user: $currentData")
-        viewModel.createUser(currentData.email, currentData.password,currentData.toUser())
+        viewModel.createUser(currentData.email, currentData.password, currentData.toUser())
     }
 
-
-    private fun navigateToNextFragment() {
+    private fun navigateToLoginFragment() {
         findNavController().navigate(RegisterFragment5Directions.actionRegisterFragment5ToLoginFragment())
     }
-
 }

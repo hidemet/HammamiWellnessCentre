@@ -199,7 +199,7 @@ class EditContactInfoDialogFragment : DialogFragment() {
 
     private fun updateProfile(updatedUser: User, currentPassword: String? = null) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.updateUserProfile(updatedUser, requireContext(), currentPassword)
+            viewModel.updateUserProfile(updatedUser,  currentPassword)
         }
     }
 

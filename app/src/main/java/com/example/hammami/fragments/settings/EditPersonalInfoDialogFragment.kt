@@ -165,7 +165,7 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
             val updatedUser = createUpdatedUser(viewModel.user.value.data!!)
             Log.d("EditUserProfile", "Saving updated user from dialog: $updatedUser")
             hideKeyboard()
-            viewModel.updateUserProfile(updatedUser, requireContext())
+            viewModel.updateUserProfile(updatedUser, )
             Log.d("EditUserProfile", "Called updateUserProfile")
         }
     }

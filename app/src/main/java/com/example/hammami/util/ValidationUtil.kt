@@ -65,9 +65,9 @@ object ValidationUtil {
             password.isEmpty() || confirmPassword.isEmpty() ->
                 ValidationResult.Invalid("I campi password non possono essere vuoti")
             password != confirmPassword ->
-                ValidationResult.Invalid("Le password non corrispondono")
+                ValidationResult.Invalid("Le password non corrispondono. Per favore, riprova.")
             !StringValidators.Password.validate(password).isValid() ->
-                ValidationResult.Invalid("La password deve essere lunga almeno 8 caratteri e contenere almeno una lettera e un numero")
+                ValidationResult.Invalid("La password non soddisfa i requisiti di sicurezza. La password deve essere lunga almeno 8 caratteri e contenere almeno una lettera e un numero")
             else -> ValidationResult.Valid
         }
     }

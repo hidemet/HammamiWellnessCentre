@@ -5,15 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardElevation="0dp"
-    app:strokeWidth="0dp">
+    app:strokeWidth="0dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:checkable="true"
+    app:rippleColor="?attr/colorControlHighlight">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/leadingIcon"
@@ -21,7 +22,8 @@
             android:layout_height="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/optionTitle"
@@ -29,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="asdasdasd"
+            android:text="Titolo opzione"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             app:layout_constraintStart_toEndOf="@id/leadingIcon"
             app:layout_constraintEnd_toStartOf="@id/trailingIcon"
@@ -43,7 +45,8 @@
             android:src="@drawable/ic_chevron_right"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

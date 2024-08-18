@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.models.User
 import com.example.hammami.database.UserProfileRepository
+import com.example.hammami.repository.AuthRepository
 import com.example.hammami.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,9 +16,10 @@ import javax.inject.Inject
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
     private val userProfileRepository: UserProfileRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    val user: StateFlow<Resource<User>> = userProfileRepository.authState.stateIn(
+    val user: StateFlow<Resource<User>> = authRepository.authState.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = Resource.Loading()
@@ -25,12 +27,12 @@ class UserProfileViewModel @Inject constructor(
 
     fun refreshUser() {
         viewModelScope.launch {
-            userProfileRepository.refreshUser()
+            userProfileRepository.fetchCurrentUserProfile()
         }
     }
 
     fun signOut() {
-        userProfileRepository.signOut()
+        authRepository.signOut()
     }
 
 

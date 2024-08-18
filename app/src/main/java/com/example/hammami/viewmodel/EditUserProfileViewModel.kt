@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.database.UserProfileRepository
 import com.example.hammami.models.User
+import com.example.hammami.repository.AuthRepository
 import com.example.hammami.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,7 +23,8 @@ import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class EditUserProfileViewModel @Inject constructor(
-    private val userProfileRepository: UserProfileRepository
+    private val userProfileRepository: UserProfileRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _passwordChangeEvent = MutableSharedFlow<PasswordChangeResult>()

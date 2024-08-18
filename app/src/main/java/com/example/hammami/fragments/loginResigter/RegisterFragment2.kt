@@ -1,53 +1,94 @@
 package com.example.hammami.fragments.loginResigter
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.hammami.R
 import com.example.hammami.databinding.FragmentRegister2Binding
 import com.example.hammami.fragments.BaseFragment
 import com.example.hammami.models.RegistrationData
 import com.example.hammami.util.StringValidators
 import com.example.hammami.util.hideKeyboardOnOutsideTouch
-import com.example.hammami.viewmodel.LoginRegisterViewModel
+import com.example.hammami.viewmodel.RegisterViewModel
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointBackward
+import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 @AndroidEntryPoint
 class RegisterFragment2 : BaseFragment() {
-    private lateinit var binding: FragmentRegister2Binding
-    private val viewModel: LoginRegisterViewModel by activityViewModels()
+    private var _binding: FragmentRegister2Binding? = null
+    private val binding get() = _binding!!
+    private val viewModel: RegisterViewModel by activityViewModels()
 
-    private lateinit var dayEditText: EditText
-    private lateinit var monthEditText: EditText
-    private lateinit var yearEditText: EditText
-    private lateinit var genderEditText: EditText
-    private lateinit var allergiesEditText: EditText
-    private lateinit var disabilitiesEditText: EditText
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentRegister2Binding.inflate(layoutInflater)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentRegister2Binding.inflate(inflater, container, false)
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun setupUI() {
+        binding.root.hideKeyboardOnOutsideTouch()
+        setupClickListeners()
+        setupDatePicker()
+    }
+
+    private fun setupClickListeners() {
         with(binding) {
-            root.hideKeyboardOnOutsideTouch()
             buttonNext.setOnClickListener { onNextButtonClick() }
             topAppBar.setNavigationOnClickListener { onBackClick() }
-
-            dayEditText = textFieldDay.editText!!
-            monthEditText = textFieldMonth.editText!!
-            yearEditText = textFieldYear.editText!!
-            genderEditText = textFieldGender.editText!!
-            allergiesEditText = textFieldAllergies.editText!!
-            disabilitiesEditText = textFieldDisabilities.editText!!
         }
+    }
+
+    private fun setupDatePicker() {
+        binding.textFieldBirthDate.setEndIconOnClickListener {
+            showDatePicker()
+        }
+        binding.textFieldBirthDate.editText?.setOnClickListener {
+            showDatePicker()
+        }
+    }
+
+    private fun showDatePicker() {
+        val constraintsBuilder = CalendarConstraints.Builder()
+            .setValidator(DateValidatorPointBackward.now())
+
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText(getString(R.string.select_birth_date))
+            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .setCalendarConstraints(constraintsBuilder.build())
+            .build()
+
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            calendar.timeInMillis = selection
+            val date = calendar.time
+            updateBirthDateField(date)
+        }
+
+        datePicker.show(parentFragmentManager, "DATE_PICKER")
+    }
+
+    private fun updateBirthDateField(date: Date) {
+        val formattedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(date)
+        binding.textFieldBirthDate.editText?.setText(formattedDate)
     }
 
     override fun observeFlows() {
@@ -61,10 +102,8 @@ class RegisterFragment2 : BaseFragment() {
     }
 
     private fun updateUIWithRegistrationData(data: RegistrationData) {
-        binding.apply {
-            textFieldDay.editText?.setText(data.birthDate.split("/").getOrNull(0))
-            textFieldMonth.editText?.setText(data.birthDate.split("/").getOrNull(1))
-            textFieldYear.editText?.setText(data.birthDate.split("/").getOrNull(2))
+        with(binding) {
+            textFieldBirthDate.editText?.setText(data.birthDate)
             textFieldGender.editText?.setText(data.gender)
             textFieldAllergies.editText?.setText(data.allergies)
             textFieldDisabilities.editText?.setText(data.disabilities)
@@ -79,35 +118,31 @@ class RegisterFragment2 : BaseFragment() {
     }
 
     private fun validateAllFields(): Boolean {
-        val isBirthDateValid = ValidationUtil.validateBirthDate(
-            binding.textFieldDay,
-            binding.textFieldMonth,
-            binding.textFieldYear,
-            binding.textViewDataError
-        )
+        val isBirthDateValid = ValidationUtil.validateField(binding.textFieldBirthDate, StringValidators.NotBlank)
         val isGenderValid = ValidationUtil.validateField(binding.textFieldGender, StringValidators.NotBlank)
 
         return isBirthDateValid && isGenderValid
     }
 
     private fun updateRegistrationData() {
-        val birthDate = "${dayEditText.text}/${monthEditText.text}/${yearEditText.text}"
-        val gender = genderEditText.text.toString()
-        val allergies = allergiesEditText.text.toString()
-        val disabilities = disabilitiesEditText.text.toString()
+        with(binding) {
+            val birthDate = textFieldBirthDate.editText?.text.toString()
+            val gender = textFieldGender.editText?.text.toString()
+            val allergies = textFieldAllergies.editText?.text.toString()
+            val disabilities = textFieldDisabilities.editText?.text.toString()
 
-        viewModel.updateRegistrationData { currentData ->
-            currentData.copy(
-                birthDate = birthDate,
-                gender = gender,
-                allergies = allergies,
-                disabilities = disabilities
-            )
+            viewModel.updateRegistrationData { currentData ->
+                currentData.copy(
+                    birthDate = birthDate,
+                    gender = gender,
+                    allergies = allergies,
+                    disabilities = disabilities
+                )
+            }
         }
     }
 
     private fun navigateToNextFragment() {
         findNavController().navigate(RegisterFragment2Directions.actionRegisterFragment2ToRegisterFragment3())
     }
-
 }

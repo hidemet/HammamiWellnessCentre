@@ -104,4 +104,15 @@
         <item>Camera</item>
     </string-array>
     <string name="points_text">%d punti</string>
+    <string name="select_date">Seleziona la data</string>
+    <string name="select_birth_date">Seleziona la data di nascita</string>
+    <string name="registration">Registrazione</string>
+    <string name="registration_step2of">Passo 2 di 5: Informazioni aggiuntive</string>
+    <string name="registration_step_2_of_5">Passo 1 di 5: Informazioni di base</string>
+    <string name="registration_step_4_of_5">Passo 4 di 5: Creazione password</string>
+    <string name="logo_hammami">logo Hammami</string>
+    <string name="create_secure_password">Crea password sicura</string>
+    <string name="password_creation_subtitle">La password protegge le tue informazioni personali. Assicurati che sia forte e unica.</string>
+    <string name="password_guide">La password deve contenere almeno 8 caratteri, inclusi almeno una lettera maiuscola, una minuscola, un numero e un carattere speciale.</string>
+    <string name="confirm_password">Conferma password</string>
 </resources>

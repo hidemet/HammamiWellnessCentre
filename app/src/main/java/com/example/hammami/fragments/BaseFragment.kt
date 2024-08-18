@@ -3,13 +3,14 @@ package com.example.hammami.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.hammami.util.Resource
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import androidx.navigation.fragment.findNavController
-
 
 abstract class BaseFragment : Fragment() {
 
@@ -17,9 +18,7 @@ abstract class BaseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
         observeFlows()
-
     }
-
 
     abstract fun setupUI()
 
@@ -31,20 +30,21 @@ abstract class BaseFragment : Fragment() {
         onLoading: () -> Unit = { showLoading(true) }
     ) {
         viewLifecycleOwner.lifecycleScope.launch {
-            collect { state ->
-                when (state) {
-                    is Resource.Loading -> onLoading()
-                    is Resource.Success -> {
-                        showLoading(false)
-                        state.data?.let { onSuccess(it) }
-                    }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> onLoading()
+                        is Resource.Success -> {
+                            showLoading(false)
+                            resource.data?.let { onSuccess(it) }
+                        }
+                        is Resource.Error -> {
+                            showLoading(false)
+                            onError(resource.message)
+                        }
 
-                    is Resource.Error -> {
-                        showLoading(false)
-                        onError(state.message)
+                        is Resource.Unspecified -> Unit
                     }
-
-                    is Resource.Unspecified -> Unit
                 }
             }
         }
@@ -53,9 +53,6 @@ abstract class BaseFragment : Fragment() {
     protected open fun showLoading(isLoading: Boolean) {
         // Implementazione di default vuota, da sovrascrivere nei fragment figli se necessario
     }
-
-    protected fun onBackClick() = findNavController().popBackStack()
-
 
     protected fun showSnackbar(
         message: String,
@@ -70,5 +67,9 @@ abstract class BaseFragment : Fragment() {
                 show()
             }
         }
+    }
+
+    protected open fun onBackClick() {
+        findNavController().navigateUp()
     }
 }
