@@ -59,5 +59,11 @@ class BestDealsAdapter : RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHold
     override fun onBindViewHolder(holder: BestDealsViewHolder, position: Int) {
         val service = differ.currentList[position]
         holder.bind(service)
+
+        holder.itemView.setOnClickListener {
+            onClick?.invoke(service)
+        }
     }
+
+    var onClick: ((Service) -> Unit)? = null
 }

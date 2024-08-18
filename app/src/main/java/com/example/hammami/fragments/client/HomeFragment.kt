@@ -10,6 +10,7 @@ import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hammami.R
 import com.example.hammami.adapters.HomeViewpagerAdapter
+import com.example.hammami.adapters.ServizioAdapter
 import com.example.hammami.databinding.FragmentHomeBinding
 import com.example.hammami.fragments.categories.MainCategoryFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +35,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val categoriesFragments = arrayListOf<Fragment>(
             MainCategoryFragment()
         )
+
+        val adapter = ServizioAdapter { service ->
+            val action = HomeFragmentDirections.actionHomeFragmentToServiceDetailFragment(service.id)
+            Navigation.findNavController(view).navigate(action)
+        }
+
+        //binding.recyclerView.adapter = adapter
 
         val viewPager2Adapter =
             HomeViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)

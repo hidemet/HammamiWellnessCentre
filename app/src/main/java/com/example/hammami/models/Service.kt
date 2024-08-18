@@ -1,8 +1,11 @@
 package com.example.hammami.data
 
+import android.os.Parcelable
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.PropertyName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Service(
     @get:PropertyName("id") @set:PropertyName("id") var id: String = "",
     @get:PropertyName("Nome") @set:PropertyName("Nome") var name: String = "",
@@ -15,6 +18,6 @@ data class Service(
     @get:PropertyName("Recensioni") @set:PropertyName("Recensioni") var reviews: List<DocumentReference>? = null,
     @get:PropertyName("Sezione homepage") @set:PropertyName("Sezione homepage") var homepageSection: String? = null,
     @get:PropertyName("Benefici") @set:PropertyName("Benefici") var benefits: String? = null
-) {
+): Parcelable {
     constructor() : this("", "", null, null, "", null, null, null, null, null, null)
 }

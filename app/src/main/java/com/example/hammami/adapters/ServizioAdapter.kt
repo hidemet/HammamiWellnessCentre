@@ -12,7 +12,7 @@ import com.example.hammami.databinding.ItemHomepageBinding
 import com.example.hammami.databinding.ItemMassaggiBenessereBinding
 import com.example.hammami.databinding.ServizioDettaglioBinding
 
-class ServizioAdapter : RecyclerView.Adapter<ServizioAdapter.ServizioViewHolder>() {
+class ServizioAdapter(private val onItemClick: (Service) -> Unit) : RecyclerView.Adapter<ServizioAdapter.ServizioViewHolder>() {
 
     inner class ServizioViewHolder(private val binding: ServizioDettaglioBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -22,8 +22,7 @@ class ServizioAdapter : RecyclerView.Adapter<ServizioAdapter.ServizioViewHolder>
                 tvContenutoDescrizione.text = service.description
                 tvContenutoDurata.text = "${service.length} h"
                 tvContenutoPrezzo.text = "${service.price} €"
-                //benefici
-                //recensioni
+                root.setOnClickListener { onItemClick(service) }
             }
         }
     }

@@ -1,6 +1,8 @@
 package com.example.hammami.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.data.Service
@@ -23,27 +25,19 @@ class ServizioViewModel @Inject constructor(
     private val _allBenessere = MutableStateFlow<Resource<List<Service>>>(Resource.Loading())
     val allBenessere: StateFlow<Resource<List<Service>>> = _allBenessere
 
-    init {
-        getServizioById()
-    }
-
-    fun getServizioById() {
+    fun getServiceById(serviceId: String): LiveData<Service?> {
+        val serviceLiveData = MutableLiveData<Service?>()
         viewModelScope.launch {
-            val allServices = mutableListOf<Service>()
-
             try {
-                val benessereSnapshot = firestore.collection("/Servizi/Benessere/trattamenti").get().await()
-                allServices.addAll(benessereSnapshot.toObjects(Service::class.java))
-
-                _allBenessere.emit(Resource.Success(allServices))
+                val serviceSnapshot = firestore.collection("/Servizi/Benessere/trattamenti")
+                    .document(serviceId).get().await()
+                val service = serviceSnapshot.toObject(Service::class.java)
+                serviceLiveData.postValue(service)
             } catch (e: Exception) {
-                Log.e(TAG, "Errore nel recupero dei nuovi servizi: ${e.message}", e)
-                _allBenessere.emit(
-                    Resource.Error(
-                        e.message ?: "Si è verificato un errore sconosciuto"
-                    )
-                )
+                Log.e(TAG, "Errore nel recupero del servizio: ${e.message}", e)
+                serviceLiveData.postValue(null)
             }
         }
+        return serviceLiveData
     }
 }
