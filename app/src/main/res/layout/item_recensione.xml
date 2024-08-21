@@ -24,7 +24,7 @@
             android:paddingBottom="8dp">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/nameUser"
+                android:id="@+id/tvNameUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -33,7 +33,7 @@
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/reviewUser" />
+                app:layout_constraintBottom_toTopOf="@id/tvReviewUser" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -47,10 +47,10 @@
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/reviewUser"/>
+                app:layout_constraintBottom_toTopOf="@id/tvReviewUser"/>
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/reviewUser"
+                android:id="@+id/tvReviewUser"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -60,7 +60,7 @@
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/nameUser"
+                app:layout_constraintTop_toBottomOf="@id/tvNameUser"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
