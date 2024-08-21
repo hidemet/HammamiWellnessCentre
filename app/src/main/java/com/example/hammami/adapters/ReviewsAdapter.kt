@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.hammami.R
+import com.example.hammami.data.Review
 import com.example.hammami.data.Service
 import com.example.hammami.databinding.ItemHomepageBinding
 import com.example.hammami.databinding.ItemRecensioneBinding
@@ -16,16 +17,11 @@ class ReviewsAdapter : RecyclerView.Adapter<ReviewsAdapter.ReviewsViewHolder>() 
 
     inner class ReviewsViewHolder(private val binding: ItemRecensioneBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(service: Service) {
+        fun bind(review: Review) {
             binding.apply {
-                if (service.image != null) {
-                        Glide.with(itemView).load(service.image).into(imageNewRvItem)
-                } else {
-                    // Carica un'immagine placeholder o nascondi l'ImageView
-                    imageNewRvItem.setImageResource(R.drawable.placeholder_image)
-                }
-                tvNewRvItemName.text = service.name
-                tvNewItemRvPrice.text = "${service.price} €"
+                tvNameUser.text = review.utente
+                tvReviewUser.text = review.commento
+                ratingBar.rating = review.valutazione.toFloat()
             }
         }
     }
