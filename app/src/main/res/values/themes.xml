@@ -50,10 +50,9 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
     </style>
 
-    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/md_theme_primaryContainer</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/icon_hammami</item>
-        <item name="windowSplashScreenAnimationDuration">1000</item>
-        <item name="postSplashScreenTheme">@style/Theme.Hammami</item>
+    <style name="Theme.App.Starting" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@color/md_theme_primaryContainer</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/icon_hammami</item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="31">1000</item>
     </style>
 </resources>

@@ -46,21 +46,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="@dimen/screen_horizontal_margin"
+            android:paddingTop="@dimen/screen_vertical_margin"
+            android:paddingBottom="@dimen/screen_vertical_margin">
+
+            <ImageView
+                android:id="@+id/logoHammami"
+                android:layout_width="224dp"
+                android:layout_height="49dp"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/logohammami"
+                android:src="@drawable/logo_hammami" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/firstNameInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="24dp"
                 android:hint="@string/placeholder_first_name">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/firstNameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:text="Andrea" />
+                    android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -68,102 +78,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="@string/placeholder_first_name">
+                android:hint="@string/placeholder_last_name">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/lastNameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:text="Rossi" />
+                    android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/birthDateLayout"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/birthDateInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:baselineAligned="false"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:hint="@string/birth_date"
+                app:endIconDrawable="@drawable/ic_calendar"
+                app:endIconMode="custom"
+                app:endIconContentDescription="@string/select_date">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/dayInputLayout"
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/birthDateEditText"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/placeholder_day">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/dayEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
-                        android:inputType="number"
-                        android:text="1" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/monthInputLayout"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="2"
-                    android:inputType="none">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/monthAutoCompleteTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/placeholder_month"
-                        android:inputType="none"
-                        android:text="Gennaio"
-                        app:simpleItems="@array/month_array" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/yearInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:hint="@string/placeholder_year">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/yearEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
-                        android:inputType="number"
-                        android:text="2000" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/dataErrorTextView"
-                android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:layout_marginTop="4dp"
-                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:textColor="@color/md_theme_error"
-                android:textSize="12sp"
-                android:visibility="gone"/>
+                    android:inputType="date"
+                    android:focusable="false"
+                    android:clickable="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/genderTextInputLayout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:hint="@string/placeholder_gender">
 
                 <AutoCompleteTextView
                     android:id="@+id/genderAutoCompleteTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/placeholder_gender"
                     android:inputType="none"
-                    android:text="Maschio"
                     app:simpleItems="@array/gender_array" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -172,15 +127,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="@string/placeholder_allergy">
+                android:hint="@string/placeholder_allergy"
+                app:helperText="@string/optional">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/allergiesEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:text=" " />
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -188,16 +142,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="@string/placeholder_disability">
+                android:hint="@string/placeholder_disability"
+                app:helperText="@string/optional">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/disabilitiesEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:text=" " />
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

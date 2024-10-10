@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.hammami.fragments.loginResigter.LoginFragment"
+        android:name="com.example.hammami.presentation.ui.fragments.loginResigter.LoginFragment"
         android:label="LoginFragment"
         tools:layout="@layout/fragment_login">
         <action
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment1"
-        android:name="com.example.hammami.fragments.loginResigter.RegisterFragment1"
+        android:name="com.example.hammami.presentation.ui.fragments.loginResigter.RegisterFragment1"
         android:label="RegisterFragment1"
         tools:layout="@layout/fragment_register_1">
         <action
@@ -26,7 +26,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment2"
-        android:name="com.example.hammami.fragments.loginResigter.RegisterFragment2"
+        android:name="com.example.hammami.presentation.ui.fragments.loginResigter.RegisterFragment2"
         android:label="RegisterFragment2"
         tools:layout="@layout/fragment_register_2">
         <action
@@ -35,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment3"
-        android:name="com.example.hammami.fragments.loginResigter.RegisterFragment3"
+        android:name="com.example.hammami.presentation.ui.fragments.loginResigter.RegisterFragment3"
         android:label="RegisterFragment3"
         tools:layout="@layout/fragment_register_3">
         <action
@@ -48,7 +48,7 @@
 
     <fragment
         android:id="@+id/registerFragment4"
-        android:name="com.example.hammami.fragments.loginResigter.RegisterFragment4"
+        android:name="com.example.hammami.presentation.ui.fragments.loginResigter.RegisterFragment4"
         android:label="RegisterFragment4"
         tools:layout="@layout/fragment_register_4">
         <action
@@ -61,7 +61,7 @@
 
     <fragment
         android:id="@+id/registerFragment5"
-        android:name="com.example.hammami.fragments.loginResigter.RegisterFragment5"
+        android:name="com.example.hammami.presentation.ui.fragments.loginResigter.RegisterFragment5"
         android:label="RegisterFragment4"
         tools:layout="@layout/fragment_register_5">
 

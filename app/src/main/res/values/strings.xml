@@ -1,4 +1,29 @@
 <resources>
+    <string name="error_first_name_empty">Il nome è obbligatorio.</string>
+    <string name="error_first_name_too_short">Il nome è troppo corto. Deve contenere almeno 2 caratteri.</string>
+    <string name="error_last_name_empty">Il cognome è obbligatorio.</string>
+    <string name="error_birthdate_future">La data di nascita non può essere nel futuro. Inserisci una data valida.</string>
+    <string name="error_birthdate_too_old">La data di nascita sembra troppo lontana nel passato. Inserisci una data valida.</string>
+    <string name="error_birthdate_invalid_format">Il formato della data non è corretto. Usa il formato GG/MM/AAAA.</string>
+    <string name="error_gender_empty">Seleziona il tuo genere.</string>
+    <string name="error_email_empty">L\'email è obbligatoria.</string>
+    <string name="error_email_invalid_format">L\'email non è valida. Usa il formato name@domain.it.</string>
+    <string name="error_phone_empty">Il numero di telefono è obbligatorio.</string>
+    <string name="error_phone_invalid_format">Il numero di telefono deve essere di 10 cifre.</string>
+    <string name="error_password_mismatch">Le password non corrispondono. Riprova.</string>
+    <string name="error_password_empty">La password è obbligatoria.</string>
+    <string name="error_password_invalid_format">La password deve contenere almeno 8 caratteri, includendo lettere, numeri e caratteri speciali.</string>
+    <string name="error_no_internet">Nessuna connessione internet. Controlla la tua connessione e riprova.</string>
+    <string name="error_server">Errore del server. Riprova più tardi.</string>
+    <string name="error_unknown_network">Errore di rete sconosciuto. Riprova più tardi.</string>
+    <string name="error_not_authenticated">Utente non autenticato. Accedi per continuare.</string>
+    <string name="error_invalid_credentials">Credenziali non valide. Controlla e riprova.</string>
+    <string name="error_user_not_found">Utente non trovato. Verifica le informazioni e riprova.</string>
+    <string name="error_user_already_exists">L\'utente esiste già. Usa un\'email diversa.</string>
+    <string name="error_weak_password">La password è troppo debole. Usa una password più forte.</string>
+    <string name="error_too_many_requests">Troppe richieste. Riprova più tardi.</string>
+    <string name="error_operation_not_allowed">Operazione non consentita. Contatta il supporto.</string>
+
     <string name="app_name">Hammami</string>
     <string name="benvenuto_">Benvenuto!</string>
     <string name="placeholder__login_email">Inserisci email</string>
@@ -103,6 +128,7 @@
         <item>Galleria</item>
         <item>Camera</item>
     </string-array>
+
     <string name="points_text">%d punti</string>
     <string name="select_date">Seleziona la data</string>
     <string name="select_birth_date">Seleziona la data di nascita</string>
@@ -115,4 +141,28 @@
     <string name="password_creation_subtitle">La password protegge le tue informazioni personali. Assicurati che sia forte e unica.</string>
     <string name="password_guide">La password deve contenere almeno 8 caratteri, inclusi almeno una lettera maiuscola, una minuscola, un numero e un carattere speciale.</string>
     <string name="confirm_password">Conferma password</string>
+    <string name="optional">Opzionale</string>
+    <string name="save">Salva</string>
+    <string name="error_fetching_user_data">Errore nel recupero dei dati utente</string>
+    <string name="reset_password_instructions">Per resettare la tua password, inserisci il tuo indirizzo email. Ti invieremo un link per il reset della password.</string>
+    <string name="reset_password_title">Resetta la password</string>
+    <string name="delete_account_warning_title">Attenzione: Eliminazione Account</string>
+    <string name="delete_account_warning_message">"Stai per eliminare definitivamente il tuo account. Questa azione è irreversibile. \n\n" + "Perderai tutti i tuoi dati e non potrai più accedere al servizio."</string>
+    <string name="edit">Modifica</string>
+    <string name="delete_account">Cancella il profilo utente</string>
+    <string name="edit_profile">Modifica il profilo utente</string>
+    <string name="contact_information">Contatti</string>
+    <string name="edit_profile_image">Modifica l\'immagine profilo</string>
+    <string name="please_correct_errors">Errore in fase di registrazione</string>
+    <string name="error_unknown">Errore sconociuto</string>
+    <string name="error_server_error">Errore a livello di server</string>
+    <string name="error_email_already_in_use">L\'email è già in uso.</string>
+    <string name="error_permission_denied">Permesso negato.</string>
+    <string name="error_update_failed">Aggiornamento fallito.</string>
+    <string name="error_bucket_not_found">Bucket non trovato.</string>
+    <string name="error_quota_exceeded">Quota superata.</string>
+    <string name="error_upload_failed">Caricamento fallito.</string>
+    <string name="error_unknown_auth">Errore di autenticazione sconosciuto. Per favore, riprova o contatta il supporto.</string>
+    <string name="error_token_refresh_failed">Impossibile aggiornare il token di autenticazione. Verifica la tua connessione internet e riprova. Se il problema persiste, contatta il supporto.</string>
+    <string name="registration_successful">Registrazione avvenuta con successo!</string>
 </resources>

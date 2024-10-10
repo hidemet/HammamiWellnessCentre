@@ -1,11 +1,17 @@
 package com.example.hammami.di
 
 import android.app.Application
-import com.example.hammami.util.PreferencesManager
 import android.content.Context
-import com.example.hammami.database.FirebaseDb
-import com.example.hammami.database.UserProfileRepository
+import androidx.lifecycle.SavedStateHandle
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.example.hammami.R
+import com.example.hammami.data.datasource.auth.FirebaseAuthDataSource
+import com.example.hammami.data.repositories.AuthRepository
+import com.example.hammami.data.repositories.UserRepository
+import com.example.hammami.domain.usecase.*
 import com.example.hammami.util.ClipboardManager
+import com.example.hammami.util.PreferencesManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -18,21 +24,23 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
-// Questo modulo fornisce le dipendenze che saranno disponibili per tutta la durata dell'applicazione.
-// Le dipendenze fornite qui saranno disponibili in tutte le attività e i servizi dell'applicazione.
 @InstallIn(SingletonComponent::class)
 object AppModule {
+    @Singleton
+    @Provides
+    fun provideGlideInstance(
+        @ApplicationContext context: Context
+    ) = Glide.with(context)
+        .setDefaultRequestOptions(
+            RequestOptions()
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .error(R.drawable.ic_launcher_foreground)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.DATA)
+        )
 
-    // Questo metodo fornisce un'istanza di FirebaseAuth. Questa istanza sarà un singleton,
-    // cioè ne esisterà una sola per tutta l'applicazione. Questo metodo sarà chiamato da Dagger
-    // ogni volta che un'istanza di FirebaseAuth sarà richiesta come dipendenza.
     @Provides
     @Singleton
     fun provideFirebaseAuth() = FirebaseAuth.getInstance()
-
-    // In questo modo, quando Dagger vede che abbiamo bisogno di un'istanza di FirebaseAuth in un ViewModel,
-    // troverà questo metodo nel modulo e lo chiamerà per ottenere l'istanza di FirebaseAuth.
-    // Questo è il concetto di iniezione delle dipendenze.
 
     @Provides
     @Singleton
@@ -40,18 +48,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseDb(auth: FirebaseAuth, firestore: FirebaseFirestore, storage: FirebaseStorage): FirebaseDb {
-        return FirebaseDb(auth, firestore, storage)
-    }
+    fun provideFirebaseAuthDataSource(
+        auth: FirebaseAuth
+    ): FirebaseAuthDataSource = FirebaseAuthDataSource(auth)
 
     @Provides
     fun provideIntroductionSP(
         application: Application
     ) = application.getSharedPreferences("introduction", Context.MODE_PRIVATE)
-
-    @Provides
-    @Singleton
-    fun provideStorage() = FirebaseStorage.getInstance().reference
 
     @Provides
     @Singleton
@@ -65,10 +69,89 @@ object AppModule {
         return ClipboardManager(context)
     }
 
-
-
     @Provides
     @Singleton
     fun provideStorageReference(): StorageReference = FirebaseStorage.getInstance().reference
 
+    @Provides
+    @Singleton
+    fun provideValidateFirstNameUseCase(): ValidateFirstNameUseCase = ValidateFirstNameUseCase()
+
+    @Provides
+    @Singleton
+    fun provideValidateLastNameUseCase(): ValidateLastNameUseCase = ValidateLastNameUseCase()
+
+    @Provides
+    @Singleton
+    fun provideValidateBirthDateUseCase(): ValidateBirthDateUseCase = ValidateBirthDateUseCase()
+
+    @Provides
+    @Singleton
+    fun provideValidateGenderUseCase(): ValidateGenderUseCase = ValidateGenderUseCase()
+
+    @Provides
+    @Singleton
+    fun provideValidateEmailUseCase(validator: AndroidEmailPatternValidator): ValidateEmailUseCase =
+        ValidateEmailUseCase(validator)
+
+    @Provides
+    @Singleton
+    fun provideValidatePhoneNumberUseCase(): ValidatePhoneNumberUseCase =
+        ValidatePhoneNumberUseCase()
+
+    @Provides
+    @Singleton
+    fun provideValidatePasswordUseCase(): ValidatePasswordUseCase = ValidatePasswordUseCase()
+
+    @Provides
+    @Singleton
+    fun provideValidateConfirmedPasswordUseCase(): ValidateConfirmedPasswordUseCase =
+        ValidateConfirmedPasswordUseCase()
+
+    @Provides
+    fun provideGetUserProfileUseCase(userRepository: UserRepository): GetUserProfileUseCase =
+        GetUserProfileUseCase(userRepository)
+
+    @Provides
+    fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserProfileUseCase {
+        return UpdateUserProfileUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideUploadUserImageUseCase(userRepository: UserRepository): UploadUserImageUseCase {
+        return UploadUserImageUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideDeleteUserUseCase(userRepository: UserRepository): DeleteUserUseCase {
+        return DeleteUserUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideSignInUseCase(authRepository: AuthRepository): SignInUseCase {
+        return SignInUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideResetPasswordUseCase(authRepository: AuthRepository): ResetPasswordUseCase {
+        return ResetPasswordUseCase(authRepository)
+    }
+
+
+    @Provides
+    fun provideSignUpUseCase(userRepository: UserRepository): SignUpUseCase {
+        return SignUpUseCase(userRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage {
+        return FirebaseStorage.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmailPatternValidator(): EmailPatternValidator {
+        return AndroidEmailPatternValidator()
+    }
 }

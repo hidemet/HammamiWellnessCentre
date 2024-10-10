@@ -25,7 +25,7 @@
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="33">
         <activity
-            android:name=".activities.InitialActivity"
+            android:name=".presentation.ui.activities.InitialActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
@@ -34,11 +34,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".presentation.ui.activities.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
-            android:name=".activities.LoginRegisterActivity"
+            android:name=".presentation.ui.activities.LoginRegisterActivity"
             android:exported="false" />
     </application>
 

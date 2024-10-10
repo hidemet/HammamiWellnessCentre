@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.hammami.fragments.client.HomeFragment"
+        android:name="com.example.hammami.presentation.ui.fragments.client.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <!-- Definisci l'azione di navigazione dal homeFragment al profileFragment -->
@@ -18,19 +18,19 @@
 
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.hammami.fragments.client.SearchFragment"
+        android:name="com.example.hammami.presentation.ui.fragments.client.SearchFragment"
         android:label="SearchFragment"
         tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/aboutUsFragment"
-        android:name="com.example.hammami.fragments.client.AboutUsFragment"
+        android:name="com.example.hammami.presentation.ui.fragments.client.AboutUsFragment"
         android:label="AboutUsFragment"
         tools:layout="@layout/fragment_appointments" />
 
     <fragment
         android:id="@+id/appointmentsFragment"
-        android:name="com.example.hammami.fragments.client.AppointmentsFragment"
+        android:name="com.example.hammami.presentation.ui.fragments.client.AppointmentsFragment"
         android:label="AppointmentsFragment"
         tools:layout="@layout/fragment_about_us" />
 
@@ -38,23 +38,23 @@
         app:startDestination="@id/profileFragment">
         <fragment
             android:id="@+id/giftCardsFragment"
-            android:name="com.example.hammami.fragments.settings.GiftCardsFragment"
+            android:name="com.example.hammami.presentation.ui.fragments.settings.GiftCardsFragment"
             android:label="GiftCardsFragment"
             tools:layout="@layout/fragment_gift_cards" />
 
         <fragment
             android:id="@+id/couponFragment"
-            android:name="com.example.hammami.fragments.settings.CouponFragment"
+            android:name="com.example.hammami.presentation.ui.fragments.settings.CouponFragment"
             android:label="couponFragment"
             tools:layout="@layout/fragment_coupon" />
         <fragment
             android:id="@+id/profileFragment"
-            android:name="com.example.hammami.fragments.settings.UserProfileFragment"
+            android:name="com.example.hammami.presentation.ui.fragments.settings.UserProfileFragment"
             android:label="Profile"
             tools:layout="@layout/fragment_user_profile">
             <argument
                 android:name="itemProfileOption"
-                app:argType="com.example.hammami.models.ItemProfileOption" />
+                app:argType="com.example.hammami.model.ItemProfileOption" />
             <action
                 android:id="@+id/action_profileFragment_to_giftCardsFragment"
                 app:destination="@id/giftCardsFragment" />
@@ -70,7 +70,7 @@
 
         <fragment
             android:id="@+id/editUserProfileFragment"
-            android:name="com.example.hammami.fragments.settings.EditUserProfileFragment"
+            android:name="com.example.hammami.presentation.ui.fragments.settings.EditUserProfileFragment"
             android:label="EditUserProfileFragment"
             tools:layout="@layout/fragment_edit_user_profile"
             >

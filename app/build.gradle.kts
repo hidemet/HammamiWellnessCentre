@@ -31,6 +31,7 @@ android {
                 "proguard-rules.pro"
             )
         }
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -74,7 +75,6 @@ dependencies {
 
     //Glide
     implementation(libs.glide)
-
     //circular image
     implementation(libs.circleimageview)
 
@@ -106,4 +106,8 @@ dependencies {
 
     // Splash screen
     implementation("androidx.core:core-splashscreen:1.0.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 }
