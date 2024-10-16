@@ -9,9 +9,10 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import android.net.Uri
 import android.util.Log
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,22 +22,22 @@ class UserRepository @Inject constructor(
     private val storageDataSource: FirebaseStorageUserDataSource,
     private val authRepository: AuthRepository
 ) {
-    fun getUserData(): Flow<Result<User, DataError>> = flow {
-        try {
-            val uid = authRepository.getCurrentUserId()
-                ?: return@flow emit(Result.Error(DataError.Auth.NOT_AUTHENTICATED))
-
+    suspend fun getUserData(): Result<User, DataError> {
+        return try {
+            val uid = authRepository.getCurrentUserId() ?: return Result.Error(DataError.Auth.NOT_AUTHENTICATED)
             val user = firestoreDataSource.fetchUserData(uid)
             if (user != null) {
-                emit(Result.Success(user))
+                Result.Success(user)
             } else {
-                emit(Result.Error(DataError.User.USER_NOT_FOUND))
+                Result.Error(DataError.User.USER_NOT_FOUND)
             }
         } catch (e: Exception) {
             Log.e("UserRepository", "Errore nel recupero dei dati utente", e)
-            emit(Result.Error(mapExceptionToDataError(e)))
+            Result.Error(mapExceptionToDataError(e))
         }
     }
+
+
 
     suspend fun getUserData(userId: String?): Result<User, DataError> {
         return try {
@@ -63,7 +64,7 @@ class UserRepository @Inject constructor(
             is Result.Success -> {
                 val uid = authRepository.getCurrentUserId()
                     ?: return Result.Error(DataError.Auth.UNKNOWN)
-                when (val saveResult = saveUserProfile(uid, userData)) {
+                when (val saveResult = saveUser(uid, userData)) {
                     is Result.Success -> Result.Success(userData.copy(email = email))
                     is Result.Error -> {
                         // Rollback: elimina l'account appena creato se il salvataggio del profilo fallisce
@@ -77,12 +78,12 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun updateUserProfile(user: User): Result<Unit, DataError> {
+    suspend fun updateUser(user: User): Result<Unit, DataError> {
         return try {
             val uid = authRepository.getCurrentUserId()
                 ?: return Result.Error(DataError.Auth.NOT_AUTHENTICATED)
 
-            firestoreDataSource.updateUserProfile(uid, user)
+            firestoreDataSource.updateUser(uid, user)
             if (user.email != authRepository.getCurrentUser()?.email) {
                 authRepository.updateEmail(user.email)
             }
@@ -93,7 +94,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun saveUserProfile(userUid: String, user: User): Result<Unit, DataError> {
+     suspend fun saveUser(userUid: String, user: User): Result<Unit, DataError> {
         return try {
             firestoreDataSource.saveUserInformation(userUid, user)
             Result.Success(Unit)
@@ -103,9 +104,9 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun uploadProfileImage(imageUri: Uri): Result<String, DataError> {
+    suspend fun uploadUserImage(imageUri: Uri): Result<String, DataError> {
         return try {
-            val downloadUrl = storageDataSource.uploadProfileImage(imageUri)
+            val downloadUrl = storageDataSource.uploadUserImage(imageUri)
             Result.Success(downloadUrl)
         } catch (e: Exception) {
             Log.e("UserRepository", "Errore nel caricamento dell'immagine del profilo", e)

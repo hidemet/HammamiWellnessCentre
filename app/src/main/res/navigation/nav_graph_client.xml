@@ -49,7 +49,7 @@
             tools:layout="@layout/fragment_coupon" />
         <fragment
             android:id="@+id/profileFragment"
-            android:name="com.example.hammami.presentation.ui.fragments.settings.UserProfileFragment"
+            android:name="com.example.hammami.presentation.ui.fragments.userProfile.ProfileFragment"
             android:label="Profile"
             tools:layout="@layout/fragment_user_profile">
             <argument
@@ -70,12 +70,11 @@
 
         <fragment
             android:id="@+id/editUserProfileFragment"
-            android:name="com.example.hammami.presentation.ui.fragments.settings.EditUserProfileFragment"
+            android:name="com.example.hammami.presentation.ui.fragments.userProfile.EditUserFragment"
             android:label="EditUserProfileFragment"
             tools:layout="@layout/fragment_edit_user_profile"
             >
         </fragment>
 
     </navigation>
-
 </navigation>

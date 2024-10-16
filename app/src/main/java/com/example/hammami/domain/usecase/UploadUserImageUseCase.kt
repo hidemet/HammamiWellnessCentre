@@ -7,5 +7,5 @@ import javax.inject.Inject
 class UploadUserImageUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(imageUri: Uri): Result<String, DataError> = userRepository.uploadProfileImage(imageUri)
+    suspend operator fun invoke(imageUri: Uri): Result<String, DataError> = userRepository.uploadUserImage(imageUri)
 }

@@ -86,7 +86,7 @@
     <string name="andrea_rossi">Andrea Rossi</string>
     <string name="_56_punti">56 punti</string>
     <string name="user_full_name">%1$s %2$s</string>
-    <string name="user_points">%1$s</string>
+    <string name="user_points">%d</string>
     <string name="retry">Riprova</string>
     <string name="unknown_error">Errore sconosciuto</string>
     <string name="personal_information">Informazioni personali</string>
@@ -165,4 +165,9 @@
     <string name="error_unknown_auth">Errore di autenticazione sconosciuto. Per favore, riprova o contatta il supporto.</string>
     <string name="error_token_refresh_failed">Impossibile aggiornare il token di autenticazione. Verifica la tua connessione internet e riprova. Se il problema persiste, contatta il supporto.</string>
     <string name="registration_successful">Registrazione avvenuta con successo!</string>
+    <string name="error_creating_image_file">Errore durante l\'apertura della fotocamera</string>
+    <string name="profile_image_updated_successfully">Immagine caricata con successo!</string>
+    <string name="invalid_input">I dati inseriti non sono corretti</string>
+    <string name="user_not_logged_in">L\'utente non è loggato</string>
+    <string name="password_reset_email_sent">E\' stata inviata un\'email per il recupero della password</string>
 </resources>

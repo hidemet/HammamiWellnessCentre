@@ -7,14 +7,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
-import com.example.hammami.domain.usecase.*
+import com.example.hammami.domain.usecase.SignUpUseCase
+import com.example.hammami.domain.usecase.ValidateBirthDateUseCase
+import com.example.hammami.domain.usecase.ValidateConfirmedPasswordUseCase
+import com.example.hammami.domain.usecase.ValidateEmailUseCase
+import com.example.hammami.domain.usecase.ValidateFirstNameUseCase
+import com.example.hammami.domain.usecase.ValidateGenderUseCase
+import com.example.hammami.domain.usecase.ValidateLastNameUseCase
+import com.example.hammami.domain.usecase.ValidatePasswordUseCase
+import com.example.hammami.domain.usecase.ValidatePhoneNumberUseCase
+import com.example.hammami.domain.usecase.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

@@ -2,7 +2,6 @@ package com.example.hammami.di
 
 import android.app.Application
 import android.content.Context
-import androidx.lifecycle.SavedStateHandle
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.hammami.R
@@ -41,6 +40,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideFirebaseAuth() = FirebaseAuth.getInstance()
+
 
     @Provides
     @Singleton
@@ -109,12 +109,12 @@ object AppModule {
         ValidateConfirmedPasswordUseCase()
 
     @Provides
-    fun provideGetUserProfileUseCase(userRepository: UserRepository): GetUserProfileUseCase =
-        GetUserProfileUseCase(userRepository)
+    fun provideGetUserProfileUseCase(userRepository: UserRepository): GetUserUseCase =
+        GetUserUseCase(userRepository)
 
     @Provides
-    fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserProfileUseCase {
-        return UpdateUserProfileUseCase(userRepository)
+    fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserUseCase {
+        return UpdateUserUseCase(userRepository)
     }
 
     @Provides
@@ -123,8 +123,8 @@ object AppModule {
     }
 
     @Provides
-    fun provideDeleteUserUseCase(userRepository: UserRepository): DeleteUserUseCase {
-        return DeleteUserUseCase(userRepository)
+    fun provideDeleteUserUseCase(userRepository: UserRepository): DeleteAccountUseCase {
+        return DeleteAccountUseCase(userRepository)
     }
 
     @Provides

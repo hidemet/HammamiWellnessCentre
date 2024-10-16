@@ -3,6 +3,7 @@ package com.example.hammami.data.datasource.user
 import com.example.hammami.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,7 +30,8 @@ suspend fun saveUserInformation(userUid: String, user: User) {
         }
     }
 
-    suspend fun updateUserProfile(uid: String, user: User) {
+
+    suspend fun updateUser(uid: String, user: User) {
         try {
             usersCollection.document(uid).set(user).await()
         } catch (e: FirebaseFirestoreException) {

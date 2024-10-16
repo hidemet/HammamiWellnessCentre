@@ -5,8 +5,8 @@ import com.example.hammami.model.User
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetUserProfileUseCase @Inject constructor(
+class GetUserUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    operator fun invoke(): Flow<Result<User, DataError>> = userRepository.getUserData()
+    suspend operator fun invoke(): Result<User, DataError> = userRepository.getUserData()
 }

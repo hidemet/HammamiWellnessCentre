@@ -12,7 +12,7 @@ import javax.inject.Singleton
 class FirebaseStorageUserDataSource @Inject constructor(
     private val storage: FirebaseStorage
 ) {
-    suspend fun uploadProfileImage(imageUri: Uri): String {
+    suspend fun uploadUserImage(imageUri: Uri): String {
         try {
             val filename = UUID.randomUUID().toString()
             val ref = storage.reference.child("profile_images/$filename")

@@ -29,8 +29,9 @@ sealed interface DataError : Error {
     enum class Storage: DataError {
         BUCKET_NOT_FOUND,
         QUOTA_EXCEEDED,
-        UPLOAD_FAILED
+        UPLOAD_FAILED,
     }
+
 
 
 }

@@ -1,11 +1,11 @@
-package com.example.hammami.presentation.ui.userProfile
+package com.example.hammami.presentation.ui.fragments.userProfile
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,26 +16,25 @@ import com.example.hammami.presentation.ui.fragments.BaseFragment
 import com.example.hammami.model.ItemProfileOption
 import com.example.hammami.model.User
 import com.example.hammami.presentation.ui.activities.LoginRegisterActivity
+import com.example.hammami.presentation.ui.activities.UserProfileViewModel
+import com.example.hammami.presentation.ui.userProfile.ProfileOptionAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class UserProfileFragment : BaseFragment() {
+class ProfileFragment : BaseFragment() {
 
     private var _binding: FragmentUserProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: UserProfileViewModel by viewModels()
+    private val viewModel: UserProfileViewModel by activityViewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentUserProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+
 
     override fun setupUI() {
         setupOptionsList()
@@ -50,17 +49,29 @@ class UserProfileFragment : BaseFragment() {
 
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collectLatest { state ->
-                state.user?.let { updateUIWithUserData(it) }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiEvent.collectLatest { event ->
-                handleUiEvent(event)
+            viewModel.userState.collect { state ->
+                when (state) {
+                    is UserProfileViewModel.UserState.LoggedIn -> updateUI(state.userData)
+                    is UserProfileViewModel.UserState.Error -> showSnackbar(state.message)
+                    is UserProfileViewModel.UserState.NotLoggedIn -> navigateToLogin()
+                    is UserProfileViewModel.UserState.Loading -> showLoading(true)
+                }
             }
         }
     }
+
+    private fun updateUI(userData: User) {
+        binding.apply {
+            userName.text = "${userData.firstName} ${userData.lastName}"
+            userPoints.text = getString(R.string.user_points, userData.points)
+
+            Glide.with(this@ProfileFragment)
+                .load(userData.profileImage)
+                .error(R.drawable.ic_profile)
+                .into(profileImage)
+        }
+    }
+
 
     private fun setupOptionsList() {
         val options = listOf(
@@ -82,39 +93,8 @@ class UserProfileFragment : BaseFragment() {
         }
     }
 
-    private fun updateUIWithUserData(user: User) {
-        binding.apply {
-            userName.text = "${user.firstName} ${user.lastName}"
-            userPoints.text = getString(R.string.user_points, user.toString())
 
-            Glide.with(this@UserProfileFragment)
-                .load(user.profileImage)
-                .error(R.drawable.ic_profile)
-                .into(profileImage)
-        }
-
-
-    }
-
-    private fun handleUiEvent(event: UserProfileViewModel.UiEvent) {
-        when (event) {
-            is UserProfileViewModel.UiEvent.ShowError -> showSnackbar(event.error)
-            is UserProfileViewModel.UiEvent.ProfileUpdateSuccess -> showSnackbar(event.message)
-            is UserProfileViewModel.UiEvent.SignOutSuccess -> navigateToLoginFragment()
-            is UserProfileViewModel.UiEvent.UserDeleted -> navigateToLoginFragment()
-            is UserProfileViewModel.UiEvent.Loading -> showLoading(true)
-            is UserProfileViewModel.UiEvent.Idle -> showLoading(false)
-            else -> {}
-        }
-    }
-
-    override fun showLoading(isLoading: Boolean) {
-        binding.linearProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.contentScrollView.visibility = if (isLoading) View.GONE else View.VISIBLE
-    }
-
-
-    private fun navigateToLoginFragment() {
+    private fun navigateToLogin() {
         val intent = Intent(requireContext(), LoginRegisterActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
