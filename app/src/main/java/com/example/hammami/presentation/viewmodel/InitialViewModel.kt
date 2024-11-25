@@ -2,47 +2,59 @@ package com.example.hammami.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hammami.domain.usecase.RefreshAuthAndUserDataUseCase
-import com.example.hammami.domain.usecase.DataError
-import com.example.hammami.domain.usecase.Result
-import com.example.hammami.model.User
+import com.example.hammami.domain.error.DataError
+import com.example.hammami.core.result.Result
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
-import com.example.hammami.data.repositories.AuthRepository
+import com.example.hammami.domain.model.User
+import com.example.hammami.domain.usecase.user.ObserveUserStateUseCase
+import com.example.hammami.domain.usecase.user.RefreshUserStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class InitialViewModel @Inject constructor(
-    private val refreshAuthAndUserDataUseCase: RefreshAuthAndUserDataUseCase,
-    authRepository: AuthRepository
+    private val observeUserStateUseCase: ObserveUserStateUseCase,
+    private val refreshUserStateUseCase: RefreshUserStateUseCase
 ) : ViewModel() {
 
-    val authState: StateFlow<Result<User, DataError>> = authRepository.authState
-
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    val uiState = _uiState.asStateFlow()
 
     init {
-        refreshAuthToken()
+        checkAuthState()
     }
 
-    private fun refreshAuthToken() {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            when (val result = refreshAuthAndUserDataUseCase()) {
-                is Result.Success -> {
-                    _uiState.value = UiState.LoggedIn
-                }
-                is Result.Error -> {
-                    _uiState.value = UiState.Error(result.error.asUiText())
+    private fun checkAuthState() = viewModelScope.launch {
+        try {
+            refreshUserStateUseCase()
+            collectUserState()
+        } catch (e: Exception) {
+            _uiState.value = UiState.NotLoggedIn
+        }
+    }
+
+    private suspend fun collectUserState() {
+        observeUserStateUseCase()
+            .collect { result ->
+                _uiState.value = when (result) {
+                    is Result.Success -> handleSuccessState(result.data)
+                    is Result.Error -> handleErrorState(result.error)
                 }
             }
-        }
+    }
+
+    private fun handleSuccessState(user: User?) = when {
+        user != null -> UiState.LoggedIn
+        else -> UiState.NotLoggedIn
+    }
+
+    private fun handleErrorState(error: DataError) = when (error) {
+        DataError.Auth.NOT_AUTHENTICATED -> UiState.NotLoggedIn
+        else -> UiState.Error(error.asUiText())
     }
 
     sealed class UiState {

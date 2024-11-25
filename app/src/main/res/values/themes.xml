@@ -55,4 +55,16 @@
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/icon_hammami</item>
         <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="31">1000</item>
     </style>
+
+    <style name="ThemeOverlay.Material3.MaterialAlertDialog.Centered" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Material3.Title.Text.Centered</item>
+    </style>
+
+    <style name="MaterialAlertDialog.Material3.Title.Text.Centered" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>

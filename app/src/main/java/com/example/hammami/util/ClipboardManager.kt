@@ -14,4 +14,6 @@ class ClipboardManager @Inject constructor(
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("Coupon Code", text)
         clipboard.setPrimaryClip(clip) }
+
+
 }

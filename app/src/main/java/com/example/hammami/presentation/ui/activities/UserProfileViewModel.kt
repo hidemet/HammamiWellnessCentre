@@ -6,187 +6,228 @@ import androidx.lifecycle.viewModelScope
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
-import com.example.hammami.domain.usecase.DeleteAccountUseCase
-import com.example.hammami.domain.usecase.GetUserUseCase
-import com.example.hammami.domain.usecase.ResetPasswordUseCase
-import com.example.hammami.domain.usecase.SignOutUseCase
-import com.example.hammami.domain.usecase.UpdateUserUseCase
-import com.example.hammami.domain.usecase.UploadUserImageUseCase
-import com.example.hammami.domain.usecase.ValidateBirthDateUseCase
-import com.example.hammami.domain.usecase.ValidateEmailUseCase
-import com.example.hammami.domain.usecase.ValidateFirstNameUseCase
-import com.example.hammami.domain.usecase.ValidateGenderUseCase
-import com.example.hammami.domain.usecase.ValidateLastNameUseCase
-import com.example.hammami.domain.usecase.ValidatePhoneNumberUseCase
-import com.example.hammami.domain.usecase.Result
-import com.example.hammami.model.User
+import com.example.hammami.core.result.Result
+import com.example.hammami.domain.model.User
+import com.example.hammami.domain.error.DataError
+import com.example.hammami.domain.usecase.auth.DeleteAccountUseCase
+import com.example.hammami.domain.usecase.auth.ResetPasswordUseCase
+import com.example.hammami.domain.usecase.auth.SignOutUseCase
+import com.example.hammami.domain.usecase.user.UpdateUserUseCase
+import com.example.hammami.domain.usecase.user.UploadUserImageUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidateBirthDateUseCase
+import com.example.hammami.domain.usecase.validation.account.ValidateEmailUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidateFirstNameUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidateGenderUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidateLastNameUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidatePhoneNumberUseCase
+import com.example.hammami.domain.usecase.user.ObserveUserStateUseCase
+import com.example.hammami.domain.usecase.user.RefreshUserStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
-    private val getUserUseCase: GetUserUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val uploadUserImageUseCase: UploadUserImageUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private val validateFirstNameUseCase: ValidateFirstNameUseCase,
-    private val validateLastNameUseCase: ValidateLastNameUseCase,
-    private val validateBirthDateUseCase: ValidateBirthDateUseCase,
-    private val validateGenderUseCase: ValidateGenderUseCase,
-    private val validatePhoneNumberUseCase: ValidatePhoneNumberUseCase,
-    private val validateEmailUseCase: ValidateEmailUseCase
+    private val validationUseCases: ValidationUseCases,
+    private val observeUserStateUseCase: ObserveUserStateUseCase,
+    private val refreshUserStateUseCase: RefreshUserStateUseCase,
 ) : ViewModel() {
 
-    private val _userState = MutableStateFlow<UserState>(UserState.Loading)
-    val userState: StateFlow<UserState> = _userState.asStateFlow()
-
-    private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
+    private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val _validationState = MutableStateFlow(ValidationState())
-    val validationState: StateFlow<ValidationState> = _validationState.asStateFlow()
+    private val _events = MutableSharedFlow<UiEvent>()
+    val events: SharedFlow<UiEvent> = _events.asSharedFlow()
 
     init {
-        loadUserData()
+        initializeUserState()
     }
 
-    fun loadUserData() {
-        viewModelScope.launch {
-            _userState.value = UserState.Loading
-            when (val result = getUserUseCase()) {
-                is Result.Success -> _userState.value = UserState.LoggedIn(result.data)
-                is Result.Error -> _userState.value = UserState.Error(result.error.asUiText())
-            }
+    fun onEvent(event: UserProfileEvent) = viewModelScope.launch {
+        when (event) {
+            is UserProfileEvent.LoadUserData -> refreshUserData()
+            is UserProfileEvent.UpdateUserInfo -> handleUpdateUserInfo(event.userInfo)
+            is UserProfileEvent.UploadProfileImage -> handleUploadProfileImage(event.imageUri)
+            is UserProfileEvent.ResetPassword -> handleResetPassword(event.email)
+            is UserProfileEvent.DeleteAccount -> handleDeleteAccount()
+            is UserProfileEvent.SignOut -> handleSignOut()
         }
     }
 
+    private fun initializeUserState() {
+        observeUserState()
+        refreshUserData()
+    }
 
-
-    fun validateAndUpdatePersonalInfo(personalInfo: PersonalInfo) {
+    private fun observeUserState() {
         viewModelScope.launch {
-            val validationResults = validatePersonalInfo(personalInfo)
-            _validationState.value = validationResults
-
-            if (validationResults.hasErrors()) {
-                _uiState.value = UiState.Error(UiText.StringResource(R.string.please_correct_errors))
-            } else {
-                (userState.value as? UserState.LoggedIn)?.userData?.let { currentUser ->
-                    updateUserData(personalInfo.toUser(currentUser))
-                }
-            }
+            observeUserStateUseCase()
+                .collect { result -> handleUserStateResult(result) }
         }
     }
 
-    fun validateAndUpdateContactInfo(contactInfo: ContactInfo) {
-        viewModelScope.launch {
-            val validationResults = validateContactInfo(contactInfo)
-            _validationState.value = validationResults
-
-            if (validationResults.hasErrors()) {
-                _uiState.value = UiState.Error(UiText.StringResource(R.string.please_correct_errors))
-            } else {
-                (userState.value as? UserState.LoggedIn)?.userData?.let { currentUser ->
-                    updateUserData(contactInfo.toUser(currentUser))
-                }
-            }
+    private suspend fun handleUserStateResult(result: Result<User?, DataError>) {
+        when (result) {
+            is Result.Success -> updateUserState(result.data)
+            is Result.Error -> handleUserStateError(result.error)
         }
     }
 
-    fun uploadProfileImage(imageUri: Uri) {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            when (val result = uploadUserImageUseCase(imageUri)) {
-                is Result.Success -> {
-                    _uiState.value = UiState.Success(UiText.StringResource(R.string.profile_image_updated_successfully))
-                    loadUserData() // Fa il refresh dei dati utente
-                }
-                is Result.Error -> _uiState.value = UiState.Error(result.error.asUiText())
-            }
+    private fun updateUserState(user: User?) {
+        _uiState.update { it.copy(user = user) }
+    }
+
+    private suspend fun handleUserStateError(error: DataError) {
+        _uiState.update { it.copy(user = null) }
+        emitError(error.asUiText())
+    }
+
+    private suspend fun handleUpdateUserInfo(userInfo: UserInfo) {
+        val validationResult = validateUserInfo(userInfo)
+        if (validationResult.hasErrors()) {
+            handleValidationErrors(validationResult)
+            return
+        }
+        executeUpdateUser(userInfo)
+    }
+
+    private suspend fun executeUpdateUser(userInfo: UserInfo) {
+        setLoading(true)
+        when (val result = updateUserUseCase(userInfo.toUser(requireCurrentUser()))) {
+            is Result.Success -> handleUpdateSuccess()
+            is Result.Error -> handleError(result.error.asUiText())
         }
     }
 
-    fun resetPassword(email: String) {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            when (val result = resetPasswordUseCase(email)) {
-                is Result.Success -> _uiState.value = UiState.Success(UiText.StringResource(R.string.password_reset_email_sent))
-                is Result.Error -> _uiState.value = UiState.Error(result.error.asUiText())
-            }
+    private suspend fun handleUploadProfileImage(imageUri: Uri) {
+        setLoading(true)
+        when (val result = uploadUserImageUseCase(imageUri)) {
+            is Result.Success -> handleImageUploadSuccess()
+            is Result.Error -> handleError(result.error.asUiText())
         }
     }
 
-    fun deleteAccount() {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            when (val result = deleteAccountUseCase()) {
-                is Result.Success -> _uiState.value = UiState.AccountDeleted
-                is Result.Error -> _uiState.value = UiState.Error(result.error.asUiText())
-            }
+    private suspend fun handleResetPassword(email: String) {
+        setLoading(true)
+        when (val result = resetPasswordUseCase(email)) {
+            is Result.Success -> emitEvent(UiEvent.ShowSnackbar(UiText.StringResource(R.string.password_reset_email_sent)))
+            is Result.Error -> handleError(result.error.asUiText())
         }
     }
 
-    fun signOut() {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
+    private suspend fun handleDeleteAccount() {
+        setLoading(true)
+        when (val result = deleteAccountUseCase()) {
+            is Result.Success -> emitEvent(UiEvent.AccountDeleted)
+            is Result.Error -> handleError(result.error.asUiText())
+        }
+    }
+
+    private suspend fun handleSignOut() {
+        setLoading(true)
+        try {
             when (val result = signOutUseCase()) {
-                is Result.Success -> _userState.value = UserState.NotLoggedIn
-                is Result.Error -> _uiState.value = UiState.Error(result.error.asUiText())
+                is Result.Success -> handleSignOutSuccess()
+                is Result.Error -> handleError(result.error.asUiText())
             }
+        } catch (e: Exception) {
+            handleError(UiText.DynamicString(e.message ?: "Unknown error"))
         }
     }
 
-    private fun updateUserData(updatedUser: User) {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            when (val result = updateUserUseCase(updatedUser)) {
-                is Result.Success -> {
-                    _uiState.value = UiState.Success(UiText.StringResource(R.string.profile_updated_successfully))
-                    loadUserData()
-                    // Resetta lo stato UI con un po' di ritardo
-                    delay(100)
-                    _uiState.value = UiState.Idle
-                }
-                is Result.Error -> _uiState.value = UiState.Error(result.error.asUiText())
-            }
+    private suspend fun handleSignOutSuccess() {
+        _uiState.update { it.copy(user = null) }
+        emitEvent(UiEvent.SignOut)
+    }
+
+    private fun validateUserInfo(userInfo: UserInfo): ValidationState {
+        return ValidationState(
+            firstNameError = (validationUseCases.validateFirstName(userInfo.firstName) as? Result.Error)?.error?.asUiText(),
+            lastNameError = (validationUseCases.validateLastName(userInfo.lastName) as? Result.Error)?.error?.asUiText(),
+            birthDateError = (validationUseCases.validateBirthDate(userInfo.birthDate) as? Result.Error)?.error?.asUiText(),
+            genderError = (validationUseCases.validateGender(userInfo.gender) as? Result.Error)?.error?.asUiText(),
+            phoneNumberError = (validationUseCases.validatePhoneNumber(userInfo.phoneNumber) as? Result.Error)?.error?.asUiText(),
+            emailError = (validationUseCases.validateEmail(userInfo.email) as? Result.Error)?.error?.asUiText()
+        )
+    }
+
+    private suspend fun handleValidationErrors(validationState: ValidationState) {
+        _uiState.update { it.copy(validationState = validationState) }
+        emitEvent(UiEvent.ShowSnackbar(UiText.StringResource(R.string.please_correct_errors)))
+    }
+
+    private suspend fun handleUpdateSuccess() {
+        emitEvent(UiEvent.ShowSnackbar(UiText.StringResource(R.string.profile_updated_successfully)))
+        refreshUserData()
+    }
+
+    private suspend fun handleImageUploadSuccess() {
+        emitEvent(UiEvent.ShowSnackbar(UiText.StringResource(R.string.profile_image_updated_successfully)))
+        refreshUserData()
+    }
+
+    private fun refreshUserData() = viewModelScope.launch {
+        setLoading(true)
+        refreshUserStateUseCase()
+        setLoading(false)
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        _uiState.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun requireCurrentUser(): User =
+        uiState.value.user ?: throw IllegalStateException("User not found")
+
+    private suspend fun emitEvent(event: UiEvent) {
+        _events.emit(event)
+    }
+    private suspend fun emitError(error: UiText) {
+        viewModelScope.launch {  // Aggiungi questo per risolvere l'errore suspend
+            setLoading(false)
+            emitEvent(UiEvent.ShowSnackbar(error))
         }
     }
 
-    private fun validatePersonalInfo(personalInfo: PersonalInfo): ValidationState {
-        return ValidationState(
-            firstNameError = (validateFirstNameUseCase(personalInfo.firstName) as? Result.Error)?.error?.asUiText(),
-            lastNameError = (validateLastNameUseCase(personalInfo.lastName) as? Result.Error)?.error?.asUiText(),
-            birthDateError = (validateBirthDateUseCase(personalInfo.birthDate) as? Result.Error)?.error?.asUiText(),
-            genderError = (validateGenderUseCase(personalInfo.gender) as? Result.Error)?.error?.asUiText()
-        )
+    data class ValidationUseCases @Inject constructor(
+        val validateFirstName: ValidateFirstNameUseCase,
+        val validateLastName: ValidateLastNameUseCase,
+        val validateBirthDate: ValidateBirthDateUseCase,
+        val validateGender: ValidateGenderUseCase,
+        val validatePhoneNumber: ValidatePhoneNumberUseCase,
+        val validateEmail: ValidateEmailUseCase
+    )
+
+    private suspend fun handleError(error: UiText) {
+        _uiState.update { it.copy(isLoading = false) }
+        _events.emit(UiEvent.ShowSnackbar(error))
     }
 
-    private fun validateContactInfo(contactInfo: ContactInfo): ValidationState {
-        return ValidationState(
-            phoneNumberError = (validatePhoneNumberUseCase(contactInfo.phoneNumber) as? Result.Error)?.error?.asUiText(),
-            emailError = (validateEmailUseCase(contactInfo.email) as? Result.Error)?.error?.asUiText()
-        )
+    data class UiState(
+        val user: User? = null,
+        val isLoading: Boolean = false,
+        val validationState: ValidationState = ValidationState()
+    )
+
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: UiText) : UiEvent()
+        object AccountDeleted : UiEvent()
+        object SignOut : UiEvent()
     }
 
-    sealed class UserState {
-        object Loading : UserState()
-        object NotLoggedIn : UserState()
-        data class LoggedIn(val userData: User) : UserState()
-        data class Error(val message: UiText) : UserState()
-    }
-
-    sealed class UiState {
-        object Idle : UiState()
-        object Loading : UiState()
-        data class Success(val message: UiText) : UiState()
-        data class Error(val message: UiText) : UiState()
-        object AccountDeleted : UiState()
+    sealed class UserProfileEvent {
+        object LoadUserData : UserProfileEvent()
+        data class UpdateUserInfo(val userInfo: UserInfo) : UserProfileEvent()
+        data class UploadProfileImage(val imageUri: Uri) : UserProfileEvent()
+        data class ResetPassword(val email: String) : UserProfileEvent()
+        object DeleteAccount : UserProfileEvent()
+        object SignOut : UserProfileEvent()
     }
 
     data class ValidationState(
@@ -197,16 +238,25 @@ class UserProfileViewModel @Inject constructor(
         val phoneNumberError: UiText? = null,
         val emailError: UiText? = null
     ) {
-        fun hasErrors() = listOf(firstNameError, lastNameError, birthDateError, genderError, phoneNumberError, emailError).any { it != null }
+        fun hasErrors() = listOf(
+            firstNameError,
+            lastNameError,
+            birthDateError,
+            genderError,
+            phoneNumberError,
+            emailError
+        ).any { it != null }
     }
 
-    data class PersonalInfo(
+    data class UserInfo(
         val firstName: String,
         val lastName: String,
         val birthDate: String,
         val gender: String,
         val allergies: String,
-        val disabilities: String
+        val disabilities: String,
+        val phoneNumber: String,
+        val email: String
     ) {
         fun toUser(currentUser: User) = currentUser.copy(
             firstName = firstName,
@@ -214,15 +264,7 @@ class UserProfileViewModel @Inject constructor(
             birthDate = birthDate,
             gender = gender,
             allergies = allergies,
-            disabilities = disabilities
-        )
-    }
-
-    data class ContactInfo(
-        val phoneNumber: String,
-        val email: String
-    ) {
-        fun toUser(currentUser: User) = currentUser.copy(
+            disabilities = disabilities,
             phoneNumber = phoneNumber,
             email = email
         )

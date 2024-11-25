@@ -40,6 +40,11 @@
         <activity
             android:name=".presentation.ui.activities.LoginRegisterActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".presentation.ui.activities.UserProfileActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -1,6 +1,5 @@
 package com.example.hammami.presentation.ui.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -8,9 +7,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.hammami.R
-import com.example.hammami.data.Service
+import com.example.hammami.domain.model.Service
 import com.example.hammami.databinding.ItemHomepageBinding
-import com.google.firebase.storage.FirebaseStorage
 
 private val TAG = "RecommendedAdapter"
 

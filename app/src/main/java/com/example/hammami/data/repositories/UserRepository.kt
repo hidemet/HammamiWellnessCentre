@@ -2,17 +2,13 @@ package com.example.hammami.data.repositories
 
 import com.example.hammami.data.datasource.user.FirebaseFirestoreUserDataSource
 import com.example.hammami.data.datasource.user.FirebaseStorageUserDataSource
-import com.example.hammami.domain.usecase.DataError
-import com.example.hammami.domain.usecase.Result
-import com.example.hammami.model.User
+import com.example.hammami.domain.error.DataError
+import com.example.hammami.core.result.Result
+import com.example.hammami.domain.model.User
 import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException
-import kotlinx.coroutines.flow.Flow
 import android.net.Uri
-import android.util.Log
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,21 +19,31 @@ class UserRepository @Inject constructor(
     private val authRepository: AuthRepository
 ) {
     suspend fun getUserData(): Result<User, DataError> {
-        return try {
-            val uid = authRepository.getCurrentUserId() ?: return Result.Error(DataError.Auth.NOT_AUTHENTICATED)
-            val user = firestoreDataSource.fetchUserData(uid)
-            if (user != null) {
-                Result.Success(user)
-            } else {
-                Result.Error(DataError.User.USER_NOT_FOUND)
+        return when (val uidResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                try {
+                    val user = firestoreDataSource.fetchUserData(uidResult.data)
+                    if (user != null) {
+                        Result.Success(user)
+                    } else {
+                        Result.Error(DataError.User.USER_NOT_FOUND)
+                    }
+                } catch (e: Exception) {
+                    Result.Error(mapExceptionToDataError(e))
+                }
             }
-        } catch (e: Exception) {
-            Log.e("UserRepository", "Errore nel recupero dei dati utente", e)
-            Result.Error(mapExceptionToDataError(e))
+            is Result.Error -> Result.Error(uidResult.error)
         }
     }
 
-
+   suspend fun getUserPoints(userId: String): Result<Int, DataError> {
+    return try {
+        val points = firestoreDataSource.getUserPoints(userId)
+        Result.Success(points)
+    } catch (e: Exception) {
+        Result.Error(mapExceptionToDataError(e))
+    }
+}
 
     suspend fun getUserData(userId: String?): Result<User, DataError> {
         return try {
@@ -51,7 +57,6 @@ class UserRepository @Inject constructor(
                 Result.Error(DataError.User.USER_NOT_FOUND)
             }
         } catch (e: Exception) {
-            Log.e("UserRepository", "Errore nel recupero dei dati utente per ID: $userId", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
@@ -60,46 +65,54 @@ class UserRepository @Inject constructor(
         if (email.isBlank() || password.isBlank()) {
             return Result.Error(DataError.Auth.INVALID_CREDENTIALS)
         }
+
         return when (val authResult = authRepository.createUser(email, password)) {
             is Result.Success -> {
-                val uid = authRepository.getCurrentUserId()
-                    ?: return Result.Error(DataError.Auth.UNKNOWN)
-                when (val saveResult = saveUser(uid, userData)) {
-                    is Result.Success -> Result.Success(userData.copy(email = email))
+                when (val uidResult = authRepository.getCurrentUserId()) {
+                    is Result.Success -> {
+                        when (val saveResult = saveUser(uidResult.data, userData)) {
+                            is Result.Success -> Result.Success(userData.copy(email = email))
+                            is Result.Error -> {
+                                // Rollback: elimina l'account appena creato se il salvataggio del profilo fallisce
+                                authRepository.deleteUser()
+                                Result.Error(saveResult.error)
+                            }
+                        }
+                    }
                     is Result.Error -> {
-                        // Rollback: elimina l'account appena creato se il salvataggio del profilo fallisce
                         authRepository.deleteUser()
-                        Result.Error(saveResult.error)
+                        Result.Error(uidResult.error)
                     }
                 }
             }
-
             is Result.Error -> Result.Error(authResult.error)
         }
     }
 
     suspend fun updateUser(user: User): Result<Unit, DataError> {
-        return try {
-            val uid = authRepository.getCurrentUserId()
-                ?: return Result.Error(DataError.Auth.NOT_AUTHENTICATED)
-
-            firestoreDataSource.updateUser(uid, user)
-            if (user.email != authRepository.getCurrentUser()?.email) {
-                authRepository.updateEmail(user.email)
+        return when (val uidResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                try {
+                    firestoreDataSource.updateUser(uidResult.data, user)
+                    when (val updateResult = authRepository.updateEmail(user.email)) {
+                        is Result.Success -> Result.Success(Unit)
+                        is Result.Error -> updateResult
+                    }
+                } catch (e: Exception) {
+                    Result.Error(mapExceptionToDataError(e))
+                }
             }
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Log.e("UserRepository", "Errore nell'aggiornamento del profilo utente", e)
-            Result.Error(mapExceptionToDataError(e))
+            is Result.Error -> Result.Error(uidResult.error)
         }
     }
 
-     suspend fun saveUser(userUid: String, user: User): Result<Unit, DataError> {
+
+
+     private suspend fun saveUser(userUid: String, user: User): Result<Unit, DataError> {
         return try {
             firestoreDataSource.saveUserInformation(userUid, user)
             Result.Success(Unit)
         } catch (e: Exception) {
-            Log.e("UserRepository", "Errore nel salvataggio del profilo utente", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
@@ -109,21 +122,38 @@ class UserRepository @Inject constructor(
             val downloadUrl = storageDataSource.uploadUserImage(imageUri)
             Result.Success(downloadUrl)
         } catch (e: Exception) {
-            Log.e("UserRepository", "Errore nel caricamento dell'immagine del profilo", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
 
     suspend fun deleteUser(): Result<Unit, DataError> {
-        return try {
-            val uid = authRepository.getCurrentUserId()
-                ?: return Result.Error(DataError.Auth.NOT_AUTHENTICATED)
-            firestoreDataSource.deleteUserProfile(uid)
-            authRepository.deleteUser()
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Log.e("UserRepository", "Errore nell'eliminazione dell'utente", e)
-            Result.Error(mapExceptionToDataError(e))
+        return when (val uidResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                try {
+                    firestoreDataSource.deleteUserProfile(uidResult.data)
+                    when (val deleteResult = authRepository.deleteUser()) {
+                        is Result.Success -> Result.Success(Unit)
+                        is Result.Error -> deleteResult
+                    }
+                } catch (e: Exception) {
+                    Result.Error(mapExceptionToDataError(e))
+                }
+            }
+            is Result.Error -> Result.Error(uidResult.error)
+        }
+    }
+
+    suspend fun getUserPoints(): Result<Int, DataError> {
+        return when (val uidResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                try {
+                    val points = firestoreDataSource.getUserPoints(uidResult.data)
+                    Result.Success(points)
+                } catch (e: Exception) {
+                    Result.Error(mapExceptionToDataError(e))
+                }
+            }
+            is Result.Error -> Result.Error(uidResult.error)
         }
     }
 

@@ -1,6 +1,6 @@
 package com.example.hammami.data.datasource.user
 
-import com.example.hammami.model.User
+import com.example.hammami.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ListenerRegistration
@@ -45,5 +45,14 @@ suspend fun saveUserInformation(userUid: String, user: User) {
         } catch (e: FirebaseFirestoreException) {
             throw e
         }
+    }
+
+    suspend fun getUserPoints(uid: String): Int {
+        return try {
+            usersCollection.document(uid).get().await().toObject(User::class.java)?.points ?: 0
+        } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
+
     }
 }

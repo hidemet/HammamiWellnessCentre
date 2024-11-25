@@ -1,53 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardElevation="0dp"
-    app:strokeWidth="0dp"
+    android:orientation="horizontal"
     android:clickable="true"
     android:focusable="true"
-    android:checkable="true"
-    app:rippleColor="?attr/colorControlHighlight">
+    android:background="?attr/selectableItemBackground"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="16dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/leadingIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:tint="?attr/colorOnSurfaceVariant" />
+
+    <TextView
+        android:id="@+id/optionTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:text="Titolo opzione"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface" />
 
-        <ImageView
-            android:id="@+id/leadingIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="?attr/colorOnSurfaceVariant" />
+    <ImageView
+        android:id="@+id/trailingIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:tint="?attr/colorOnSurfaceVariant"
+        android:src="@drawable/ic_chevron_right" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/optionTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="Titolo opzione"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            app:layout_constraintStart_toEndOf="@id/leadingIcon"
-            app:layout_constraintEnd_toStartOf="@id/trailingIcon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <ImageView
-            android:id="@+id/trailingIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_chevron_right"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="?attr/colorOnSurfaceVariant" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

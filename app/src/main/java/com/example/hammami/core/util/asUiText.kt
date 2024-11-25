@@ -1,17 +1,14 @@
 package com.example.hammami.core.util
 
 import com.example.hammami.R
-import com.example.hammami.domain.usecase.DataError
-import com.example.hammami.domain.usecase.Error
-import com.example.hammami.domain.usecase.ValidateBirthDateUseCase.*
-import com.example.hammami.domain.usecase.ValidateConfirmedPasswordUseCase.*
-import com.example.hammami.domain.usecase.ValidateEmailUseCase.*
-import com.example.hammami.domain.usecase.ValidateFirstNameUseCase.*
-import com.example.hammami.domain.usecase.ValidateGenderUseCase.*
-import com.example.hammami.domain.usecase.ValidateLastNameUseCase.*
-import com.example.hammami.domain.usecase.ValidatePasswordUseCase.*
-import com.example.hammami.domain.usecase.ValidatePhoneNumberUseCase.*
 import com.example.hammami.core.ui.UiText
+import com.example.hammami.domain.error.DataError
+import com.example.hammami.domain.error.Error
+import com.example.hammami.domain.error.ValidationError
+import com.example.hammami.domain.error.ValidationError.*
+import com.example.hammami.domain.error.ValidationError.User.*
+import com.example.hammami.domain.error.ValidationError.Card.*
+import com.example.hammami.domain.error.ValidationError.DiscountError.*
 
 fun FirstNameError.asUiText(): UiText {
     return when (this) {
@@ -23,6 +20,16 @@ fun FirstNameError.asUiText(): UiText {
 fun LastNameError.asUiText(): UiText {
     return UiText.StringResource(R.string.error_last_name_empty)
 }
+
+fun DiscountError.asUiText(): UiText {
+    return when (this) {
+        INVALID_DISCOUNT -> UiText.StringResource(R.string.error_invalid_discount)
+        EXCEEDS_AMOUNT -> UiText.StringResource(R.string.discount_exceeds_amount)
+        EMPTY_CODE -> TODO()
+        NOT_FOUND -> TODO()
+    }
+}
+
 
 fun BirthDateError.asUiText(): UiText {
     return when (this) {
@@ -67,7 +74,10 @@ fun DataError.asUiText(): UiText {
             DataError.Network.NO_INTERNET -> UiText.StringResource(R.string.error_no_internet)
             DataError.Network.UNKNOWN -> UiText.StringResource(R.string.error_unknown_network)
             DataError.Network.SERVER_ERROR -> UiText.StringResource(R.string.error_server_error)
+            DataError.Network.OPERATION_CANCELLED -> UiText.StringResource(R.string.error_operation_cancelled)
+            DataError.Network.SERVICE_UNAVAILABLE -> UiText.StringResource(R.string.error_service_unavailable)
         }
+
         is DataError.Auth -> when (this) {
             DataError.Auth.USER_NOT_FOUND -> UiText.StringResource(R.string.error_user_not_found)
             DataError.Auth.INVALID_CREDENTIALS -> UiText.StringResource(R.string.error_invalid_credentials)
@@ -77,25 +87,90 @@ fun DataError.asUiText(): UiText {
             DataError.Auth.UNKNOWN -> UiText.StringResource(R.string.error_unknown_auth)
             DataError.Auth.TOKEN_REFRESH_FAILED -> UiText.StringResource(R.string.error_token_refresh_failed)
         }
+
         is DataError.User -> when (this) {
             DataError.User.USER_NOT_FOUND -> UiText.StringResource(R.string.error_user_not_found)
             DataError.User.USER_ALREADY_EXISTS -> UiText.StringResource(R.string.error_user_already_exists)
             DataError.User.PERMISSION_DENIED -> UiText.StringResource(R.string.error_permission_denied)
             DataError.User.UPDATE_FAILED -> UiText.StringResource(R.string.error_update_failed)
+            DataError.User.INVALID_INPUT -> UiText.StringResource(R.string.error_invalid_input)
+            DataError.User.INSUFFICIENT_POINTS -> UiText.StringResource(R.string.insufficient_points)
+            DataError.User.COUPON_NOT_FOUND -> UiText.StringResource(R.string.error_coupon_not_found)
+            DataError.User.COUPON_ALREADY_EXISTS -> UiText.StringResource(R.string.error_coupon_already_exists)
+            DataError.User.COUPON_EXPIRED -> UiText.StringResource(R.string.error_coupon_expired)
+            DataError.User.COUPON_ALREADY_USED -> UiText.StringResource(R.string.error_coupon_already_used)
+            DataError.User.GIFT_CARD_NOT_FOUND -> UiText.StringResource(R.string.error_gift_card_not_found)
+            DataError.User.GIFT_CARD_NOT_VALID -> UiText.StringResource(R.string.error_gift_card_not_valid)
+            DataError.User.UNKNOWN -> UiText.StringResource(R.string.error_unknown_user)
         }
+
         is DataError.Storage -> when (this) {
             DataError.Storage.BUCKET_NOT_FOUND -> UiText.StringResource(R.string.error_bucket_not_found)
             DataError.Storage.QUOTA_EXCEEDED -> UiText.StringResource(R.string.error_quota_exceeded)
             DataError.Storage.UPLOAD_FAILED -> UiText.StringResource(R.string.error_upload_failed)
         }
+
+        is DataError.Coupon -> when (this) {
+            DataError.Coupon.NOT_FOUND -> UiText.StringResource(R.string.error_coupon_not_found)
+            DataError.Coupon.ALREADY_USED -> UiText.StringResource(R.string.error_coupon_already_used)
+            DataError.Coupon.EXPIRED -> UiText.StringResource(R.string.error_coupon_expired)
+            DataError.Coupon.INVALID -> UiText.StringResource(R.string.error_coupon_invalid)
+            DataError.Coupon.VALUE_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_coupon_value_exceeds_amount)
+        }
+
+        is DataError.GiftCard -> when (this) {
+            DataError.GiftCard.NOT_FOUND -> UiText.StringResource(R.string.error_gift_card_not_found)
+            DataError.GiftCard.VALIDATION_FAILED -> UiText.StringResource(R.string.error_gift_card_validation_failed)
+        }
+
+        is DataError.Payment -> when (this) {
+            DataError.Payment.INVALID_DISCOUNT_CODE -> UiText.StringResource(R.string.error_invalid_discount_code)
+            DataError.Payment.INVALID_AMOUNT -> UiText.StringResource(R.string.error_invalid_amount)
+            DataError.Payment.UNKNOWN -> UiText.StringResource(R.string.error_unknown_payment)
+            DataError.Payment.DISCOUNT_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_discount_exceeds_amount)
+            DataError.Payment.INVALID_PAYMENT_INFO -> UiText.StringResource(R.string.error_invalid_payment_info)
+        }
+
+        DataError.Discount.NOT_FOUND -> TODO()
+        DataError.Discount.EMPTY -> TODO()
     }
 }
+
+fun ExpiryDateError.asUiText(): UiText {
+    return when (this) {
+        ExpiryDateError.EMPTY -> UiText.StringResource(R.string.error_expiry_date_empty)
+        ExpiryDateError.INVALID_FORMAT -> UiText.StringResource(R.string.error_expiry_date_invalid_format)
+        ExpiryDateError.EXPIRED -> UiText.StringResource(R.string.error_expiry_date_expired)
+    }
+}
+
+fun NumberError.asUiText(): UiText {
+    return when (this) {
+        NumberError.EMPTY -> UiText.StringResource(R.string.error_card_number_empty)
+        NumberError.INVALID_FORMAT -> UiText.StringResource(R.string.error_card_number_invalid_format)
+        NumberError.INVALID_CARD -> UiText.StringResource(R.string.error_card_number_invalid_card)
+        NumberError.INVALID_LENGTH -> UiText.StringResource(R.string.error_card_number_invalid_length)
+    }
+}
+
+fun CvvError.asUiText(): UiText {
+    return when (this) {
+        CvvError.EMPTY -> UiText.StringResource(R.string.error_cvv_empty)
+        CvvError.INVALID_FORMAT -> UiText.StringResource(R.string.error_cvv_invalid_format)
+        CvvError.INVALID_LENGTH -> UiText.StringResource(R.string.error_cvv_invalid_length)
+    }
+}
+
 fun Error.asUiText(): UiText {
     return when (this) {
         is DataError.Network -> this.asUiText()
         is DataError.Auth -> this.asUiText()
         is DataError.User -> this.asUiText()
         is DataError.Storage -> this.asUiText()
+        is DataError.Coupon -> this.asUiText()
+        is DataError.GiftCard -> this.asUiText()
+        is DataError.Payment -> this.asUiText()
+        is DataError.Discount -> this.asUiText()
         is FirstNameError -> this.asUiText()
         is LastNameError -> this.asUiText()
         is BirthDateError -> this.asUiText()
@@ -104,6 +179,12 @@ fun Error.asUiText(): UiText {
         is PhoneNumberError -> this.asUiText()
         is ConfirmedPasswordError -> this.asUiText()
         is PasswordError -> this.asUiText()
-       // else -> UiText.StringResource(R.string.error_unknown)
+        is ExpiryDateError -> this.asUiText()
+        is NumberError -> this.asUiText()
+        is CvvError -> this.asUiText()
+        is DiscountError -> this.asUiText()
+        is Payment -> this.asUiText()
+        // else -> UiText.StringResource(R.string.error_unknown)
+
     }
 }

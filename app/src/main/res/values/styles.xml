@@ -5,11 +5,9 @@
         <item name="indicatorSize">80dp</item>
         <item name="trackCornerRadius">4dp</item>
         <item name="indicatorColor">@color/md_theme_onPrimaryContainer</item>
-    </style>
-
-    <style name="FullScreenDialogStylexxxxxxxx">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">?attr/colorSurfaceContainerLowest</item>
+        <item name="android:statusBarColor">?attr/colorSurfaceContainerLowest</item>
+        <item name="android:navigationBarColor">?attr/colorSurfaceContainerLowest</item>
     </style>
 
     <style name="FullScreenDialogStyle" parent="Theme.Hammami">
@@ -18,8 +16,15 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
-        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    <item name="android:windowExitAnimation">@android:anim/fade_out</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
+
+    <style name="Widget.App.BottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="behavior_fitToContents">true</item>
+        <item name="behavior_skipCollapsed">true</item>
+    </style>
+
+
 
 </resources>

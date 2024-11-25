@@ -3,9 +3,9 @@ package com.example.hammami.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hammami.data.Service
-import com.example.hammami.domain.usecase.Result
-import com.example.hammami.domain.usecase.DataError
+import com.example.hammami.domain.model.Service
+import com.example.hammami.core.result.Result
+import com.example.hammami.domain.error.DataError
 import javax.inject.Inject
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel

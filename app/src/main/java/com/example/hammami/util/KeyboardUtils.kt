@@ -11,7 +11,7 @@ fun Fragment.hideKeyboard() {
 }
 
 fun View.hideKeyboardOnOutsideTouch() {
-    setOnTouchListener { v, event ->
+    setOnTouchListener { v, _ ->
         v.performClick()
         (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
             .hideSoftInputFromWindow(windowToken, 0)

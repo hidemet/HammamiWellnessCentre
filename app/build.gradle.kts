@@ -2,10 +2,11 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
     id("com.android.application")
-    id ("com.google.gms.google-services")
-    id ("kotlin-parcelize")
-    id ("androidx.navigation.safeargs.kotlin")
-    id ("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
+    id("androidx.navigation.safeargs.kotlin")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -41,73 +42,76 @@ android {
         jvmTarget = "17"
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         dataBinding = true
+//        parcelize = true
     }
 }
 
-dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.firebase.storage.ktx)
-    implementation(libs.androidx.material3.android)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 
 
-    // Material Design 3
-    implementation(libs.material)
+    dependencies {
+
+        implementation(libs.androidx.core.ktx)
+        implementation(libs.androidx.appcompat)
+
+        implementation(libs.androidx.activity)
+        implementation(libs.androidx.constraintlayout)
+        implementation(libs.firebase.firestore.ktx)
+        implementation(libs.firebase.storage.ktx)
+        implementation(libs.androidx.material3.android)
+
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.androidx.junit)
+        androidTestImplementation(libs.androidx.espresso.core)
 
 
-    //implementation("com.google.android.material:material-icons-core:1.6.7")
-    //implementation("com.google.android.material:material-icons-extended:1.6.7")
+        // Material Design 3
+        implementation(libs.material)
 
-    //loading button
-    //implementation("br.com.simplepass:loading-button-android:2.2.0")
 
-    //Glide
-    implementation(libs.glide)
-    //circular image
-    implementation(libs.circleimageview)
+        //implementation("com.google.android.material:material-icons-core:1.6.7")
+        //implementation("com.google.android.material:material-icons-extended:1.6.7")
 
-    //viewpager2 indicatior
-    //implementation("io.github.vejei.viewpagerindicator:viewpagerindicator:1.0.0-alpha.1")
+        //loading button
+        //implementation("br.com.simplepass:loading-button-android:2.2.0")
 
-    //stepView
-    //implementation("com.shuhart.stepview:stepview:1.5.1")
+        //Glide
+        implementation(libs.glide)
+        //circular image
+        implementation(libs.circleimageview)
 
-    //Android Ktx
-    implementation(libs.androidx.navigation.fragment.ktx)
+        //viewpager2 indicatior
+        //implementation("io.github.vejei.viewpagerindicator:viewpagerindicator:1.0.0-alpha.1")
 
-    //Dagger hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+        //stepView
+        //implementation("com.shuhart.stepview:stepview:1.5.1")
 
-    // Firebase
-    implementation(libs.firebase.auth)
-    //implementation(platform("com.google.firebase:firebase-bom:32.0.0")) // Update to the latest BOM version
-    implementation("com.google.firebase:firebase-firestore-ktx") // Add Firestore dependency
+        //Android Ktx
+        implementation(libs.androidx.navigation.fragment.ktx)
 
-    //Coroutines with firebase
-    implementation(libs.kotlinx.coroutines.play.services)
+        //Dagger hilt
+        implementation("com.google.dagger:hilt-android:2.44")
+        kapt("com.google.dagger:hilt-android-compiler:2.44")
 
-    //Navigation component
-    val nav_version = "2.5.0"
-    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+        // Firebase
+        implementation(libs.firebase.auth)
+        //implementation(platform("com.google.firebase:firebase-bom:32.0.0")) // Update to the latest BOM version
+        implementation("com.google.firebase:firebase-firestore-ktx") // Add Firestore dependency
 
-    // Splash screen
-    implementation("androidx.core:core-splashscreen:1.0.0")
+        //Coroutines with firebase
+        implementation(libs.kotlinx.coroutines.play.services)
 
-    // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-}
+        //Navigation component
+        val nav_version = "2.5.0"
+        implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+        implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+
+        // Splash screen
+        implementation("androidx.core:core-splashscreen:1.0.0")
+
+        // Retrofit
+        implementation("com.squareup.retrofit2:retrofit:2.9.0")
+        implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    }

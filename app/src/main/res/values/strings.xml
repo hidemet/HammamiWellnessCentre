@@ -1,4 +1,291 @@
 <resources>
+
+    <string name="earned_points_format">"Punti guadagnati: %1$d"</string>
+    <string name="total_points_format">"Punti totali: %1$d"</string>
+    <string name="error_coupon_invalid">Codice coupon non valido</string>
+    <string name="error_coupon_value_exceeds_amount">Il valore del coupon supera l\'importo</string>
+    <string name="error_expiry_date_empty">La data di scadenza è obbligatoria</string>
+    <string name="error_expiry_date_invalid_format">Formato della data di scadenza non valido</string>
+    <string name="error_expiry_date_expired">La data di scadenza è passata</string>
+    <string name="error_card_number_empty">Il numero della carta è obbligatorio</string>
+    <string name="error_card_number_invalid_format">Formato del numero della carta non valido</string>
+    <string name="error_card_number_invalid_card">Numero della carta non valido</string>
+    <string name="error_card_number_invalid_length">Lunghezza del numero della carta non valida</string>
+    <string name="error_invalid_credit_card">Carta di credito non valida</string>
+    <string name="error_cvv_empty">Il CVV è obbligatorio</string>
+    <string name="error_cvv_invalid_format">Formato del CVV non valido</string>
+    <string name="error_cvv_invalid_length">Lunghezza del CVV non valida</string>
+
+    <string name="coupon_generated_success_message">Il tuo coupon è stato generato con successo!</string>
+    <string name="coupon_details_format">Valore: %1$s\nScadenza: %2$s</string>
+    <string name="coupon_code_copied">Codice coupon copiato negli appunti</string>
+
+    <string name="error_gift_card_not_found">Gift card non trovata</string>
+    <string name="error_gift_card_not_valid">Gift card non valida</string>
+    <string name="error_unknown_user">Errore utente sconosciuto</string>
+    <string name="error_gift_card_validation_failed">Validazione della gift card fallita</string>
+    <string name="error_invalid_amount">Importo non valido</string>
+    <string name="error_unknown_payment">Errore pagamento sconosciuto</string>
+    <string name="error_discount_exceeds_amount">Lo sconto supera l\'importo</string>
+
+
+    <string name="confirm_coupon">Conferma il coupon</string>
+    <string name="coupon_value_details">Coupon del valore di %.2f€</string>
+    <string name="points_required_details">Richiede %d punti</string>
+    <string name="points_remaining_details">Ti rimarranno %d punti dopo il riscatto</string>
+
+    <!-- Payment Fragment Strings -->
+    <string name="service_duration_format">Duration: %1$d minutes</string>
+    <string name="gift_card_value_format">Gift Card da %.0f €</string>
+    <string name="price_format">$%1$.2f</string>
+    <string name="price_format_negative">-$%1$.2f</string>
+    <string name="discount_amount">Sconto: -€%1$.2f</string>
+    <string name="discount_applied">Sconto di €%1$.2f applicato</string>
+    <string name="check_card_details">Per favore controlla i dettagli della tua carta</string>
+    <string name="continue_text">Continua</string>
+    <string name="confirm_payment">Conferma Pagamento</string>
+    <string name="processing">Elaborazione in corso</string>
+    <string name="done">Fatto</string>
+
+
+    <!-- Aggiunte per fragment_gift_card_generated.xml -->
+    <string name="gift_card_created">Gift Card creata</string>
+    <string name="go_to_home">Vai alla Home</string>
+
+    <!-- Aggiunte per layout_payment_discount_section.xml -->
+    <string name="discount_codes">Codici Sconto</string>
+    <string name="enter_code">Inserisci Codice</string>
+    <string name="apply">Applica</string>
+    <string name="discount">Sconto</string>
+
+    <!-- Aggiunte per layout_payment_summary.xml -->
+    <string name="original_amount">Importo Originale</string>
+
+
+    <!-- Aggiunte per layout_payment_review.xml -->
+    <string name="review_payment">Rivedi Pagamento</string>
+
+    <!-- Aggiunte per layout_payment_enter_details.xml -->
+    <string name="enter_card_details">Inserisci i Dettagli della Carta</string>
+    <string name="expiry">Scadenza (MM/YY)</string>
+
+    <!-- Aggiunte per layout_gifcard_payment.xml -->
+    <string name="select_payment_method">Seleziona metodo di pagamento</string>
+    <string name="pay_now">Paga ora</string>
+
+    <string name="points_format">%d pt</string>
+    <string name="coupon_generated_success">Coupon Generato!</string>
+    <string name="coupon_generated_description">Puoi copare il codice e usarlo per avere uno sconto sul tuo prossimo acquisto</string>
+    <string name="select_another_coupon">Seleziona un altro coupon</string>
+    <string name="back_to_coupons">Torna ai miei coupon</string>
+    <string name="coupon_copied">Codice copiato negli appunti</string>
+
+    <string name="gift_cards">Gift Cards</string>
+    <string name="no_gift_cards">Nessuna Gift Card</string>
+    <string name="no_gift_cards_description">Non hai ancora acquistato nessuna gift card. Acquistane una per iniziare!</string>
+    <string name="your_gift_cards">Le tue Gift Cards</string>
+    <string name="purchase_gift_card">Acquista Gift Card</string>
+
+    <!-- Pagamento -->
+    <string name="discount_format">-€%.2f</string>
+    <string name="payment_method">Metodo di pagamento</string>
+
+    <!-- Metodi di pagamento -->
+    <string name="credit_card">Carta di credito</string>
+    <string name="paypal">PayPal</string>
+    <string name="google_pay">Google Pay</string>
+    <string name="in_store">In negozio</string>
+
+    <!-- Sezione sconti -->
+    <string name="discount_section_title">Applica uno sconto</string>
+    <string name="discount_section_description">Inserisci un codice gift card o un coupon per applicare uno sconto al tuo acquisto</string>
+    <string name="discount_code_hint">Codice sconto</string>
+    <string name="enter_gift_card_or_coupon">Inserisci un codice gift card (GC) o un coupon</string>
+    <string name="apply_discount">Applica</string>
+    <string name="gift_card_applied_format">Gift Card %1$s (-€%.2f)</string>
+    <string name="coupon_applied_format">Coupon %1$s (-€%.2f)</string>
+
+    <!-- Carta di credito -->
+    <string name="card_number">Numero carta</string>
+    <string name="expiry_date">Data scadenza (MM/YY)</string>
+    <string name="cvv">CVV</string>
+
+    <!-- PayPal e Google Pay -->
+    <string name="redirect_to_paypal">Verrai reindirizzato a PayPal per completare il pagamento</string>
+    <string name="proceed_with_google_pay">Procedi con Google Pay</string>
+
+    <!-- Pulsanti -->
+    <string name="proceed_to_payment">Procedi al pagamento</string>
+    <string name="copy_code">Copia codice</string>
+
+    <!-- Dialog Gift Card generata -->
+    <string name="gift_card_generated_title">Gift Card generata con successo!</string>
+    <string name="gift_card_code">Codice Gift Card</string>
+    <string name="expires_on">Scade il: %1$s</string>
+    <string name="gift_card_instructions">Condividi questo codice con chi vuoi. La gift card può essere utilizzata una sola volta per il pagamento di un servizio di valore uguale o superiore.</string>
+    <string name="code_copied_to_clipboard">Codice copiato negli appunti</string>
+
+    <!-- Messaggi di successo -->
+    <string name="discount_applied_message">Sconto di €%.2f applicato con successo</string>
+    <string name="gift_card_purchase_success">Puoi copare il codice e usarlo per avere uno sconto sul tuo prossimo acquisto</string>
+    <string name="booking_payment_success">Prenotazione confermata con successo</string>
+
+    <!-- Messaggi di errore -->
+    <string name="error_invalid_discount_code">Codice sconto non valido</string>
+    <string name="error_discount_already_applied">Uno sconto è già stato applicato</string>
+    <string name="error_gift_card_value_too_low">Il valore della gift card è inferiore al prezzo del servizio</string>
+
+    <!-- Titoli e Label -->
+    <string name="total_amount">Totale</string>
+    <string name="original_price">Prezzo</string>
+    <string name="total_to_pay">Da pagare</string>
+    <string name="payment_details">Dettagli pagamento</string>
+
+    <!-- Metodi di Pagamento -->
+    <string name="credit_card_number">Numero carta</string>
+    <string name="save_card_for_future">Salva carta per pagamenti futuri</string>
+
+
+    <!-- Coupon -->
+    <string name="coupon_code">Codice coupon</string>
+    <string name="apply_coupon">Applica</string>
+    <string name="applied_coupon_format">%1$s (%2$s)</string>
+    <string name="coupon_section_title">Hai un coupon?</string>
+
+    <!-- Header Servizi -->
+    <string name="appointment_date_format">%1$s</string>
+    <string name="appointment_time_format">%1$s-%2$s (%3$s)</string>
+    <string name="duration_format">Durata: %d minuti</string>
+    <string name="duration_hours_only">%1$d ora</string>
+    <string name="duration_minutes_only">%1$d min</string>
+
+    <!-- Gift Card -->
+    <string name="gift_card_purchase">Acquisto Gift Card</string>
+
+    <!-- Messaggi di Successo -->
+    <string name="coupon_applied_success">Coupon applicato con successo!</string>
+    <string name="coupon_removed">Coupon rimosso</string>
+    <string name="payment_successful">Pagamento completato con successo</string>
+
+    <!-- Messaggi di Errore -->
+    <string name="error_invalid_coupon">Codice coupon non valido</string>
+    <string name="error_expired_coupon">Questo coupon è scaduto</string>
+    <string name="error_already_used_coupon">Questo coupon è già stato utilizzato</string>
+    <string name="error_coupon_not_applicable">Questo coupon non può essere applicato a questo acquisto</string>
+    <string name="error_coupon_min_amount">Importo minimo per utilizzare questo coupon: %1$s</string>
+    <string name="error_payment_failed">Pagamento non riuscito. Riprova.</string>
+    <string name="error_invalid_card">Carta non valida</string>
+    <string name="error_card_expired">Carta scaduta</string>
+    <string name="error_invalid_cvv">CVV non valido</string>
+
+
+    <!-- Accessibility -->
+    <string name="close_coupon_description">Rimuovi coupon applicato</string>
+    <string name="credit_card_icon_description">Icona carta di credito</string>
+    <string name="paypal_icon_description">Logo PayPal</string>
+    <string name="google_pay_icon_description">Logo Google Pay</string>
+    <string name="scan_card_description">Scansiona carta di credito</string>
+    <string name="payment_processing">Elaborazione del pagamento in corso</string>
+
+    <!-- Dialog -->
+    <string name="confirm_payment_title">Conferma pagamento</string>
+    <string name="confirm_payment_message">Stai per effettuare un pagamento di %1$s. Vuoi procedere?</string>
+    <string name="payment_cancel_confirmation">Sei sicuro di voler annullare il pagamento?</string>
+
+    <!-- Form Validation -->
+    <string name="required_field">Campo obbligatorio</string>
+    <string name="invalid_card_number">Numero carta non valido</string>
+    <string name="invalid_expiry_date">Data di scadenza non valida</string>
+    <string name="invalid_cvv_format">CVV deve essere di 3 o 4 cifre</string>
+    <string name="card_expired">La carta è scaduta</string>
+
+    <!-- Receipt -->
+    <string name="receipt_title">Ricevuta di Pagamento</string>
+    <string name="receipt_transaction_id">ID Transazione: %1$s</string>
+    <string name="receipt_date">Data: %1$s</string>
+    <string name="receipt_payment_method">Metodo di pagamento: %1$s</string>
+    <!-- Visibilità dello stato del sistema -->
+    <string name="points_placeholder">Hai %d punti</string>
+    <string name="active_coupons_title">Coupon Attivi</string>
+    <string name="no_active_coupons">Non hai ancora nessun coupon attivo</string>
+    <string name="loading">Caricamento in corso…</string>
+
+    <!-- Match tra sistema e mondo reale -->
+    <string name="available_coupons_title">Coupon Disponibili</string>
+    <string name="available_coupons_subtitle">Scegli il coupon da riscattare con i tuoi punti</string>
+    <string name="coupon_value_format">%.0f €</string>
+    <string name="points_required_format">Richiede %d punti</string>
+
+    <!-- Controllo e libertà dell\'utente -->
+    <string name="cancel">Annulla</string>
+    <string name="close">Chiudi</string>
+    <string name="back">Indietro</string>
+
+    <!-- Coerenza e standard -->
+    <string name="confirm_redemption_title">Conferma Riscatto</string>
+    <string name="coupon_generated_title">Coupon Generato!</string>
+    <string name="coupon_code_hint">Codice Coupon</string>
+
+    <!-- Prevenzione degli errori -->
+    <string name="confirm_redemption_message">Vuoi riscattare un coupon da %.2f€ utilizzando %2$d punti?</string>
+    <string name="insufficient_points">Non hai abbastanza punti per questo coupon</string>
+    <string name="coupon_expiration_warning">Il coupon scadrà il %s</string>
+
+    <!-- Riconoscimento invece che ricordo -->
+    <string name="copy_code_description">Copia codice coupon</string>
+    <string name="select_coupon_description">Seleziona questo coupon</string>
+
+    <!-- Flessibilità ed efficienza -->
+    <string name="points_icon_description">Icona punti</string>
+    <string name="coupon_expiration_format">Scade il: %s</string>
+
+    <!-- Design estetico e minimalista -->
+    <string name="coupon_code_prefix">Codice: </string>
+    <string name="coupon_value_prefix">Valore: </string>
+
+    <!-- Aiuto e documentazione -->
+    <string name="how_points_work">Come funzionano i punti?</string>
+    <string name="help_redeem_coupon">Come utilizzare un coupon</string>
+
+    <!-- Gestione degli errori -->
+    <string name="error_generic">Si è verificato un errore. Riprova più tardi.</string>
+    <string name="error_network">Verifica la tua connessione e riprova.</string>
+    <string name="error_coupon_expired">Questo coupon è scaduto.</string>
+    <string name="error_coupon_already_used">Questo coupon è già stato utilizzato.</string>
+    <string name="error_coupon_not_found">Coupon non trovato.</string>
+    <!-- ************* -->
+
+    <!-- Titolo della schermata -->
+    <string name="coupons_title">I miei Coupons</string>
+
+    <!-- Testo per il saldo punti -->
+    <string name="points">%d pt.</string>
+    <string name="coupon_value">Coupon da $d €</string>
+
+    <!-- Titolo della sezione coupons disponibili -->
+    <string name="available_coupons">I tuoi coupon</string>
+
+    <!-- Messaggio quando non ci sono coupons disponibili -->
+    <string name="no_coupons_available">Al momento non hai coupons attivi. Accumula più punti per riscattarne!</string>
+
+    <!-- Testo del pulsante per riscattare un coupon -->
+    <string name="redeem_coupon">Riscatta Coupon</string>
+
+    <!-- Stringhe per i singoli coupons (da usare nell'adapter del RecyclerView) -->
+    <string name="coupon_value_adapter">Valore: %1$s€</string>
+    <string name="coupon_points_cost">Costo in punti: %1$d</string>
+    <string name="coupon_expiration">Scade il: %1$s</string>
+
+    <!-- Stringhe per il dialogo di riscatto coupon -->
+    <string name="redeem_coupon_dialog_title">Riscatta un Coupon</string>
+    <string name="redeem_coupon_dialog_message">Sei sicuro di voler riscattare questo coupon per %1$d punti?</string>
+    <string name="redeem_coupon_dialog_confirm">Conferma</string>
+    <string name="redeem_coupon_dialog_cancel">Annulla</string>
+
+    <!-- Messaggi di conferma o errore -->
+    <string name="coupon_redeemed_success">Coupon riscattato con successo!</string>
+    <string name="coupon_redeemed_error">Errore nel riscatto del coupon. Riprova più tardi.</string>
+
     <string name="error_first_name_empty">Il nome è obbligatorio.</string>
     <string name="error_first_name_too_short">Il nome è troppo corto. Deve contenere almeno 2 caratteri.</string>
     <string name="error_last_name_empty">Il cognome è obbligatorio.</string>
@@ -119,7 +406,6 @@
     <string name="reauthentication_required">Richiesta di ri-autenticazione</string>
     <string name="confirm">Conferma</string>
     <string name="password_required">Inserisci la password.</string>
-    <string name="cancel">Cancella</string>
     <string name="choose_image_source">Da dove vuoi caricare immagine?</string>
     <string name="upload_failed">Image upload failed</string>
     <string name="new_password">Password nuova</string>
@@ -170,4 +456,27 @@
     <string name="invalid_input">I dati inseriti non sono corretti</string>
     <string name="user_not_logged_in">L\'utente non è loggato</string>
     <string name="password_reset_email_sent">E\' stata inviata un\'email per il recupero della password</string>
+    <string name="settings">Impostazioni</string>
+    <string name="error_operation_cancelled">L\'operazione è stata cancellata</string>
+    <string name="error_invalid_input">Input non valido</string>
+    <string name="error_coupon_already_exists">Il coupon esiste già.</string>
+    <string name="coupon_generated_successfully">Coupon generato con successo!</string>
+    <string name="error_auth_required">Errore: E\' richiesta l\'autenticazione!</string>
+    <string name="error_service_unavailable">Servizio al momento non disponibile. Riprovare più tardi.</string>
+    <string name="discount_exceeds_amount">Attenzione: Lo sconto che stai applicando è superiore al totale da pagare.</string>
+    <string name="gift_card_code_copied">La gif card è stata copiata!</string>
+    <string name="available_gift_cards">Gift card disponibili</string>
+    <string name="payment">Pagamento</string>
+    <string name="select_gift_card">Seleziona una Gift Card</string>
+    <string name="coupon_created">Coupon creato</string>
+    <string name="back_to_gift_cards">Torna alle mie Gift Card</string>
+    <string name="gift_card_icon">icona gift card\n</string>
+    <string name="remove_discount">Rimuovi sconto</string>
+    <string name="check_payment_details">Per favore controlla i dettagli della tua carta di credito!\n</string>
+    <string name="discount_applied_format">Sconto di €%1$.2f applicato</string>
+    <string name="error_invalid_discount">Lo sconto non è valido!</string>
+    <string name="error_invalid_payment_token">toker per il pagamento non valido!</string>
+    <string name="error_invalid_payment_info">Rivedi i dati sulla carta di credito.</string>
+    <string name="discount_code">Digita codice sconto</string>
+
 </resources>

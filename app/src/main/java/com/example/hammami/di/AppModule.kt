@@ -5,10 +5,29 @@ import android.content.Context
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.hammami.R
+import com.example.hammami.core.validator.AndroidEmailPatternValidator
+import com.example.hammami.core.validator.EmailPatternValidator
 import com.example.hammami.data.datasource.auth.FirebaseAuthDataSource
 import com.example.hammami.data.repositories.AuthRepository
 import com.example.hammami.data.repositories.UserRepository
-import com.example.hammami.domain.usecase.*
+import com.example.hammami.data.repositories.UserStateRepository
+import com.example.hammami.domain.usecase.auth.DeleteAccountUseCase
+import com.example.hammami.domain.usecase.auth.ResetPasswordUseCase
+import com.example.hammami.domain.usecase.auth.SignInUseCase
+import com.example.hammami.domain.usecase.auth.SignUpUseCase
+import com.example.hammami.domain.usecase.auth.CheckAuthStateUseCase
+import com.example.hammami.domain.usecase.user.ObserveUserStateUseCase
+import com.example.hammami.domain.usecase.user.UpdateUserUseCase
+import com.example.hammami.domain.usecase.user.UploadUserImageUseCase
+import com.example.hammami.domain.usecase.validation.account.ValidateConfirmedPasswordUseCase
+import com.example.hammami.domain.usecase.validation.account.ValidateEmailUseCase
+import com.example.hammami.domain.usecase.validation.account.ValidatePasswordUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidateBirthDateUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidateFirstNameUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidateGenderUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidateLastNameUseCase
+import com.example.hammami.domain.usecase.validation.user.ValidatePhoneNumberUseCase
+import com.example.hammami.presentation.ui.activities.UserProfileViewModel
 import com.example.hammami.util.ClipboardManager
 import com.example.hammami.util.PreferencesManager
 import com.google.firebase.auth.FirebaseAuth
@@ -29,13 +48,11 @@ object AppModule {
     @Provides
     fun provideGlideInstance(
         @ApplicationContext context: Context
-    ) = Glide.with(context)
-        .setDefaultRequestOptions(
-            RequestOptions()
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .error(R.drawable.ic_launcher_foreground)
-                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.DATA)
-        )
+    ) = Glide.with(context).setDefaultRequestOptions(
+        RequestOptions().placeholder(R.drawable.ic_launcher_foreground)
+            .error(R.drawable.ic_launcher_foreground)
+            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.DATA)
+    )
 
     @Provides
     @Singleton
@@ -109,8 +126,28 @@ object AppModule {
         ValidateConfirmedPasswordUseCase()
 
     @Provides
-    fun provideGetUserProfileUseCase(userRepository: UserRepository): GetUserUseCase =
-        GetUserUseCase(userRepository)
+    @Singleton
+    fun provideValidationUseCases(
+        validateFirstName: ValidateFirstNameUseCase,
+        validateLastName: ValidateLastNameUseCase,
+        validateBirthDate: ValidateBirthDateUseCase,
+        validateGender: ValidateGenderUseCase,
+        validatePhoneNumber: ValidatePhoneNumberUseCase,
+        validateEmail: ValidateEmailUseCase
+    ) = UserProfileViewModel.ValidationUseCases(
+        validateFirstName,
+        validateLastName,
+        validateBirthDate,
+        validateGender,
+        validatePhoneNumber,
+        validateEmail
+    )
+
+    @Provides
+    @Singleton
+    fun provideObserveUserStateUseCase(userStateRepository: UserStateRepository): ObserveUserStateUseCase =
+        ObserveUserStateUseCase(userStateRepository)
+
 
     @Provides
     fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserUseCase {
@@ -125,6 +162,15 @@ object AppModule {
     @Provides
     fun provideDeleteUserUseCase(userRepository: UserRepository): DeleteAccountUseCase {
         return DeleteAccountUseCase(userRepository)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideCheckAuthStateUseCase(
+        authRepository: AuthRepository
+    ): CheckAuthStateUseCase {
+        return CheckAuthStateUseCase(authRepository)
     }
 
     @Provides
