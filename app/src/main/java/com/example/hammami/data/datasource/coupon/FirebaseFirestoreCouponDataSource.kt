@@ -10,6 +10,7 @@ import javax.inject.Singleton
 
 import com.example.hammami.util.FirestoreCollections
 import com.example.hammami.util.FirestoreFields
+import com.example.hammami.util.FirestoreFields.POINTS
 import com.google.firebase.Timestamp
 
 
@@ -22,16 +23,16 @@ class FirebaseFirestoreCouponDataSource @Inject constructor(
 
     private fun DocumentSnapshot.toCoupon(): Coupon {
         return Coupon(
-                id = id,
-                code = getString("code") ?: "",
-                value = getDouble("value") ?: 0.0,
-                userId = getString("userId") ?: "",
-                createdAt = getTimestamp("createdAt") ?: Timestamp.now(),
-                expirationDate = getTimestamp("expirationDate") ?: Timestamp.now(),
-                usedInBooking = getString("usedInBooking"),
-                isUsed = getBoolean("isUsed") ?: false,
-                usedDate = getTimestamp("usedDate")
-            )
+            id = id,
+            code = getString("code") ?: "",
+            value = getDouble("value") ?: 0.0,
+            userId = getString("userId") ?: "",
+            createdAt = getTimestamp("createdAt") ?: Timestamp.now(),
+            expirationDate = getTimestamp("expirationDate") ?: Timestamp.now(),
+            usedInBooking = getString("usedInBooking"),
+            isUsed = getBoolean("isUsed") ?: false,
+            usedDate = getTimestamp("usedDate")
+        )
     }
 
     private fun Coupon.toFirestoreMap() = mapOf(
@@ -75,7 +76,7 @@ class FirebaseFirestoreCouponDataSource @Inject constructor(
             .document(userId)
             .get()
             .await()
-            .getLong("points") ?: 0L
+            .getLong(POINTS) ?: 0L
 
     suspend fun createCouponWithPoints(
         coupon: Coupon,
@@ -85,7 +86,7 @@ class FirebaseFirestoreCouponDataSource @Inject constructor(
         firestore.runTransaction { transaction ->
             val userRef = usersCollection.document(userId)
             val currentPoints = transaction.get(userRef)
-                .getLong("points") ?: 0L
+                .getLong(POINTS) ?: 0L
 
             if (currentPoints < requiredPoints) {
                 throw IllegalStateException("Insufficient points")
@@ -95,7 +96,7 @@ class FirebaseFirestoreCouponDataSource @Inject constructor(
             transaction.set(couponRef, coupon.copy(id = couponRef.id).toFirestoreMap())
             transaction.update(
                 userRef,
-                "points",
+                POINTS,
                 currentPoints - requiredPoints
             )
         }.await()
@@ -132,4 +133,3 @@ class FirebaseFirestoreCouponDataSource @Inject constructor(
         }.await()
     }
 }
-

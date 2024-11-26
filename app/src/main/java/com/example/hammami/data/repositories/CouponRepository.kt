@@ -4,11 +4,14 @@ import com.example.hammami.data.datasource.coupon.FirebaseFirestoreCouponDataSou
 import com.example.hammami.domain.model.coupon.Coupon
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
+import com.example.hammami.util.FirestoreCollections
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import java.security.SecureRandom
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,16 +20,23 @@ class CouponRepository @Inject constructor(
     private val dataSource: FirebaseFirestoreCouponDataSource,
     private val authRepository: AuthRepository
 ) {
-    suspend fun generateCoupon(value: Double): Result<Coupon, DataError> {
+
+
+    suspend fun generateCoupon(value: Double, userId: String): Result<Coupon, DataError> {
         return when (val uidResult = authRepository.getCurrentUserId()) {
             is Result.Success -> {
                 try {
                     val requiredPoints = calculateRequiredPoints(value)
                     val userId = uidResult.data
 
-                    val coupon = createCoupon(value, userId)
+                    val coupon = Coupon(
+                        code = Coupon.generateCode(value),
+                        value = value,
+                        createdAt = Timestamp.now(),
+                        expirationDate = calculateExpirationDate(),
+                        isUsed = false
+                    )
                     dataSource.createCouponWithPoints(coupon, userId, requiredPoints)
-
                     Result.Success(coupon)
                 } catch (e: Exception) {
                     Result.Error(mapException(e))
@@ -47,7 +57,6 @@ class CouponRepository @Inject constructor(
                     Result.Error(mapException(e))
                 }
             }
-
             is Result.Error -> Result.Error(uidResult.error)
         }
     }
@@ -80,7 +89,7 @@ class CouponRepository @Inject constructor(
     }
 
 
-    suspend fun useCoupon(couponCode: String, bookingId: String): Result<Unit, DataError> {
+    suspend fun useCoupon(couponCode: String, transactionId: String): Result<Unit, DataError> {
         return try {
             val coupon = dataSource.getCouponByCode(couponCode)
                 ?: return Result.Error(DataError.Coupon.NOT_FOUND)
@@ -89,33 +98,17 @@ class CouponRepository @Inject constructor(
                 return Result.Error(DataError.Coupon.INVALID)
             }
 
-            dataSource.updateCouponUsage(coupon.id, bookingId)
+            dataSource.updateCouponUsage(coupon.id, transactionId)
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(mapException(e))
         }
     }
 
-    private fun createCoupon(value: Double, userId: String) = Coupon(
-        code = generateUniqueCode(value),
-        value = value,
-        userId = userId,
-        createdAt = Timestamp.now(),
-        expirationDate = calculateExpirationDate()
-    )
-
     private fun calculateRequiredPoints(value: Double): Int = (value * 5).toInt()
 
-    private fun generateUniqueCode(value: Double): String {
-        val random = SecureRandom()
-        val timestamp = System.currentTimeMillis()
-        val chars = ('A'..'Z') + ('0'..'9')
-        val randomPart = (1..8).map { chars[random.nextInt(chars.size)] }.joinToString("")
-        return "CO${timestamp.toString().takeLast(6)}$randomPart${value.toInt()}"
-    }
-
     private fun calculateExpirationDate(): Timestamp =
-        Timestamp(Date(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000))
+        Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))
 
     private fun mapException(e: Exception): DataError = when (e) {
         is IllegalStateException -> DataError.User.INSUFFICIENT_POINTS

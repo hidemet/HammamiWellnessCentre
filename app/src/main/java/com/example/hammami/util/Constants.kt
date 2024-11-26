@@ -9,29 +9,35 @@ object Constants {
 }
 
 object CouponConstants {
-    const val MIN_COUPON_VALUE = 10
-    const val MAX_COUPON_VALUE = 30
-    const val COUPON_VALUE_STEP = 10
+    const val MIN_COUPON_VALUE = 10.0
+    const val MAX_COUPON_VALUE = 30.0
+    const val COUPON_VALUE_STEP = 10.0
     const val MIN_POINTS_REQUIRED = 50
-    //const val POINTS_MULTIPLIER = 50
 
-    const val RANDOM_CODE_LENGTH = 4
-    const val VALUE_CODE_LENGTH = 4
-    const val EXPIRATION_YEARS = 1L
+    const val CODE_LENGTH = 10
+    const val EXPIRATION_DAYS = 365L
     const val POINTS_MULTIPLIER = 5
 
     val VALID_COUPON_VALUES = setOf(10, 20, 30)
-    val COUPON_CODE_PATTERN = Regex("\\d+[A-Z0-9]{4}\\d{4}")
+    val COUPON_CODE_PATTERN = Regex("^CO\\d{6}[A-Z0-9]{8}\$")
 }
 
-object FirestoreCollections {
-    const val COUPONS = "coupons"
-    const val USERS = "users"
-    const val POINTS_HISTORY = "pointsHistory"
+enum class FirestoreCollections {
+    COUPONS, USERS, POINTS_HISTORY, TREATMENTS, STAFF, BOOKINGS
 }
+
 
 object FirestoreFields {
     const val USER_ID = "userId"
     const val CODE = "code"
     const val POINTS = "points"
+    const val VALUE = "value"
+    const val CREATED_AT = "createdAt"
+    const val EXPIRATION_DATE = "expirationDate"
+    const val IS_USED = "isUsed"
+    const val USED_DATE = "usedDate"
+    const val USED_IN_TRANSACTION = "usedInTransaction"
+
+
+
 }
