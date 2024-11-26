@@ -105,7 +105,6 @@ class CouponRepository @Inject constructor(
         }
     }
 
-    private fun calculateRequiredPoints(value: Double): Int = (value * 5).toInt()
 
     private fun calculateExpirationDate(): Timestamp =
         Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))

@@ -6,16 +6,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
-import com.example.hammami.databinding.ItemActiveCouponBinding
-import com.example.hammami.domain.model.coupon.Coupon
-import com.example.hammami.domain.model.coupon.getFormattedExpirationDate
+import com.example.hammami.databinding.ItemActiveVoucherBinding
+import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.VoucherType
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ActiveCouponAdapter(
     private val onCopyCode: (String) -> Unit
-) : ListAdapter<Coupon, ActiveCouponAdapter.ViewHolder>(CouponDiffCallback()) {
+) : ListAdapter<DiscountVoucher, ActiveCouponAdapter.ViewHolder>(VoucherDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemActiveCouponBinding.inflate(
+        val binding = ItemActiveVoucherBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -24,52 +26,54 @@ class ActiveCouponAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val voucher = getItem(position)
+        if (voucher.type == VoucherType.COUPON) {
+            holder.bind(voucher)
+        }
     }
 
     class ViewHolder(
-        private val binding: ItemActiveCouponBinding,
+        private val binding: ItemActiveVoucherBinding,
         private val onCopyCode: (String) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(coupon: Coupon) = with(binding) {
-            setupCouponInfo(coupon)
-            setupClickListener(coupon)
-        }
+        fun bind(voucher: DiscountVoucher) = with(binding) {
+            // Mostra titolo "Coupon"
+            titleText.text = root.context.getString(R.string.coupon)
 
-        private fun ItemActiveCouponBinding.setupCouponInfo(coupon: Coupon) {
-            couponValue.text = root.context.getString(
-                R.string.coupon_value_format,
-                coupon.value
+            // Mostra il valore del coupon
+            voucherValue.text = root.context.getString(
+                R.string.voucher_value_format,
+                voucher.value
             )
-            couponCode.setText(coupon.code)
-            couponExpiry.text = root.context.getString(
-                R.string.coupon_expiration_format,
-                coupon.getFormattedExpirationDate()
 
-            )
-        }
-
-        private fun ItemActiveCouponBinding.setupClickListener(coupon: Coupon) = with(binding) {
-
-            // Rendi l'intero layout cliccabile per una migliore UX (Legge di Fitts)
-            root.setOnClickListener {
-                onCopyCode(coupon.code)
+            // Setup codice coupon con copy
+            voucherCodeLayout.apply {
+                voucherCode.setText(voucher.code)
+                hint = root.context.getString(R.string.coupon_code)
+                setEndIconOnClickListener {
+                    onCopyCode(voucher.code)
+                }
             }
 
-            // Aggiungi anche il click sull'endIcon come punto di interazione aggiuntivo
-            couponCodeLayout.setEndIconOnClickListener {
-                onCopyCode(coupon.code)
-            }
+            // Data di scadenza
+            voucherExpiry.text = root.context.getString(
+                R.string.expires_on,
+                SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    .format(voucher.expirationDate.toDate())
+            )
         }
     }
 
+    private class VoucherDiffCallback : DiffUtil.ItemCallback<DiscountVoucher>() {
+        override fun areItemsTheSame(
+            oldItem: DiscountVoucher,
+            newItem: DiscountVoucher
+        ): Boolean = oldItem.id == newItem.id
 
-    private class CouponDiffCallback : DiffUtil.ItemCallback<Coupon>() {
-        override fun areItemsTheSame(oldItem: Coupon, newItem: Coupon): Boolean =
-            oldItem.id == newItem.id
-
-        override fun areContentsTheSame(oldItem: Coupon, newItem: Coupon): Boolean =
-            oldItem == newItem
+        override fun areContentsTheSame(
+            oldItem: DiscountVoucher,
+            newItem: DiscountVoucher
+        ): Boolean = oldItem == newItem
     }
 }

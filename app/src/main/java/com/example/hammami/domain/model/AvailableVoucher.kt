@@ -1,7 +1,5 @@
-package com.example.hammami.domain
+package com.example.hammami.domain.model
 
-import androidx.compose.ui.input.pointer.PointerIcon
-import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.domain.model.payment.PaymentItem
 import java.util.UUID
 
@@ -43,7 +41,7 @@ data class AvailableVoucher(
                 )
             } ?: emptyList()
 
-        fun createPointRewardOptions(userPoints: Int) = VALID_VALUES[VoucherType.COUPON]
+        fun createCouponOptions(userPoints: Int) = VALID_VALUES[VoucherType.COUPON]
                 ?.map { value ->
                     val requiredPoints = (value * POINTS_MULTIPLIER).toInt()
                     AvailableVoucher(

@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hammami.R
 import com.example.hammami.databinding.DialogCouponConfirmationBinding
 import com.example.hammami.databinding.FragmentCouponSelectionBinding
-import com.example.hammami.domain.model.coupon.AvailableCoupon
 import com.example.hammami.presentation.ui.adapters.AvailableCouponAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -55,9 +54,12 @@ class CouponSelectionFragment : BaseFragment() {
             is CouponViewModel.UiEvent.ShowUserMessage -> {
                 showSnackbar(event.message)
             }
+
             CouponViewModel.UiEvent.NavigateToCouponSuccess -> {
                 findNavController().navigate(R.id.action_couponSelectionFragment_to_couponSuccessFragment)
             }
+
+            else -> Unit
         }
     }
 
@@ -65,7 +67,7 @@ class CouponSelectionFragment : BaseFragment() {
         setNavigationOnClickListener { onBackClick() }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collect { state ->
+            viewModel.uiState.collect { state ->
                 binding.tvPoints.text = getString(R.string.points_format, state.userPoints)
             }
         }
@@ -73,7 +75,7 @@ class CouponSelectionFragment : BaseFragment() {
 
     private fun setupAvailableCouponsRecyclerView() {
         val adapter = AvailableCouponAdapter { availableCoupon ->
-            viewModel.selectCoupon(availableCoupon)
+            viewModel.onCouponSelected(availableCoupon)
             showConfirmationDialog()
         }
 
@@ -83,64 +85,61 @@ class CouponSelectionFragment : BaseFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collect { state ->
+            viewModel.uiState.collect { state ->
                 adapter.submitList(state.availableCoupons)
             }
         }
     }
 
     private fun showConfirmationDialog() {
-        confirmationDialogView = DialogCouponConfirmationBinding.inflate(layoutInflater)
+        val dialogBinding = DialogCouponConfirmationBinding.inflate(layoutInflater)
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setView(confirmationDialogView?.root)
+            .setView(dialogBinding.root)
             .setCancelable(false)
             .create()
 
-        setupDialogContent()
-        setupDialogButtons(dialog)
-        observeDialogState(dialog)
+        setupDialogContent(dialogBinding)
+        setupDialogButtons(dialog, dialogBinding)
+        observeDialogState()
 
         dialog.show()
     }
 
-    private fun setupDialogContent() {
+    private fun setupDialogContent(dialogBinding: DialogCouponConfirmationBinding) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.selectedCoupon.collect { coupon ->
-                coupon?.let { updateDialogContent(it) }
+            viewModel.uiState.collect { state ->
+                state.selectedCoupon?.let { coupon ->
+                    dialogBinding.confirmationText.text = getString(
+                        R.string.confirm_redemption_message,
+                        coupon.value,
+                        coupon.requiredPoints
+                    )
+                }
             }
         }
     }
 
-    private fun updateDialogContent(coupon: AvailableCoupon) {
-        confirmationDialogView?.apply {
-            confirmationText.text = getString(
-                R.string.confirm_redemption_message,
-                coupon.value,
-                coupon.requiredPoints
-            )
-        }
-    }
-
-    private fun setupDialogButtons(dialog: androidx.appcompat.app.AlertDialog) {
-        confirmationDialogView?.apply {
+    private fun setupDialogButtons(
+        dialog: androidx.appcompat.app.AlertDialog,
+        dialogBinding: DialogCouponConfirmationBinding
+    ) {
+        dialogBinding.apply {
             buttonCancel.setOnClickListener {
                 dialog.dismiss()
-                viewModel.resetCouponSelection()
             }
 
             buttonConfirm.setOnClickListener {
-                viewModel.selectedCoupon.value?.let { coupon ->
-                    viewModel.onCouponSelected(coupon.value)
-                }
+                viewModel.onConfirmCouponSelection()
                 dialog.dismiss()
             }
         }
     }
 
-    private fun observeDialogState(dialog: androidx.appcompat.app.AlertDialog) {
+    private fun observeDialogState(
+    ) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collect { state ->
+            viewModel.uiState.collect { state ->
                 confirmationDialogView?.apply {
                     buttonConfirm.isEnabled = !state.isLoading
                     progressIndicator.isVisible = state.isLoading
@@ -148,6 +147,7 @@ class CouponSelectionFragment : BaseFragment() {
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

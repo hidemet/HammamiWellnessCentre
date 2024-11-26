@@ -1,6 +1,6 @@
 package com.example.hammami.domain.usecase
 
-import com.example.hammami.domain.AvailableVoucher
+import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
 import com.example.hammami.core.result.Result
@@ -19,7 +19,7 @@ class GetAvailableVouchersUseCase @Inject constructor(
                 when (val pointsResult = getUserPointsUseCase()) {
                     is Result.Success ->
                         Result.Success(
-                            AvailableVoucher.createPointRewardOptions(pointsResult.data)
+                            AvailableVoucher.createCouponOptions(pointsResult.data)
                         )
                     is Result.Error -> Result.Error(pointsResult.error)
                 }

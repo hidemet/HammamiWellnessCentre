@@ -478,5 +478,6 @@
     <string name="error_invalid_payment_token">toker per il pagamento non valido!</string>
     <string name="error_invalid_payment_info">Rivedi i dati sulla carta di credito.</string>
     <string name="discount_code">Digita codice sconto</string>
+    <string name="coupon_value_format">Coupon da %.0f €</string>
 
 </resources>

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
 import com.example.hammami.databinding.ItemAvailableVoucherBinding
-import com.example.hammami.domain.AvailableVoucher
+import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.VoucherType
 
 class AvailableVoucherAdapter(

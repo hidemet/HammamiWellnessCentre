@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentCouponSuccessBinding
-import com.example.hammami.domain.model.coupon.getFormattedExpirationDate
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -42,23 +41,23 @@ class CouponSuccessFragment : BaseFragment() {
     }
 
     private fun setupCouponDetails() {
-        viewModel.state.value.generatedCoupon?.let { coupon ->
+        viewModel.uiState.value.generatedCoupon?.let { coupon ->
             // Access views in the included layout using binding.couponCard
             with(binding.couponCard) {
                 // Set coupon value
-                couponValue.text = getString(
+                voucherValue.text = getString(
                     R.string.coupon_value_format,
                     coupon.value
                 )
                 // Set coupon code in TextInputEditText
-                couponCode.setText(coupon.code)
+                voucherCode.setText(coupon.code)
                 // Set expiration date
-                couponExpiry.text = getString(
+                voucherExpiry.text = getString(
                     R.string.coupon_expiration_format,
-                    coupon.getFormattedExpirationDate()
+                    coupon.expirationDate
                 )
                 // Setup click listener for copy button
-                couponCodeLayout.setEndIconOnClickListener {
+                voucherCodeLayout.setEndIconOnClickListener {
                     viewModel.copyCouponToClipboard(coupon.code)
                 }
             }

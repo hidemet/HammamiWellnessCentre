@@ -1,7 +1,5 @@
 package com.example.hammami.data.repositories
 
-import androidx.compose.ui.input.key.Key.Companion.D
-import androidx.compose.ui.input.key.Key.Companion.F
 import com.example.hammami.data.datasource.voucher.FirebaseFirestoreVoucherDataSource
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.DiscountVoucher
@@ -10,7 +8,6 @@ import com.example.hammami.core.result.Result
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.storage.StorageException
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -20,6 +17,7 @@ import javax.inject.Singleton
 class VoucherRepository @Inject constructor(
     private val dataSource: FirebaseFirestoreVoucherDataSource,
     private val userRepository: UserRepository // per gestire i punti
+    private val authRepository: AuthRepository // per gestire l'utente corrente
 ) {
     suspend fun createGiftCard(
         value: Double,
@@ -87,14 +85,20 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-    suspend fun getUserVouchers(userId: String): Result<List<DiscountVoucher>, DataError> {
-        return try {
-            val vouchers = dataSource.getVouchersByUser(userId)
-            Result.Success(vouchers)
-        } catch (e: Exception) {
-            Result.Error(mapExceptionToDataError(e))
+suspend fun getUserVouchers(): Result<List<DiscountVoucher>, DataError> {
+    return try {
+        when (val userIdResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                val userId = userIdResult.data
+                val vouchers = dataSource.getVouchersByUser(userId)
+                Result.Success(vouchers)
+            }
+            is Result.Error -> Result.Error(userIdResult.error)
         }
+    } catch (e: Exception) {
+        Result.Error(mapExceptionToDataError(e))
     }
+}
 
     private fun calculateExpirationDate(): Timestamp =
         Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))

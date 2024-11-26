@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class ActiveVoucherAdapter(
-    private val onCopyCode: (String) -> Unit
+    private val onCopyCode: (String) -> Unit,
 ) : ListAdapter<DiscountVoucher, ActiveVoucherAdapter.ViewHolder>(VoucherDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

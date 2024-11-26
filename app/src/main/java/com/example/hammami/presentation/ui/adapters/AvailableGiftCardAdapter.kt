@@ -8,15 +8,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
-import com.example.hammami.databinding.ItemAvailableGiftCardBinding
+import com.example.hammami.databinding.ItemAvailableVoucherBinding
+import com.example.hammami.domain.model.coupon.AvailableVoucher
 import com.example.hammami.domain.model.giftCard.AvailableGiftCard
 
 class AvailableGiftCardAdapter(
-    private val onGiftCardSelected: (NavController, AvailableGiftCard) -> Unit
+private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
 ) : ListAdapter<AvailableGiftCard, AvailableGiftCardAdapter.ViewHolder>(GiftCardDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemAvailableGiftCardBinding.inflate(
+        val binding = ItemAvailableVoucherBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -29,13 +30,16 @@ class AvailableGiftCardAdapter(
     }
 
     class ViewHolder(
-        private val binding: ItemAvailableGiftCardBinding,
+        private val binding: ItemAvailableVoucherBinding,
         private val onGiftCardSelected: (NavController, AvailableGiftCard) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(giftCard: AvailableGiftCard) {
             with(binding) {
-                giftCardValue.text = root.context.getString(
+
+                itemIcon.setImageResource(R.drawable.ic_gift_card)
+
+                voucherValue.text = root.context.getString(
                     R.string.gift_card_value_format,
                     giftCard.value
                 )
@@ -44,8 +48,6 @@ class AvailableGiftCardAdapter(
                         onGiftCardSelected(root.findNavController(),giftCard)
                     }
                 }
-                root.isEnabled = giftCard.isEnabled
-                root.alpha = if (giftCard.isEnabled) 1f else 0.5f
             }
         }
     }

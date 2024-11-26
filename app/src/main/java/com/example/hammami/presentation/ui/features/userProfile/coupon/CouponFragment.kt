@@ -17,7 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentCouponBinding
+import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.presentation.ui.adapters.ActiveCouponAdapter
+import com.example.hammami.presentation.ui.adapters.ActiveVoucherAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.userProfile.coupon.CouponViewModel.*
 
@@ -42,12 +44,37 @@ class CouponFragment : BaseFragment() {
     }
 
     override fun setupUI() {
-        setupAppBar()
+        setupTopAppBar()
         setupRecyclerView()
         setupFab()
         setupInitialState()
 
     }
+
+    private fun setupTopAppBar() {
+        binding.topAppBar.setNavigationOnClickListener { onBackClick() }
+    }
+
+    private fun createActiveCouponsAdapter() = ActiveVoucherAdapter(
+        onCopyCode = { code -> viewModel.copyCouponToClipboard(code) }
+    )
+
+    private fun setupRecyclerView() = with(binding) {
+        rvActiveCoupons.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = activeCouponsAdapter
+            isNestedScrollingEnabled = false
+            addItemDecoration(createItemDecoration())
+        }
+    }
+
+    private fun setupFab() = with(binding) {
+        fabRedeemCoupon.setOnClickListener {
+            findNavController().navigate(R.id.action_couponFragment_to_couponSelectionFragment)
+        }
+    }
+
+
 
     // Funzione chiamata quando un coupon è stato generato
     fun onCouponGenerated() {
@@ -66,18 +93,22 @@ class CouponFragment : BaseFragment() {
     }
 
     private suspend fun observeState() {
-        viewModel.state.collect { state ->
+        viewModel.uiState.collect { state ->
             updateUI(state)
         }
     }
 
     private suspend fun observeEvents() {
         viewModel.uiEvent.collect { event ->
-            handleEvent(event)
+            when (event) {
+                is UiEvent.ShowError -> showSnackbar(event.message)
+                is UiEvent.ShowUserMessage -> showSnackbar(event.message)
+                else -> Unit
+            }
         }
     }
 
-    private fun updateUI(state: CouponState) = with(binding) {
+    private fun updateUI(state: UiState) = with(binding) {
         progressIndicator.isVisible = state.isLoading
         updatePointsDisplay(state.userPoints)
         updateCouponsList(state)
@@ -88,25 +119,16 @@ class CouponFragment : BaseFragment() {
         tvPoints.text = getString(R.string.points, points)
     }
 
-    private fun updateCouponsList(state: CouponState) = with(binding) {
+    private fun updateCouponsList(state: UiState) = with(binding) {
         activeCouponsTitle.isVisible = state.hasActiveCoupons
         rvActiveCoupons.isVisible = state.hasActiveCoupons
         noActiveCoupons.isVisible = !state.hasActiveCoupons && !state.isLoading
-
         activeCouponsAdapter.submitList(state.activeCoupons)
     }
 
     private fun updateFabState(enabled: Boolean) = with(binding) {
         fabRedeemCoupon.isEnabled = enabled
     }
-
-
-    private fun setupFab() = with(binding) {
-        fabRedeemCoupon.setOnClickListener {
-            findNavController().navigate(R.id.action_couponFragment_to_couponSelectionFragment)
-        }
-    }
-
 
     private fun setupInitialState() = with(binding) {
         progressIndicator.isVisible = true
@@ -116,22 +138,8 @@ class CouponFragment : BaseFragment() {
     }
 
 
-    private fun setupAppBar() {
-        binding.topAppBar.setNavigationOnClickListener { onBackClick() }
-    }
 
-    private fun createActiveCouponsAdapter() = ActiveCouponAdapter { code ->
-        viewModel.copyCouponToClipboard(code)
-    }
 
-    private fun setupRecyclerView() = with(binding) {
-        rvActiveCoupons.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = activeCouponsAdapter
-            isNestedScrollingEnabled = false
-            addItemDecoration(createItemDecoration())
-        }
-    }
 
     private fun createItemDecoration() = object : RecyclerView.ItemDecoration() {
         override fun getItemOffsets(
@@ -143,15 +151,6 @@ class CouponFragment : BaseFragment() {
             outRect.bottom = resources.getDimensionPixelSize(R.dimen.spacing_small)
         }
     }
-
-
-    private fun handleEvent(event: UiEvent) {
-        when (event) {
-            is UiEvent.ShowUserMessage -> showSnackbar(event.message)
-            else -> Unit
-        }
-    }
-
 
     override fun onResume() {
         super.onResume()
