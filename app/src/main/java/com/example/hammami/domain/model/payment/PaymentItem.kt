@@ -25,6 +25,7 @@ sealed class PaymentItem: Parcelable {
         val serviceId: String
     ) : PaymentItem()
 
+
     @Parcelize
     data class GiftCardPurchase(
         override val id: String = UUID.randomUUID().toString(),
