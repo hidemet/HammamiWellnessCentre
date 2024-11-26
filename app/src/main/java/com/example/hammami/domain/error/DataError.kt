@@ -1,6 +1,15 @@
 package com.example.hammami.domain.error
 
 sealed interface DataError : Error {
+
+    enum class Firestore: DataError{
+        UNKNOWN,
+    }
+
+    enum class Unknown: DataError {
+        UNKNOWN,
+    }
+
     enum class Network: DataError {
         NO_INTERNET,
         UNKNOWN,
@@ -55,16 +64,12 @@ sealed interface DataError : Error {
         EMPTY,
     }
 
-    enum class GiftCard : DataError {
+    enum class Voucher : DataError {
         NOT_FOUND,
-        VALIDATION_FAILED,
-    }
-
-    enum class Coupon : DataError {
-        NOT_FOUND,
-        ALREADY_USED,
+        ALREADY_EXISTS,
         EXPIRED,
         VALUE_EXCEEDS_AMOUNT,
-        INVALID
+        PERMISSION_DENIED,
+        INSUFFICIENT_POINTS   // Per voucher di tipo POINT_REWARD
     }
 }

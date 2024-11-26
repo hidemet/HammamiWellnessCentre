@@ -21,24 +21,20 @@
         android:paddingTop="20dp"
         android:paddingBottom="20dp">
 
-        <!-- Icona del Coupon -->
         <ImageView
             android:id="@+id/itemIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_coupon"
             app:tint="?attr/colorPrimary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Titolo del Coupon -->
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/couponValue"
+            android:id="@+id/voucherValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/coupon"
             android:layout_marginStart="8dp"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:textColor="?attr/colorOnSurface"
@@ -46,21 +42,19 @@
             app:layout_constraintEnd_toStartOf="@id/trailingIcon"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Punti del Coupon -->
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/couponPoints"
+            android:id="@+id/voucherPoints"
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="100 punti"
             android:layout_marginStart="8dp"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toEndOf="@id/itemIcon"
-            app:layout_constraintTop_toBottomOf="@id/couponValue"
+            app:layout_constraintTop_toBottomOf="@id/voucherValue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/trailingIcon" />
 
-        <!-- Icona di navigazione -->
         <ImageView
             android:id="@+id/trailingIcon"
             android:layout_width="24dp"

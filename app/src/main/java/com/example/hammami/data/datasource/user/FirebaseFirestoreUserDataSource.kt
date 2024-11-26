@@ -53,6 +53,21 @@ suspend fun saveUserInformation(userUid: String, user: User) {
         } catch (e: FirebaseFirestoreException) {
             throw e
         }
+    }
 
+    suspend fun setUserPoints(uid: String, points: Int) {
+        try {
+            usersCollection.document(uid).update("points", points).await()
+        } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
+    }
+
+    suspend fun deductPoints(uid: String, points: Int) {
+        try {
+            usersCollection.document(uid).update("points", getUserPoints(uid) - points).await()
+        } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
     }
 }

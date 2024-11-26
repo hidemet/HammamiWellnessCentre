@@ -58,7 +58,7 @@
             <!-- Include the Coupon Card -->
             <include
                 android:id="@+id/couponCard"
-                layout="@layout/item_active_coupon"
+                layout="@layout/item_active_voucher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

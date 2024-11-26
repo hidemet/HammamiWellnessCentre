@@ -213,7 +213,7 @@
     <!-- Match tra sistema e mondo reale -->
     <string name="available_coupons_title">Coupon Disponibili</string>
     <string name="available_coupons_subtitle">Scegli il coupon da riscattare con i tuoi punti</string>
-    <string name="coupon_value_format">%.0f €</string>
+    <string name="voucher_value_format">%.0f €</string>
     <string name="points_required_format">Richiede %d punti</string>
 
     <!-- Controllo e libertà dell\'utente -->

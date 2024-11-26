@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 tools:itemCount="4"
-                tools:listitem="@layout/item_available_gift_card" />
+                tools:listitem="@layout/item_available_vouaaaaaaaaacher" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

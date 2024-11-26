@@ -154,7 +154,7 @@
                     android:paddingHorizontal="16dp"
                     android:clipToPadding="false"
                     tools:itemCount="4"
-                    tools:listitem="@layout/item_active_coupon" />
+                    tools:listitem="@layout/item_active_voucher" />
 
 
 

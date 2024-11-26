@@ -130,9 +130,22 @@ fun DataError.asUiText(): UiText {
             DataError.Payment.DISCOUNT_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_discount_exceeds_amount)
             DataError.Payment.INVALID_PAYMENT_INFO -> UiText.StringResource(R.string.error_invalid_payment_info)
         }
+        is DataError.Discount -> when (this) {
+            DataError.Discount.NOT_FOUND -> UiText.StringResource(R.string.error_discount_not_found)
+            DataError.Discount.EMPTY -> UiText.StringResource(R.string.error_discount_empty)
+
+        }
 
         DataError.Discount.NOT_FOUND -> TODO()
         DataError.Discount.EMPTY -> TODO()
+        DataError.Firestore.UNKNOWN -> TODO()
+        DataError.Unknown.UNKNOWN -> TODO()
+        DataError.Voucher.NOT_FOUND -> TODO()
+        DataError.Voucher.ALREADY_EXISTS -> TODO()
+        DataError.Voucher.EXPIRED -> TODO()
+        DataError.Voucher.VALUE_EXCEEDS_AMOUNT -> TODO()
+        DataError.Voucher.PERMISSION_DENIED -> TODO()
+        DataError.Voucher.INSUFFICIENT_POINTS -> TODO()
     }
 }
 

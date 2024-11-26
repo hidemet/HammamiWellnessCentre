@@ -37,13 +37,23 @@ class UserRepository @Inject constructor(
     }
 
    suspend fun getUserPoints(userId: String): Result<Int, DataError> {
-    return try {
-        val points = firestoreDataSource.getUserPoints(userId)
-        Result.Success(points)
-    } catch (e: Exception) {
-        Result.Error(mapExceptionToDataError(e))
+       return try {
+           val points = firestoreDataSource.getUserPoints(userId)
+           Result.Success(points)
+       } catch (e: Exception) {
+           Result.Error(mapExceptionToDataError(e))
+       }
+   }
+
+    suspend fun deductPoints(userId: String, requiredPoints: Int): Result<Unit, DataError> {
+        return try {
+           val userPoints = firestoreDataSource.getUserPoints(userId)
+            firestoreDataSource.setUserPoints(userId, userPoints - requiredPoints)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
     }
-}
 
     suspend fun getUserData(userId: String?): Result<User, DataError> {
         return try {
