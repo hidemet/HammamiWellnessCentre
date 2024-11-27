@@ -14,13 +14,13 @@ import com.example.hammami.domain.model.payment.GooglePayPayment
 import com.example.hammami.domain.model.payment.PayPalPayment
 import com.example.hammami.domain.model.payment.PaymentSystem
 import com.example.hammami.domain.usecase.giftcard.CreateGiftCardUseCase
-import com.example.hammami.domain.usecase.payment.ApplyDiscountUseCase
+import com.example.hammami.domain.usecase.payment.ApplyVoucherUseCase
 import com.example.hammami.domain.usecase.payment.ProcessPaymentUseCase
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
 import com.example.hammami.domain.usecase.user.getCurrentUserIdUseCase
 import com.example.hammami.domain.usecase.validation.creditCard.ValidateCreditCardUseCase
 import com.example.hammami.domain.usecase.validation.discount.GetDiscountUseCase
-import com.example.hammami.domain.usecase.validation.discount.ValidateDiscountUseCase
+import com.example.hammami.domain.usecase.validation.discount.ValidateVoucherUseCase
 import com.example.hammami.domain.usecase.validation.payment.PaymentValidationUseCase
 import com.example.hammami.domain.usecase.validation.payment.PaymentValidationUseCase.PaymentValidationResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,9 +36,9 @@ import javax.inject.Inject
 class PaymentViewModel @Inject constructor(
     private val processPaymentUseCase: ProcessPaymentUseCase,
     private val createGiftCardUseCase: CreateGiftCardUseCase,
-    private val applyDiscountUseCase: ApplyDiscountUseCase,
+    private val applyVoucherUseCase: ApplyVoucherUseCase,
     private val validateCreditCardUseCase: ValidateCreditCardUseCase,
-    private val validateDiscountUseCase: ValidateDiscountUseCase,
+    private val validateVoucherUseCase: ValidateVoucherUseCase,
     private val getCurrentUserIdUseCase: getCurrentUserIdUseCase,
     private val getDiscountUseCase: GetDiscountUseCase,
     private val getUserPointsUseCase: GetUserPointsUseCase,
@@ -95,7 +95,7 @@ class PaymentViewModel @Inject constructor(
         when (val discountResult = getDiscountUseCase(code)) {
             is Result.Success -> {
                 val discount = discountResult.data
-                when (val validationResult = validateDiscountUseCase(discount, amount)) {
+                when (val validationResult = validateVoucherUseCase(discount, amount)) {
                     is Result.Success -> {
                         updateState {
                             copy(

@@ -2,6 +2,7 @@ package com.example.hammami.domain.model
 
 import com.google.firebase.Timestamp
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 enum class VoucherType {
     GIFT_CARD,    // Acquistato con denaro
@@ -31,5 +32,7 @@ data class DiscountVoucher(
             val random = (1..8).map { ('A'..'Z') + ('0'..'9').random() }.joinToString("")
             return "$prefix$timestamp$random${value.toInt()}"
         }
+        fun calculateExpirationDate(): Timestamp =
+            Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))
     }
 }

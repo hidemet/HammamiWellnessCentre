@@ -17,7 +17,7 @@ class CreateVoucherUseCase @Inject constructor(
         transactionId: String,
     ) : Result<DiscountVoucher, DataError> {
         return when(type) {
-            VoucherType.COUPON -> voucherRepository.createCoupon(value, userId, calculateRequiredPoints(value))
+            VoucherType.COUPON -> voucherRepository.createVoucher(value, userId, calculateRequiredPoints(value))
             VoucherType.GIFT_CARD -> voucherRepository.createGiftCard(value, userId, transactionId)
         }
     }

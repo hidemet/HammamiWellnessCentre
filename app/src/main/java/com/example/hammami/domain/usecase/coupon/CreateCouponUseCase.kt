@@ -4,6 +4,7 @@ import com.example.hammami.core.result.Result
 import com.example.hammami.data.repositories.VoucherRepository
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.domain.usecase.user.getCurrentUserIdUseCase
 import javax.inject.Inject
 
@@ -13,16 +14,21 @@ class CreateCouponUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         value: Double,
-    ) : Result<DiscountVoucher, DataError> {
+    ): Result<DiscountVoucher, DataError> {
         return when (val uidResult = getCurrentUserIdUseCase()) {
             is Result.Success -> {
-         voucherRepository.createCoupon(value, uidResult.data, calculateRequiredPoints(value))
+                val coupon = DiscountVoucher(
+                    code = DiscountVoucher.generateCode(value, VoucherType.COUPON),
+                    value = value,
+                    type = VoucherType.COUPON,
+                    expirationDate = DiscountVoucher.calculateExpirationDate(),
+                    createdBy = uidResult.data,
+                )
+
+                voucherRepository.createVoucher(coupon)
             }
+
             is Result.Error -> Result.Error(uidResult.error)
         }
-    }
-
-    private fun calculateRequiredPoints(value: Double): Int {
-        return (value * 5).toInt()
     }
 }

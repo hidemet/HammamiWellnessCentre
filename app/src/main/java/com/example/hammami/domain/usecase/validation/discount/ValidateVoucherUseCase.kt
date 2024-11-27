@@ -4,11 +4,10 @@ package com.example.hammami.domain.usecase.validation.discount
 import com.example.hammami.domain.model.payment.Discount
 import com.example.hammami.domain.error.ValidationError
 import com.example.hammami.core.result.Result
-import com.example.hammami.data.repositories.DiscountRepository
 
 import javax.inject.Inject
 
-class ValidateDiscountUseCase @Inject constructor() {
+class ValidateVoucherUseCase @Inject constructor() {
     operator fun invoke(
         discount: Discount,
         amount: Double

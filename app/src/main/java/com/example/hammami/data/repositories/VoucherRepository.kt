@@ -40,32 +40,17 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-    suspend fun createCoupon(
-        value: Double,
-        userId: String,
-        requiredPoints: Int
+    suspend fun createVoucher(
+        voucher: DiscountVoucher
     ): Result<DiscountVoucher, DataError> {
         return try {
-            // Verifica e sottrai i punti in una transazione atomica
-            when (val pointsResult = userRepository.deductPoints(userId, requiredPoints)) {
-                is Result.Success -> {
-                    val voucher = DiscountVoucher(
-                        code = DiscountVoucher.generateCode(value, VoucherType.COUPON),
-                        value = value,
-                        type = VoucherType.COUPON,
-                        createdBy = userId,
-                        expirationDate = calculateExpirationDate()
-                    )
-                    dataSource.createVoucher(voucher)
-                    Result.Success(voucher)
-                }
-
-                is Result.Error -> Result.Error(pointsResult.error)
-            }
+            dataSource.createVoucher(voucher)
+            Result.Success(voucher)
         } catch (e: Exception) {
             Result.Error(mapExceptionToDataError(e))
         }
     }
+
 
     suspend fun useVoucher(code: String, amount: Double): Result<Double, DataError> {
         return try {
@@ -85,33 +70,34 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-suspend fun getUserVouchers(): Result<List<DiscountVoucher>, DataError> {
-    return try {
-        when (val userIdResult = authRepository.getCurrentUserId()) {
-            is Result.Success -> {
-                val userId = userIdResult.data
-                val vouchers = dataSource.getVouchersByUser(userId)
-                Result.Success(vouchers)
+    suspend fun getUserVouchers(): Result<List<DiscountVoucher>, DataError> {
+        return try {
+            when (val userIdResult = authRepository.getCurrentUserId()) {
+                is Result.Success -> {
+                    val userId = userIdResult.data
+                    val vouchers = dataSource.getVouchersByUser(userId)
+                    Result.Success(vouchers)
+                }
+
+                is Result.Error -> Result.Error(userIdResult.error)
             }
-            is Result.Error -> Result.Error(userIdResult.error)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
         }
-    } catch (e: Exception) {
-        Result.Error(mapExceptionToDataError(e))
     }
-}
 
     private fun calculateExpirationDate(): Timestamp =
         Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))
 
     private fun mapExceptionToDataError(e: Exception): DataError = when (e) {
-            is FirebaseFirestoreException -> when (e.code) {
-                FirebaseFirestoreException.Code.ALREADY_EXISTS -> DataError.Voucher.ALREADY_EXISTS
-                FirebaseFirestoreException.Code.NOT_FOUND -> DataError.Voucher.NOT_FOUND
-                FirebaseFirestoreException.Code.PERMISSION_DENIED -> DataError.Voucher.PERMISSION_DENIED
-                else -> DataError.Firestore.UNKNOWN
-            }
-
-            is FirebaseNetworkException -> DataError.Network.NO_INTERNET
-            else -> DataError.Unknown.UNKNOWN
+        is FirebaseFirestoreException -> when (e.code) {
+            FirebaseFirestoreException.Code.ALREADY_EXISTS -> DataError.Voucher.ALREADY_EXISTS
+            FirebaseFirestoreException.Code.NOT_FOUND -> DataError.Voucher.NOT_FOUND
+            FirebaseFirestoreException.Code.PERMISSION_DENIED -> DataError.Voucher.PERMISSION_DENIED
+            else -> DataError.Firestore.UNKNOWN
         }
+
+        is FirebaseNetworkException -> DataError.Network.NO_INTERNET
+        else -> DataError.Unknown.UNKNOWN
+    }
 }

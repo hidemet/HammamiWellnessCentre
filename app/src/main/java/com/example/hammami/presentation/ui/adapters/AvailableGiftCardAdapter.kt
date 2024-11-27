@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
 import com.example.hammami.databinding.ItemAvailableVoucherBinding
-import com.example.hammami.domain.model.coupon.AvailableVoucher
 import com.example.hammami.domain.model.giftCard.AvailableGiftCard
 
 class AvailableGiftCardAdapter(

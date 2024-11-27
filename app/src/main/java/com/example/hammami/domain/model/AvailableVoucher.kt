@@ -20,11 +20,12 @@ data class AvailableVoucher(
                 userPoints >= requiredPoints
     }
 
-    fun toPaymentItem() = PaymentItem.giftCardPurchase(
-        id = UUID.randomUUID().toString(),
-        value = value,
-        type = type
-    )
+
+//    fun toPaymentItem() = PaymentItem.giftCardPurchase(
+//        id = UUID.randomUUID().toString(),
+//        value = value,
+//        type = type
+//    )
 
     companion object {
         private val VALID_VALUES = mapOf(

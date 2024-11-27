@@ -3,11 +3,12 @@ package com.example.hammami.domain.usecase.payment
 
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.error.ValidationError.*
+import com.example.hammami.domain.model.DiscountVoucher
 import com.example.hammami.domain.model.payment.Discount
 import javax.inject.Inject
 
 
-class ApplyDiscountUseCase @Inject constructor() {
+class ApplyVoucherUseCase @Inject constructor() {
     data class DiscountedAmount(
         val finalAmount: Double,
         val savings: Double
@@ -15,7 +16,7 @@ class ApplyDiscountUseCase @Inject constructor() {
 
     operator fun invoke(
         amount: Double,
-        discount: Discount
+        discount: DiscountVoucher
     ): Result<DiscountedAmount, DiscountError> {
         return when {
             !discount.isValid() ->

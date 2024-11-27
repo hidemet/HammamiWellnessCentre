@@ -1,6 +1,5 @@
 package com.example.hammami.domain.usecase.coupon
 
-import com.example.hammami.domain.model.coupon.AvailableVoucher
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.model.AvailableVoucher

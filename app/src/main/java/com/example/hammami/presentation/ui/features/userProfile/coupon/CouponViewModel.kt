@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
-import com.example.hammami.domain.model.coupon.AvailableVoucher
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.DiscountVoucher
 import com.example.hammami.domain.usecase.GetAvailableVouchersUseCase
 import com.example.hammami.domain.usecase.coupon.CreateCouponUseCase
+import com.example.hammami.domain.usecase.coupon.GetAvailableCouponsUseCase
 import com.example.hammami.domain.usecase.coupon.GetUserCouponsUseCase
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
 import com.example.hammami.util.ClipboardManager
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CouponViewModel @Inject constructor(
     private val getUserCouponsUseCase: GetUserCouponsUseCase,
-    private val getAvailableVouchersUseCase: GetAvailableVouchersUseCase,
+    private val getAvailableCouponsUseCase: GetAvailableCouponsUseCase,
     private val createCouponUseCase: CreateCouponUseCase,
     private val getUserPointsUseCase: GetUserPointsUseCase,
     private val clipboardManager: ClipboardManager
@@ -97,7 +97,7 @@ class CouponViewModel @Inject constructor(
             }
 
             // Carica i coupon disponibili per il riscatto
-            val availableCoupons = when (val availableResult = getAvailableVouchersUseCase()) {
+            val availableCoupons = when (val availableResult = getAvailableCouponsUseCase()) {
                 is Result.Success -> availableResult.data
                 is Result.Error -> {
                     emitUiEvent(UiEvent.ShowError(availableResult.error.asUiText()))
@@ -116,7 +116,7 @@ class CouponViewModel @Inject constructor(
         }
     }
 
-    fun onCouponSelected(coupon: com.example.hammami.domain.model.coupon.AvailableVoucher) {
+    fun onCouponSelected(coupon: AvailableVoucher) {
         viewModelScope.launch {
             if (!coupon.canBeRedeemed(uiState.value.userPoints)) {
                 emitUiEvent(
@@ -141,6 +141,8 @@ class CouponViewModel @Inject constructor(
                         generatedCoupon = result.data, selectedCoupon = null
                     )
                 }
+                val userPoints = uiState.value.userPoints
+
                 emitUiEvent(UiEvent.NavigateToCouponSuccess)
             }
 
