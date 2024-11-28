@@ -38,7 +38,6 @@ class PaymentViewModel @Inject constructor(
     private val getUserPointsUseCase: GetUserPointsUseCase,
     private val paymentValidationUseCase: PaymentValidationUseCase,
     private val karmaPointsCalculator: KarmaPointsCalculator
-
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PaymentUiState())
