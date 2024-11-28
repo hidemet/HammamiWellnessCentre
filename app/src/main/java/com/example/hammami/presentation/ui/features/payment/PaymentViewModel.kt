@@ -20,6 +20,9 @@ import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
 import com.example.hammami.domain.usecase.validation.creditCard.ValidateCreditCardUseCase
 import com.example.hammami.domain.usecase.validation.payment.PaymentValidationUseCase
 import com.example.hammami.domain.usecase.validation.payment.PaymentValidationUseCase.PaymentValidationResult
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,20 +30,32 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class PaymentViewModel @Inject constructor(
+
+@AssistedFactory
+interface PaymentViewModelFactory {
+    fun create(paymentItem: PaymentItem): PaymentViewModel
+}
+
+class PaymentViewModel @AssistedInject constructor(
+    @Assisted private val paymentItem: PaymentItem,
     private val processPaymentUseCase: ProcessPaymentUseCase,
     private val validateCreditCardUseCase: ValidateCreditCardUseCase,
     private val validateVoucherUseCase: ValidateVoucherUseCase,
     private val getDiscountVoucherUseCase: GetDiscountVoucherUseCase,
     private val getUserPointsUseCase: GetUserPointsUseCase,
     private val paymentValidationUseCase: PaymentValidationUseCase,
-    private val karmaPointsCalculator: KarmaPointsCalculator
+    private val karmaPointsCalculator: KarmaPointsCalculator,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(PaymentUiState())
+
+    private val _state = MutableStateFlow(
+        PaymentUiState(
+            paymentItem = paymentItem,
+            finalAmount = paymentItem.price,
+            earnedPoints = karmaPointsCalculator.calculatePoints(paymentItem.price, paymentItem)
+        )
+    )
     val state = _state.asStateFlow()
 
     private val _event = MutableSharedFlow<PaymentEvent>()
@@ -50,16 +65,16 @@ class PaymentViewModel @Inject constructor(
         loadUserPoints()
     }
 
-
-    fun setPaymentItem(item: PaymentItem) {
-        updateState {
-            copy(
-                paymentItem = item,
-                finalAmount = item.amount,
-                earnedPoints = karmaPointsCalculator.calculatePoints(item.amount, item)
-            )
-        }
-    }
+//    fun setPaymentItem(item: PaymentItem) {
+//        savedStateHandle["paymentItem"] = item
+//        updateState {
+//            copy(
+//                paymentItem = item,
+//                finalAmount = item.price,
+//                earnedPoints = karmaPointsCalculator.calculatePoints(item.price, item)
+//            )
+//        }
+//    }
 
     private fun loadUserPoints() {
         viewModelScope.launch {
@@ -82,7 +97,7 @@ class PaymentViewModel @Inject constructor(
 
     fun onApplyVoucher() = viewModelScope.launch {
         val currentState = state.value
-        val amount = currentState.paymentItem.amount
+        val amount = currentState.paymentItem.price
         val code = currentState.discountCode
 
         updateState { copy(isLoading = true) }
@@ -98,7 +113,10 @@ class PaymentViewModel @Inject constructor(
                                 appliedVoucher = voucher,
                                 finalAmount = newAmount,
                                 discountCode = "",
-                                earnedPoints = karmaPointsCalculator.calculatePoints(newAmount, paymentItem),
+                                earnedPoints = karmaPointsCalculator.calculatePoints(
+                                    newAmount,
+                                    paymentItem
+                                ),
                                 isLoading = false
                             )
                         }
@@ -106,12 +124,13 @@ class PaymentViewModel @Inject constructor(
 
                     is Result.Error -> {
                         updateState {
-                            copy(discountError = validationResult.error.asUiText(),)
+                            copy(discountError = validationResult.error.asUiText())
                         }
                         emitEvent(PaymentEvent.ShowError(validationResult.error.asUiText()))
                     }
                 }
             }
+
             is Result.Error -> {
                 emitEvent(PaymentEvent.ShowError(voucherResult.error.asUiText()))
             }
@@ -119,7 +138,7 @@ class PaymentViewModel @Inject constructor(
     }
 
     fun onRemoveVoucher() {
-        val amount = state.value.paymentItem.amount
+        val amount = state.value.paymentItem.price
         updateState {
             copy(
                 appliedVoucher = null,
@@ -187,7 +206,7 @@ class PaymentViewModel @Inject constructor(
     fun onConfirmPayment() = viewModelScope.launch {
         val currentState = state.value
         val paymentSystem = currentState.paymentSystem ?: return@launch
-        val amount = currentState.paymentItem.amount
+        val amount = currentState.paymentItem.price
         val paymentItem = currentState.paymentItem
 
         updateState { copy(isLoading = true) }
@@ -229,11 +248,11 @@ class PaymentViewModel @Inject constructor(
             is Result.Success -> {
                 updateState { copy(isLoading = false) }
                 when (state.value.paymentItem) {
-                    is PaymentItem.GiftCardPurchase -> {
+                    is PaymentItem.GiftCardPayment -> {
                         emitEvent(PaymentEvent.NavigateToGiftCardGenerated(transactionId = result.data))
                     }
 
-                    is PaymentItem.ServiceBooking -> {
+                    is PaymentItem.ServiceBookingPayment -> {
                         TODO()
 //                        emitEvent(
 //                            PaymentEvent.NavigateToBookingSummary(

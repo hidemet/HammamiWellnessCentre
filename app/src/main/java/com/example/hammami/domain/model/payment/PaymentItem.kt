@@ -1,45 +1,41 @@
 package com.example.hammami.domain.model.payment
 
 import android.os.Parcelable
+import com.example.hammami.domain.model.AvailableVoucher
+import com.example.hammami.domain.model.Service
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
-import java.util.UUID
+
 @Parcelize
-sealed class PaymentItem: Parcelable {
-    abstract val id: String
-    abstract val amount: Double
-    abstract val title: String
-    abstract val description: String
+sealed class PaymentItem : Parcelable {
+    abstract val price: Double
 
     @Parcelize
-    data class ServiceBooking(
-        override val id: String,
-        override val amount: Double,
-        override val title: String,
-        override val description: String,
+    data class ServiceBookingPayment(
+        override val price: Double,
+        val title: String,
+        val description: String,
+        val serviceId: String,
         val dateTime: LocalDateTime,
-        val duration: Int,
-        val serviceId: String
+        val duration: Int
     ) : PaymentItem()
 
-
     @Parcelize
-    data class GiftCardPurchase(
-        override val id: String = UUID.randomUUID().toString(),
-        val value: Double,
-        override val amount: Double = value,
-        override val title: String = "Gift Card da ${value}€",
-        override val description: String = "Acquisto Gift Card del valore di ${value}€",
-        val recipientEmail: String? = null
-    ) : PaymentItem(), Parcelable {
-
-        companion object {
-            fun fromAvailableGiftCard(giftCard: AvailableGiftCard): PaymentItem.GiftCardPurchase {
-                return PaymentItem.GiftCardPurchase(
-                    id = UUID.randomUUID().toString(),
-                    value = giftCard.value
-                )
-            }
-        }
-    }
+    data class GiftCardPayment(
+        override val price: Double
+    ) : PaymentItem()
 }
+
+fun Service.toPaymentItem(dateTime: LocalDateTime) = PaymentItem.ServiceBookingPayment(
+    price = price!!.toDouble(),
+    title = name,
+    description = description,
+    serviceId = id,
+    dateTime = dateTime,
+    duration = length?.toInt() ?: 0
+)
+
+fun AvailableVoucher.toPaymentItem() = PaymentItem.GiftCardPayment(
+    price = value
+)
+

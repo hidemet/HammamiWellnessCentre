@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.core.ui.UiText
+import com.example.hammami.presentation.ui.features.payment.PaymentViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.flow.Flow
@@ -94,4 +95,5 @@ abstract class BaseFragment : Fragment() {
         Log.e(TAG, "${javaClass.simpleName} Unexpected error", e)
         showSnackbar(UiText.DynamicString("Si è verificato un errore inaspettato: ${e.message}"))
     }
+
 }

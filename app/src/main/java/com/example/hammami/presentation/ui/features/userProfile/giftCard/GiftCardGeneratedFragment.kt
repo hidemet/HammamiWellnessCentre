@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentGiftCardGeneratedBinding
 import com.example.hammami.presentation.ui.features.BaseFragment
@@ -19,13 +20,14 @@ class GiftCardGeneratedFragment : BaseFragment() {
     private var _binding: FragmentGiftCardGeneratedBinding? = null
     private val binding get() = _binding!!
     private val viewModel: GiftCardViewModel by activityViewModels()
+    private val args: GiftCardGeneratedFragmentArgs by navArgs()
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Recupera l'ID della transazione dagli argomenti
-        arguments?.getString("transaction_id")?.let { transactionId ->
-            viewModel.loadGiftCard(transactionId)
-        }
+        viewModel.loadGiftCard(args.transactionId)
     }
 
     override fun onCreateView(

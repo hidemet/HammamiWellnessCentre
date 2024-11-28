@@ -30,6 +30,21 @@ class VoucherRepository @Inject constructor(
         }
     }
 
+    suspend fun getUserVouchersByType(type: VoucherType): Result<List<DiscountVoucher>, DataError> {
+        return when (val userIdResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                try {
+                    val vouchers = dataSource.getUserVouchersByType(userIdResult.data, type)
+                    Result.Success(vouchers)
+                } catch (e: Exception) {
+                    Result.Error(mapExceptionToDataError(e))
+                }
+            }
+
+            is Result.Error -> Result.Error(userIdResult.error)
+        }
+    }
+
     suspend fun getVoucherByCode(code: String): Result<DiscountVoucher, DataError> {
         return try {
             val voucher = dataSource.getVoucherByCode(code)

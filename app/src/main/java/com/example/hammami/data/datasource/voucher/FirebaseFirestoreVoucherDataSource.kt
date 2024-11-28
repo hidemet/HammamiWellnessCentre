@@ -1,6 +1,7 @@
 package com.example.hammami.data.datasource.voucher
 
 import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.VoucherType
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
@@ -38,6 +39,20 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
             throw mapFirebaseException(e)
         }
     }
+
+    suspend fun getUserVouchersByType(userId: String, type: VoucherType): List<DiscountVoucher> {
+        return try {
+            vouchersCollection
+                .whereEqualTo("createdBy", userId)
+                .whereEqualTo("type", type)
+                .get()
+                .await()
+                .toObjects(DiscountVoucher::class.java)
+        } catch (e: Exception) {
+            throw mapFirebaseException(e)
+        }
+    }
+
 
     suspend fun getVouchersByUser(userId: String): List<DiscountVoucher> {
         return try {

@@ -122,9 +122,9 @@ class GiftCardsFragment : BaseFragment() {
         when (event) {
             is GiftCardViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
             is GiftCardViewModel.UiEvent.ShowError -> showSnackbar(event.message)
-            is GiftCardViewModel.UiEvent.GiftCardPurchaseSuccess -> {
-                findNavController().navigate(R.id.action_availableGiftCardsFragment_to_giftCardGeneratedFragment)
-            }
+           // is GiftCardViewModel.UiEvent.GiftCardPurchaseSuccess -> {
+            //    findNavController().navigate(R.id.action_availableGiftCardsFragment_to_giftCardGeneratedFragment)
+            // }
 
             is GiftCardViewModel.UiEvent.NavigateToPayment -> TODO()
         }

@@ -16,7 +16,7 @@ class KarmaPointsCalculator @Inject constructor() {
         val basePoints = (amount * POINTS_PER_EURO).toInt()
 
         return when (item) {
-            is PaymentItem.GiftCardPurchase ->
+            is PaymentItem.GiftCardPayment->
                 (basePoints * GIFT_CARD_POINTS_MULTIPLIER).toInt()
             else -> basePoints
         }

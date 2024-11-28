@@ -8,6 +8,8 @@ import com.example.hammami.core.util.asUiText
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.VoucherType
+import com.example.hammami.domain.usecase.GetUserVouchersUseCase
 import com.example.hammami.domain.usecase.coupon.CreateCouponUseCase
 import com.example.hammami.domain.usecase.coupon.GetAvailableCouponsUseCase
 import com.example.hammami.domain.usecase.coupon.RedeemCouponUseCase
@@ -24,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CouponViewModel @Inject constructor(
     private val redeemCouponUseCase: RedeemCouponUseCase,
-    private val getUserCouponsUseCase: GetUserCouponsUseCase,
+    private val getUserVouchersUseCase: GetUserVouchersUseCase,
     private val getAvailableCouponsUseCase: GetAvailableCouponsUseCase,
     private val getUserPointsUseCase: GetUserPointsUseCase,
     private val clipboardManager: ClipboardManager
@@ -55,7 +57,7 @@ class CouponViewModel @Inject constructor(
             }
 
             // Carica i coupon attivi dell'utente
-            val activeCoupons = when (val result  = getUserCouponsUseCase()) {
+            val activeCoupons = when (val result  = getUserVouchersUseCase(VoucherType.COUPON)) {
                 is Result.Success -> result .data
                 is Result.Error -> {
                     emitUiEvent(UiEvent.ShowError(result.error.asUiText()))

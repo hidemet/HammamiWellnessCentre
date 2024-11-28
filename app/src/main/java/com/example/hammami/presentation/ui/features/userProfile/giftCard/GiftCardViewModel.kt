@@ -1,19 +1,19 @@
 package com.example.hammami.presentation.ui.features.userProfile.giftCard
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
-import com.example.hammami.domain.model.giftCard.GiftCard
-import com.example.hammami.domain.usecase.giftcard.GetAvailableGiftCardsUseCase
-import com.example.hammami.domain.usecase.giftcard.GetUserGiftCardsUseCase
 import com.example.hammami.util.ClipboardManager
 import com.example.hammami.core.result.Result
-import com.example.hammami.domain.model.giftCard.AvailableGiftCard
+import com.example.hammami.domain.model.AvailableVoucher
+import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.domain.model.payment.PaymentItem
-import com.example.hammami.domain.usecase.giftcard.GetGiftCardByTransactionUseCase
+import com.example.hammami.domain.usecase.GetAvailableVouchersUseCase
+import com.example.hammami.domain.usecase.GetDiscountVoucherUseCase
+import com.example.hammami.domain.usecase.GetUserVouchersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,14 +21,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class GiftCardViewModel @Inject constructor(
-    private val getGiftCardByTransactionUseCase: GetGiftCardByTransactionUseCase,
-    private val getAvailableGiftCardsUseCase: GetAvailableGiftCardsUseCase,
-private val getUserGiftCardsUseCase: GetUserGiftCardsUseCase,
+    private val getAvailableVouchersUseCase: GetAvailableVouchersUseCase,
+    private val getUserVouchersUseCase: GetUserVouchersUseCase,
+    private val getVoucherByTransactionUseCase: GetDiscountVoucherUseCase,
     private val clipboardManager: ClipboardManager,
 ) : ViewModel() {
 
@@ -43,45 +42,52 @@ private val getUserGiftCardsUseCase: GetUserGiftCardsUseCase,
     }
 
     fun loadData() = viewModelScope.launch {
-        Log.d("GiftCardVM", "Starting to load data")
         updateState { copy(isLoading = true) }
 
-        try {
-            val availableCards = getAvailableGiftCards()
-            Log.d("GiftCardVM", "Available cards loaded: $availableCards")
-            val userCards = getUserGiftCards()
-            Log.d("GiftCardVM", "User cards loaded: $userCards")
-
-            updateState {
-                copy(
-                    isLoading = false,
-                    availableGiftCards = availableCards,
-                    userGiftCards = userCards
-                )
+        // Carica le gift card disponibili
+        when (val result = getAvailableVouchersUseCase(VoucherType.GIFT_CARD)) {
+            is Result.Success -> {
+                updateState { copy(availableGiftCards = result.data) }
             }
-        } catch (e: Exception) {
-            Log.e("GiftCardVM", "Error loading data", e)
-            emitUiEvent(UiEvent.ShowError(UiText.DynamicString(e.message ?: "Unknown error")))
-            updateState { copy(isLoading = false) }
+
+            is Result.Error -> {
+                emitEvent(UiEvent.ShowError(result.error.asUiText()))
+            }
+        }
+
+        // Carica le gift card dell'utente
+        when (val result = getUserVouchersUseCase(VoucherType.GIFT_CARD)) {
+            is Result.Success -> {
+                updateState {
+                    copy(
+                        userGiftCards = result.data, isLoading = false
+                    )
+                }
+            }
+
+            is Result.Error -> {
+                emitEvent(UiEvent.ShowError(result.error.asUiText()))
+                updateState { copy(isLoading = false) }
+            }
         }
     }
 
     fun loadGiftCard(transactionId: String) {
         viewModelScope.launch {
-           updateState{ copy(isLoading = true) }
+            updateState { copy(isLoading = true) }
 
-            when (val result = getGiftCardByTransactionUseCase(transactionId)) {
+            when (val result = getVoucherByTransactionUseCase(transactionId)) {
                 is Result.Success -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            generatedGiftCard = result.data
-                            )
+                    updateState {
+                        copy(
+                            generatedGiftCard = result.data,
+                            isLoading = false
+                        )
                     }
                 }
                 is Result.Error -> {
-                    updateState{ copy(isLoading = false) }
-                    emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
+                    emitEvent(UiEvent.ShowError(result.error.asUiText()))
+                    updateState { copy(isLoading = false) }
                 }
             }
         }
@@ -90,39 +96,23 @@ private val getUserGiftCardsUseCase: GetUserGiftCardsUseCase,
     fun copyGiftCardToClipboard(code: String) {
         clipboardManager.copyToClipboard(code)
         viewModelScope.launch {
-            emitUiEvent(
-                UiEvent.ShowMessage(
-                    UiText.StringResource(R.string.gift_card_code_copied)
-                )
-            )
+            emitEvent(UiEvent.ShowMessage(UiText.StringResource(R.string.gift_card_code_copied)))
         }
     }
 
-    private suspend fun getAvailableGiftCards(): List<AvailableGiftCard> {
-        return when (val result = getAvailableGiftCardsUseCase()) {
-            is Result.Success -> result.data
-            is Result.Error -> {
-                emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
-                emptyList()
-            }
-        }
+    private suspend fun emitEvent(event: UiEvent) {
+        _uiEvent.emit(event)
     }
 
-    private suspend fun getUserGiftCards(): List<GiftCard> {
-        return when (val result = getUserGiftCardsUseCase()) {
-            is Result.Success -> result.data
-            is Result.Error -> {
-                emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
-                emptyList()
-            }
-        }
+    private fun updateState(update: GiftCardState.() -> GiftCardState) {
+        _state.update(update)
     }
 
     data class GiftCardState(
-        val availableGiftCards: List<AvailableGiftCard> = emptyList(),
-        val userGiftCards: List<GiftCard> = emptyList(),
-        val generatedGiftCard: GiftCard? = null,
-        val selectedPaymentItem: PaymentItem.GiftCardPurchase? = null,
+        val availableGiftCards: List<AvailableVoucher> = emptyList(),
+        val userGiftCards: List<DiscountVoucher> = emptyList(),
+        val selectedPaymentItem: PaymentItem.GiftCardPayment? = null,
+        val generatedGiftCard: DiscountVoucher? = null,
         val isLoading: Boolean = false
     ) {
         val hasGiftCards: Boolean get() = userGiftCards.isNotEmpty()
@@ -133,14 +123,7 @@ private val getUserGiftCardsUseCase: GetUserGiftCardsUseCase,
     sealed class UiEvent {
         data class ShowError(val message: UiText) : UiEvent()
         data class ShowMessage(val message: UiText) : UiEvent()
-        object GiftCardPurchaseSuccess : UiEvent()
-    }
-
-    private suspend fun emitUiEvent(event: UiEvent) {
-        _uiEvent.emit(event)
-    }
-
-    private fun updateState(update: GiftCardState.() -> GiftCardState) {
-        _state.update(update)
+        object NavigateToPayment : UiEvent()
+        // object GiftCardPurchaseSuccess : UiEvent()
     }
 }
