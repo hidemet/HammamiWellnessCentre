@@ -8,10 +8,9 @@ import com.example.hammami.core.util.asUiText
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.DiscountVoucher
-import com.example.hammami.domain.usecase.GetAvailableVouchersUseCase
 import com.example.hammami.domain.usecase.coupon.CreateCouponUseCase
 import com.example.hammami.domain.usecase.coupon.GetAvailableCouponsUseCase
-import com.example.hammami.domain.usecase.coupon.GetUserCouponsUseCase
+import com.example.hammami.domain.usecase.coupon.RedeemCouponUseCase
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
 import com.example.hammami.util.ClipboardManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,9 +23,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CouponViewModel @Inject constructor(
+    private val redeemCouponUseCase: RedeemCouponUseCase,
     private val getUserCouponsUseCase: GetUserCouponsUseCase,
     private val getAvailableCouponsUseCase: GetAvailableCouponsUseCase,
-    private val createCouponUseCase: CreateCouponUseCase,
     private val getUserPointsUseCase: GetUserPointsUseCase,
     private val clipboardManager: ClipboardManager
 ) : ViewModel() {
@@ -39,68 +38,36 @@ class CouponViewModel @Inject constructor(
 
 
     init {
-        // Inizia osservando i dati utente
-        observeUserState()
-        // Carica i dati iniziali
         loadData()
     }
-
-    fun resetCouponSelection() {
-        _selectedCoupon.value = null
-        updateState { copy(generatedCoupon = null) }
-    }
-
-    fun selectCoupon(coupon: com.example.hammami.domain.model.coupon.AvailableVoucher) {
-        _selectedCoupon.value = coupon
-    }
-
-    private fun observeUserState() {
-        viewModelScope.launch {
-            observeUserStateUseCase().collect { result ->
-                when (result) {
-                    is Result.Success -> {
-                        updateState {
-                            copy(userPoints = result.data?.points ?: 0)
-                        }
-                    }
-
-                    is Result.Error -> {
-                        updateState { copy(userPoints = 0) }
-                        emitUiEvent(UiEvent.ShowUserMessage(result.error.asUiText()))
-                    }
-                }
-            }
-        }
-    }
-
 
     fun loadData() {
         viewModelScope.launch {
             updateUiState { copy(isLoading = true) }
 
             // Carica i punti dell'utente
-            val points = when (val pointsResult = getUserPointsUseCase()) {
-                is Result.Success -> pointsResult.data
+            val points = when (val result  = getUserPointsUseCase()) {
+                is Result.Success -> result .data
                 is Result.Error -> {
-                    emitUiEvent(UiEvent.ShowError(pointsResult.error.asUiText()))
+                    emitUiEvent(UiEvent.ShowError(result .error.asUiText()))
                     return@launch
                 }
             }
 
             // Carica i coupon attivi dell'utente
-            val activeCoupons = when (val couponsResult = getUserCouponsUseCase()) {
-                is Result.Success -> couponsResult.data
+            val activeCoupons = when (val result  = getUserCouponsUseCase()) {
+                is Result.Success -> result .data
                 is Result.Error -> {
-                    emitUiEvent(UiEvent.ShowError(couponsResult.error.asUiText()))
+                    emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
                     return@launch
                 }
             }
 
             // Carica i coupon disponibili per il riscatto
-            val availableCoupons = when (val availableResult = getAvailableCouponsUseCase()) {
-                is Result.Success -> availableResult.data
+            val availableCoupons = when (val result  = getAvailableCouponsUseCase()) {
+                is Result.Success -> result .data
                 is Result.Error -> {
-                    emitUiEvent(UiEvent.ShowError(availableResult.error.asUiText()))
+                    emitUiEvent(UiEvent.ShowError(result .error.asUiText()))
                     return@launch
                 }
             }
@@ -130,23 +97,31 @@ class CouponViewModel @Inject constructor(
     }
 
 
-    fun onConfirmCouponSelection() = viewModelScope.launch {
-        val selectedCoupon = _uiState.value.selectedCoupon ?: return@launch
+    fun onConfirmCouponSelection() {
+        viewModelScope.launch {
+            val selectedCoupon = _uiState.value.selectedCoupon ?: return@launch
 
+            updateUiState { copy(isLoading = true) }
 
-        when (val result = createCouponUseCase(value = selectedCoupon.value)) {
-            is Result.Success -> {
-                updateUiState {
-                    copy(
-                        generatedCoupon = result.data, selectedCoupon = null
-                    )
+            when (val result = redeemCouponUseCase(
+                value = selectedCoupon.value,
+                requiredPoints = selectedCoupon.requiredPoints ?: 0
+            )) {
+                is Result.Success -> {
+                    updateUiState {
+                        copy(
+                            isLoading = false,
+                            generatedCoupon = result.data,
+                            selectedCoupon = null
+                        )
+                    }
+                    emitUiEvent(UiEvent.NavigateToCouponSuccess)
+                    loadData() // Refresh della pagina
                 }
-                val userPoints = uiState.value.userPoints
-
-                emitUiEvent(UiEvent.NavigateToCouponSuccess)
+                is Result.Error -> {
+                    emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
+                }
             }
-
-            is Result.Error -> emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
         }
     }
 
@@ -163,6 +138,7 @@ class CouponViewModel @Inject constructor(
 
 
     private suspend fun emitUiEvent(event: UiEvent) {
+        updateUiState { copy(isLoading = false) }
         _uiEvent.emit(event)
     }
 

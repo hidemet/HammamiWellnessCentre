@@ -1,8 +1,5 @@
 package com.example.hammami.domain.model
 
-import com.example.hammami.domain.model.coupon.Coupon
-
-
 data class User(
     var firstName: String = "",
     var lastName: String = "",
@@ -14,5 +11,4 @@ data class User(
     var email: String = "",
     var profileImage: String = "",
     var points: Int = 0,
-    var coupons: List<Coupon> = emptyList()
 )

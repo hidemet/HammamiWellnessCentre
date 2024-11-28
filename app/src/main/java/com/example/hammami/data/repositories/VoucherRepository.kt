@@ -16,29 +16,8 @@ import javax.inject.Singleton
 @Singleton
 class VoucherRepository @Inject constructor(
     private val dataSource: FirebaseFirestoreVoucherDataSource,
-    private val userRepository: UserRepository // per gestire i punti
     private val authRepository: AuthRepository // per gestire l'utente corrente
 ) {
-    suspend fun createGiftCard(
-        value: Double,
-        userId: String,
-        transactionId: String
-    ): Result<DiscountVoucher, DataError> {
-        return try {
-            val voucher = DiscountVoucher(
-                code = DiscountVoucher.generateCode(value, VoucherType.GIFT_CARD),
-                value = value,
-                type = VoucherType.GIFT_CARD,
-                createdBy = userId,
-                creationTransactionId = transactionId,
-                expirationDate = calculateExpirationDate()
-            )
-            dataSource.createVoucher(voucher)
-            Result.Success(voucher)
-        } catch (e: Exception) {
-            Result.Error(mapExceptionToDataError(e))
-        }
-    }
 
     suspend fun createVoucher(
         voucher: DiscountVoucher
@@ -51,20 +30,12 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-
-    suspend fun useVoucher(code: String, amount: Double): Result<Double, DataError> {
+    suspend fun getVoucherByCode(code: String): Result<DiscountVoucher, DataError> {
         return try {
             val voucher = dataSource.getVoucherByCode(code)
                 ?: return Result.Error(DataError.Voucher.NOT_FOUND)
 
-            when {
-                !voucher.isValid() -> Result.Error(DataError.Voucher.EXPIRED)
-                voucher.value > amount -> Result.Error(DataError.Voucher.VALUE_EXCEEDS_AMOUNT)
-                else -> {
-                    dataSource.deleteVoucher(voucher.id)
-                    Result.Success(voucher.value)
-                }
-            }
+            Result.Success(voucher)
         } catch (e: Exception) {
             Result.Error(mapExceptionToDataError(e))
         }
@@ -85,6 +56,16 @@ class VoucherRepository @Inject constructor(
             Result.Error(mapExceptionToDataError(e))
         }
     }
+
+    suspend fun deleteVoucher(code: String): Result<Unit, DataError> {
+        return try {
+            dataSource.deleteVoucher(code)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
 
     private fun calculateExpirationDate(): Timestamp =
         Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))

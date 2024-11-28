@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
 import com.example.hammami.databinding.ItemAvailableVoucherBinding
-import com.example.hammami.domain.model.giftCard.AvailableGiftCard
+import com.example.hammami.domain.model.AvailableVoucher
 
 class AvailableGiftCardAdapter(
 private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
-) : ListAdapter<AvailableGiftCard, AvailableGiftCardAdapter.ViewHolder>(GiftCardDiffCallback()) {
+) : ListAdapter<AvailableVoucher, AvailableGiftCardAdapter.ViewHolder>(GiftCardDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemAvailableVoucherBinding.inflate(
@@ -30,10 +30,10 @@ private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
 
     class ViewHolder(
         private val binding: ItemAvailableVoucherBinding,
-        private val onGiftCardSelected: (NavController, AvailableGiftCard) -> Unit
+        private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(giftCard: AvailableGiftCard) {
+        fun bind(giftCard: AvailableVoucher) {
             with(binding) {
 
                 itemIcon.setImageResource(R.drawable.ic_gift_card)
@@ -51,11 +51,11 @@ private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
         }
     }
 
-    private class GiftCardDiffCallback : DiffUtil.ItemCallback<AvailableGiftCard>() {
-        override fun areItemsTheSame(oldItem: AvailableGiftCard, newItem: AvailableGiftCard): Boolean =
+    private class GiftCardDiffCallback : DiffUtil.ItemCallback<AvailableVoucher>() {
+        override fun areItemsTheSame(oldItem: AvailableVoucher, newItem: AvailableVoucher): Boolean =
             oldItem.value == newItem.value
 
-        override fun areContentsTheSame(oldItem: AvailableGiftCard, newItem: AvailableGiftCard): Boolean =
+        override fun areContentsTheSame(oldItem: AvailableVoucher, newItem: AvailableVoucher): Boolean =
             oldItem == newItem
     }
 }

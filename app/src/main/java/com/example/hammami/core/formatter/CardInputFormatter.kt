@@ -16,6 +16,7 @@ class CardInputFormatter @Inject constructor() {
 
     fun getCursorPosition(input: String): Int =
         if (shouldAddSlash(input)) 3 else input.length
+
 }
 
 // Implementato come extension del TextInputEditText
@@ -29,6 +30,19 @@ fun TextInputEditText.setupExpiryDateFormatting(
             setText("$input/")
             setSelection(formatter.getCursorPosition(input))
         }
+        onValueChanged(text?.toString() ?: "")
+    }
+}
+
+fun TextInputEditText.setupCardNumberFormatting(
+    formatter: CardInputFormatter,
+    onValueChanged: (String) -> Unit
+) {
+    doAfterTextChanged { text ->
+        val input = text?.toString() ?: ""
+        val formatted = input.chunked(4).joinToString(" ") { it.take(4) }
+        setText(formatted)
+        setSelection(formatter.getCursorPosition(input))
         onValueChanged(text?.toString() ?: "")
     }
 }

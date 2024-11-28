@@ -1,11 +1,8 @@
 package com.example.hammami.domain.model.payment
 
 import android.os.Parcelable
-import com.example.hammami.domain.model.giftCard.AvailableGiftCard
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 @Parcelize
 sealed class PaymentItem: Parcelable {

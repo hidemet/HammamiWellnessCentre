@@ -2,18 +2,14 @@ package com.example.hammami.presentation.ui.features.payment
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Selection.setSelection
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
-import androidx.databinding.adapters.TextViewBindingAdapter.setText
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,11 +17,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.hammami.R
+import com.example.hammami.core.formatter.CardInputFormatter
+import com.example.hammami.core.formatter.setupCardNumberFormatting
 import com.example.hammami.core.formatter.setupExpiryDateFormatting
 import com.example.hammami.databinding.FragmentPaymentBinding
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.presentation.ui.features.BaseFragment
+import com.example.hammami.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -50,14 +49,12 @@ class PaymentFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val paymentItem = args.paymentItem
-        viewModel.setPaymentItem(paymentItem)
+        viewModel.setPaymentItem(args.paymentItem)
         setupUI()
         observeFlows()
     }
 
-     override fun setupUI() {
+    override fun setupUI() = with(binding) {
         setupTopAppBar()
         setupPaymentDetails()
         setupDiscountSection()
@@ -107,11 +104,11 @@ class PaymentFragment : BaseFragment() {
         // Bottone per applicare lo sconto
         applyDiscountButton.setOnClickListener {
             hideKeyboard()
-            viewModel.onApplyDiscount()
+            viewModel.onApplyVoucher()
         }
         // Rimozione sconto
         removeDiscountButton.setOnClickListener {
-            viewModel.onRemoveDiscount()
+            viewModel.onRemoveVoucher()
             // Reset input field
             discountInput.text = null
             discountInput.clearFocus()
@@ -128,24 +125,22 @@ class PaymentFragment : BaseFragment() {
                 R.id.googlePayChip -> PaymentMethod.GOOGLE_PAY
                 else -> return@setOnCheckedStateChangeListener
             }
-            viewModel.onPaymentMethodSelected(method)
+            viewModel.onPaymentMethodSelect(method)
         }
     }
 
     private fun setupCreditCardFields() = with(binding) {
-        cardNumberInput.doAfterTextChanged { text ->
-            viewModel.onCardDataChanged(number = text?.toString() ?: "")
+
+        cardNumberInput.setupCardNumberFormatting(
+            formatter = CardInputFormatter()
+        ) { text ->
+            viewModel.onCardDataChanged(number = text)
         }
 
-        // Gestione corretta della data di scadenza
-        expiryInput.doAfterTextChanged { editable ->
-            val input = editable?.toString() ?: ""
-            if (input.length == 2 && !input.contains("/")) {
-                editable?.apply {
-                    insert(2, "/")
-                }
-            }
-            viewModel.onCardDataChanged(expiry = editable?.toString() ?: "")
+        expiryInput.setupExpiryDateFormatting(
+            formatter = CardInputFormatter()
+        ) { text ->
+            viewModel.onCardDataChanged(expiry = text)
         }
 
         cvvInput.doAfterTextChanged { text ->
@@ -166,17 +161,15 @@ class PaymentFragment : BaseFragment() {
             updatePaymentItemDetails(state.paymentItem)
             updateDiscountSection(state)
             updatePaymentMethod(state)
-            updateCardFields(state)
-            updateSummary(state)
+            updatePaymentButton(state)
+            updateCreditCardErrors(state)
+            updateAmount(state)
         }
     }
 
 
-    private fun updateConfirmButtonState(state: PaymentUiState) {
-        binding.confirmButton.isEnabled = when (state.selectedMethod) {
-            PaymentMethod.CREDIT_CARD -> state.creditCard?.isValid() == true
-            PaymentMethod.PAYPAL, PaymentMethod.GOOGLE_PAY -> true
-        }
+    private fun updatePaymentButton(state: PaymentUiState) {
+        binding.confirmButton.isEnabled = state.isPaymentEnabled
     }
 
     private fun updatePaymentItemDetails(paymentItem: PaymentItem) {
@@ -218,17 +211,17 @@ class PaymentFragment : BaseFragment() {
 
     private fun updateDiscountSection(state: PaymentUiState) = with(binding) {
         // Gestione del codice sconto
-        discountInput.isEnabled = state.appliedDiscount == null
+        discountInput.isEnabled = state.appliedVoucher == null
         applyDiscountButton.isEnabled = state.discountCode.isNotBlank() &&
-                state.appliedDiscount == null
+                state.appliedVoucher == null
 
-        // Visualizzazione dello sconto applicato
-        appliedDiscountCard.isVisible = state.appliedDiscount != null
-        state.appliedDiscount?.let { discount ->
-            discountCode.text = discount.code
+        // Mostra/ nascondi sezione sconto
+        appliedDiscountCard.isVisible = state.appliedVoucher != null
+        state.appliedVoucher?.let { voucher ->
+            discountCode.text = voucher.code
             discountAmount.text = getString(
                 R.string.price_format_negative,
-                discount.value
+                voucher.value
             )
         }
 
@@ -243,29 +236,22 @@ class PaymentFragment : BaseFragment() {
         creditCardDetailsContainer.isVisible = state.selectedMethod == PaymentMethod.CREDIT_CARD
     }
 
-    private fun updateCardFields(state: PaymentUiState) = with(binding) {
-        // Mostra gli errori della carta se presenti
-        state.cardErrors?.let { errors ->
-            cardNumberLayout.error = errors.numberError?.asString(requireContext())
-            expiryLayout.error = errors.expiryError?.asString(requireContext())
-            cvvLayout.error = errors.cvvError?.asString(requireContext())
-        } ?: run {
-            // Reset degli errori
-            cardNumberLayout.error = null
-            expiryLayout.error = null
-            cvvLayout.error = null
-        }
+    private fun updateCreditCardErrors(state: PaymentUiState) = with(binding) {
+        cardNumberLayout.error = state.cardValidationErrors?.numberError?.asString(requireContext())
+        expiryLayout.error = state.cardValidationErrors?.expiryError?.asString(requireContext())
+        cvvLayout.error = state.cardValidationErrors?.cvvError?.asString(requireContext())
     }
 
-    private fun updateSummary(state: PaymentUiState) = with(binding) {
-        state.paymentItem?.let { item ->
-            // Importi
-            originalAmount.text = getString(R.string.price_format, item.amount)
 
-            val finalAmount = state.appliedDiscount?.let {
-                item.amount - it.value
-            } ?: item.amount
-            totalAmount.text = getString(R.string.price_format, finalAmount)
+    private fun updateAmount(state: PaymentUiState) = with(binding) {
+        originalAmount.text = getString(
+            R.string.price_format,
+            state.paymentItem.amount
+        )
+        totalAmount.text = getString(
+            R.string.price_format,
+            state.finalAmount
+        )
 
             // Punti karma
             earnedPoints.text = getString(
@@ -277,7 +263,7 @@ class PaymentFragment : BaseFragment() {
                 state.totalPoints + state.earnedPoints
             )
         }
-    }
+
 
     private fun updateLoadingState(state: PaymentUiState) = with(binding) {
         // Loading state
@@ -285,56 +271,27 @@ class PaymentFragment : BaseFragment() {
         linearProgressIndicator.isVisible = state.isLoading
     }
 
-    private fun observeEvents() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.event.collect { event ->
-                    handleEvent(event)
-                }
+    private suspend fun observeEvents() {
+        viewModel.event.collect { event ->
+            when (event) {
+                is PaymentEvent.ShowError -> showSnackbar(event.message)
+                is PaymentEvent.NavigateToGiftCardGenerated ->
+                    findNavController().navigate(
+                        PaymentFragmentDirections
+                            .actionPaymentFragmentToGiftCardGeneratedFragment(event.transactionId)
+                    )
+
+                is PaymentEvent.NavigateToBookingSummary ->
+                    // Implementa la navigazione alla schermata di riepilogo prenotazione
+                    TODO()
+
+                is PaymentEvent.NavigateBack -> findNavController().navigateUp()
             }
         }
     }
-
-    private fun handleEvent(event: PaymentEvent) {
-        when (event) {
-            is PaymentEvent.ShowError -> {
-                showSnackbar(event.message.asString(requireContext()))
-            }
-            is PaymentEvent.NavigateToGiftCardGenerated -> {
-                findNavController().navigate(
-                    PaymentFragmentDirections
-                        .actionPaymentFragmentToGiftCardGeneratedFragment(event.transactionId)
-                )
-            }
-            is PaymentEvent.NavigateToBookingSummary -> {
-                TODO()
-          //      findNavController().navigate(
-            //        PaymentFragmentDirections
-              //          .actionPaymentFragmentToBookingSummaryFragment(event.transactionId)
-                //)
-            }
-            PaymentEvent.NavigateBack -> findNavController().navigateUp()
-        }
-    }
-
-    private fun showSnackbar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
-    }
-
-
-    private fun hideKeyboard() {
-        val imm = requireContext()
-            .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view?.windowToken, 0)
-    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val ARG_PAYMENT_ITEM = "payment_item"
     }
 }

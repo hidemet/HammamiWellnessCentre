@@ -12,12 +12,15 @@ import javax.inject.Inject
 class ValidatePaymentSystemUseCase @Inject constructor(
     private val validateCreditCard: ValidateCreditCardUseCase
 ) {
-    operator fun invoke(paymentSystem: PaymentSystem): Result<Unit, DataError> {
+    suspend operator fun invoke(paymentSystem: PaymentSystem): Result<Unit, DataError> {
         return when (paymentSystem) {
             is CreditCardPayment -> {
                 val validation = validateCreditCard(paymentSystem.creditCard)
-                if (validation.isValid) Result.Success(Unit)
-                else Result.Error(DataError.Payment.INVALID_PAYMENT_INFO)
+                if (validation.isValid) {
+                    Result.Success(Unit)
+                } else {
+                    Result.Error(DataError.Payment.INVALID_PAYMENT_INFO)
+                }
             }
             is GooglePayPayment -> {
                 if (paymentSystem.token.isNotBlank()) Result.Success(Unit)
@@ -27,9 +30,7 @@ class ValidatePaymentSystemUseCase @Inject constructor(
                 if (paymentSystem.token.isNotBlank()) Result.Success(Unit)
                 else Result.Error(DataError.Payment.INVALID_PAYMENT_INFO)
             }
-            else -> {
-                Result.Error(DataError.Payment.INVALID_PAYMENT_INFO)
-            }
+            else -> Result.Error(DataError.Payment.INVALID_PAYMENT_INFO)
         }
     }
 }

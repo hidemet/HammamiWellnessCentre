@@ -78,6 +78,14 @@ fun DataError.asUiText(): UiText {
             DataError.Network.SERVICE_UNAVAILABLE -> UiText.StringResource(R.string.error_service_unavailable)
         }
 
+        is DataError.Firestore -> when (this) {
+            DataError.Firestore.UNKNOWN -> UiText.StringResource(R.string.error_unknown_firestore)
+        }
+
+        is DataError.Unknown -> when (this) {
+            DataError.Unknown.UNKNOWN -> UiText.StringResource(R.string.error_unknown)
+        }
+
         is DataError.Auth -> when (this) {
             DataError.Auth.USER_NOT_FOUND -> UiText.StringResource(R.string.error_user_not_found)
             DataError.Auth.INVALID_CREDENTIALS -> UiText.StringResource(R.string.error_invalid_credentials)
@@ -110,17 +118,12 @@ fun DataError.asUiText(): UiText {
             DataError.Storage.UPLOAD_FAILED -> UiText.StringResource(R.string.error_upload_failed)
         }
 
-        is DataError.Coupon -> when (this) {
-            DataError.Coupon.NOT_FOUND -> UiText.StringResource(R.string.error_coupon_not_found)
-            DataError.Coupon.ALREADY_USED -> UiText.StringResource(R.string.error_coupon_already_used)
-            DataError.Coupon.EXPIRED -> UiText.StringResource(R.string.error_coupon_expired)
-            DataError.Coupon.INVALID -> UiText.StringResource(R.string.error_coupon_invalid)
-            DataError.Coupon.VALUE_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_coupon_value_exceeds_amount)
-        }
-
-        is DataError.GiftCard -> when (this) {
-            DataError.GiftCard.NOT_FOUND -> UiText.StringResource(R.string.error_gift_card_not_found)
-            DataError.GiftCard.VALIDATION_FAILED -> UiText.StringResource(R.string.error_gift_card_validation_failed)
+        is DataError.Voucher -> when (this) {
+            DataError.Voucher.NOT_FOUND -> UiText.StringResource(R.string.error_voucher_not_found)
+            DataError.Voucher.ALREADY_EXISTS -> UiText.StringResource(R.string.error_voucher_already_exists)
+            DataError.Voucher.VALUE_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_voucher_exceeds_amount)
+            DataError.Voucher.PERMISSION_DENIED -> UiText.StringResource(R.string.error_voucher_permission_denied)
+            DataError.Voucher.INSUFFICIENT_POINTS -> UiText.StringResource(R.string.error_insufficient_points)
         }
 
         is DataError.Payment -> when (this) {
@@ -130,22 +133,6 @@ fun DataError.asUiText(): UiText {
             DataError.Payment.DISCOUNT_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_discount_exceeds_amount)
             DataError.Payment.INVALID_PAYMENT_INFO -> UiText.StringResource(R.string.error_invalid_payment_info)
         }
-        is DataError.Discount -> when (this) {
-            DataError.Discount.NOT_FOUND -> UiText.StringResource(R.string.error_discount_not_found)
-            DataError.Discount.EMPTY -> UiText.StringResource(R.string.error_discount_empty)
-
-        }
-
-        DataError.Discount.NOT_FOUND -> TODO()
-        DataError.Discount.EMPTY -> TODO()
-        DataError.Firestore.UNKNOWN -> TODO()
-        DataError.Unknown.UNKNOWN -> TODO()
-        DataError.Voucher.NOT_FOUND -> TODO()
-        DataError.Voucher.ALREADY_EXISTS -> TODO()
-        DataError.Voucher.EXPIRED -> TODO()
-        DataError.Voucher.VALUE_EXCEEDS_AMOUNT -> TODO()
-        DataError.Voucher.PERMISSION_DENIED -> TODO()
-        DataError.Voucher.INSUFFICIENT_POINTS -> TODO()
     }
 }
 
@@ -180,10 +167,10 @@ fun Error.asUiText(): UiText {
         is DataError.Auth -> this.asUiText()
         is DataError.User -> this.asUiText()
         is DataError.Storage -> this.asUiText()
-        is DataError.Coupon -> this.asUiText()
-        is DataError.GiftCard -> this.asUiText()
         is DataError.Payment -> this.asUiText()
-        is DataError.Discount -> this.asUiText()
+        is DataError.Firestore -> this.asUiText()
+        is DataError.Unknown -> this.asUiText()
+        is DataError.Voucher -> this.asUiText()
         is FirstNameError -> this.asUiText()
         is LastNameError -> this.asUiText()
         is BirthDateError -> this.asUiText()
@@ -197,7 +184,5 @@ fun Error.asUiText(): UiText {
         is CvvError -> this.asUiText()
         is DiscountError -> this.asUiText()
         is Payment -> this.asUiText()
-        // else -> UiText.StringResource(R.string.error_unknown)
-
     }
 }

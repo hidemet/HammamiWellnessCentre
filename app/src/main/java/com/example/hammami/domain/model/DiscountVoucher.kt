@@ -22,6 +22,8 @@ data class DiscountVoucher(
     fun isValid(): Boolean = !isExpired()
     fun isExpired(): Boolean = expirationDate.toDate().before(Date())
 
+    fun canBeAppliedTo(amount: Double): Boolean = amount >= value
+
     companion object {
         fun generateCode(value: Double, type: VoucherType): String {
             val prefix = when(type) {

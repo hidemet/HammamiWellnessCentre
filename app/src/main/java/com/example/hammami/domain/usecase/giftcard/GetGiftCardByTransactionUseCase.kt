@@ -1,6 +1,5 @@
 package com.example.hammami.domain.usecase.giftcard
 
-import com.example.hammami.data.repositories.GiftCardRepository
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.giftCard.GiftCard
 import com.example.hammami.core.result.Result

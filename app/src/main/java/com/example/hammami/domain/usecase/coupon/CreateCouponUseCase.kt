@@ -13,22 +13,16 @@ class CreateCouponUseCase @Inject constructor(
     private val getCurrentUserIdUseCase: getCurrentUserIdUseCase
 ) {
     suspend operator fun invoke(
-        value: Double,
+        userId: String,
+        value: Double
     ): Result<DiscountVoucher, DataError> {
-        return when (val uidResult = getCurrentUserIdUseCase()) {
-            is Result.Success -> {
-                val coupon = DiscountVoucher(
-                    code = DiscountVoucher.generateCode(value, VoucherType.COUPON),
-                    value = value,
-                    type = VoucherType.COUPON,
-                    expirationDate = DiscountVoucher.calculateExpirationDate(),
-                    createdBy = uidResult.data,
-                )
-
-                voucherRepository.createVoucher(coupon)
-            }
-
-            is Result.Error -> Result.Error(uidResult.error)
-        }
+        val coupon = DiscountVoucher(
+            code = DiscountVoucher.generateCode(value, VoucherType.COUPON),
+            value = value,
+            type = VoucherType.COUPON,
+            expirationDate = DiscountVoucher.calculateExpirationDate(),
+            createdBy = userId,
+        )
+        return voucherRepository.createVoucher(coupon)
     }
 }

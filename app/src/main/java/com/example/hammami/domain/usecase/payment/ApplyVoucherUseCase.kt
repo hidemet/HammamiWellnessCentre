@@ -4,7 +4,6 @@ package com.example.hammami.domain.usecase.payment
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.error.ValidationError.*
 import com.example.hammami.domain.model.DiscountVoucher
-import com.example.hammami.domain.model.payment.Discount
 import javax.inject.Inject
 
 

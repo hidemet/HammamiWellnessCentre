@@ -3,24 +3,21 @@ package com.example.hammami.presentation.ui.features.payment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.R
+import com.example.hammami.core.util.KarmaPointsCalculator
 import com.example.hammami.core.util.asUiText
 import com.example.hammami.domain.model.payment.CreditCard
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.core.result.Result
 import com.example.hammami.core.ui.UiText
+import com.example.hammami.domain.model.DiscountVoucher
 import com.example.hammami.domain.model.payment.CreditCardPayment
-import com.example.hammami.domain.model.payment.GooglePayPayment
-import com.example.hammami.domain.model.payment.PayPalPayment
 import com.example.hammami.domain.model.payment.PaymentSystem
-import com.example.hammami.domain.usecase.giftcard.CreateGiftCardUseCase
-import com.example.hammami.domain.usecase.payment.ApplyVoucherUseCase
+import com.example.hammami.domain.usecase.GetDiscountVoucherUseCase
+import com.example.hammami.domain.usecase.ValidateVoucherUseCase
 import com.example.hammami.domain.usecase.payment.ProcessPaymentUseCase
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
-import com.example.hammami.domain.usecase.user.getCurrentUserIdUseCase
 import com.example.hammami.domain.usecase.validation.creditCard.ValidateCreditCardUseCase
-import com.example.hammami.domain.usecase.validation.discount.GetDiscountUseCase
-import com.example.hammami.domain.usecase.validation.discount.ValidateVoucherUseCase
 import com.example.hammami.domain.usecase.validation.payment.PaymentValidationUseCase
 import com.example.hammami.domain.usecase.validation.payment.PaymentValidationUseCase.PaymentValidationResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,14 +32,13 @@ import javax.inject.Inject
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
     private val processPaymentUseCase: ProcessPaymentUseCase,
-    private val createGiftCardUseCase: CreateGiftCardUseCase,
-    private val applyVoucherUseCase: ApplyVoucherUseCase,
     private val validateCreditCardUseCase: ValidateCreditCardUseCase,
     private val validateVoucherUseCase: ValidateVoucherUseCase,
-    private val getCurrentUserIdUseCase: getCurrentUserIdUseCase,
-    private val getDiscountUseCase: GetDiscountUseCase,
+    private val getDiscountVoucherUseCase: GetDiscountVoucherUseCase,
     private val getUserPointsUseCase: GetUserPointsUseCase,
     private val paymentValidationUseCase: PaymentValidationUseCase,
+    private val karmaPointsCalculator: KarmaPointsCalculator
+
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PaymentUiState())
@@ -60,7 +56,8 @@ class PaymentViewModel @Inject constructor(
         updateState {
             copy(
                 paymentItem = item,
-                earnedPoints = calculateEarnedPoints(item.amount)
+                finalAmount = item.amount,
+                earnedPoints = karmaPointsCalculator.calculatePoints(item.amount, item)
             )
         }
     }
@@ -74,7 +71,6 @@ class PaymentViewModel @Inject constructor(
                 }
 
                 is Result.Error -> {
-                    updateState { copy(isLoading = false) }
                     emitEvent(PaymentEvent.ShowError(result.error.asUiText()))
                 }
             }
@@ -85,69 +81,63 @@ class PaymentViewModel @Inject constructor(
         _state.update { it.copy(discountCode = code) }
     }
 
-    fun onApplyDiscount() = viewModelScope.launch {
+    fun onApplyVoucher() = viewModelScope.launch {
         val currentState = state.value
-        val amount = currentState.paymentItem?.amount ?: return@launch
-        val code = currentState.discountCode.trim()
+        val amount = currentState.paymentItem.amount
+        val code = currentState.discountCode
 
         updateState { copy(isLoading = true) }
 
-        when (val discountResult = getDiscountUseCase(code)) {
+        when (val voucherResult = getDiscountVoucherUseCase(code)) {
             is Result.Success -> {
-                val discount = discountResult.data
-                when (val validationResult = validateVoucherUseCase(discount, amount)) {
+                val voucher = voucherResult.data
+                when (val validationResult = validateVoucherUseCase(voucher, amount)) {
                     is Result.Success -> {
+                        val newAmount = amount - voucher.value
                         updateState {
                             copy(
-                                appliedDiscount = discount,
-                                earnedPoints = calculateEarnedPoints(amount - discount.value),
+                                appliedVoucher = voucher,
+                                finalAmount = newAmount,
+                                discountCode = "",
+                                earnedPoints = karmaPointsCalculator.calculatePoints(newAmount, paymentItem),
                                 isLoading = false
                             )
                         }
                     }
 
                     is Result.Error -> {
-                        updateState { copy(isLoading = false) }
+                        updateState {
+                            copy(discountError = validationResult.error.asUiText(),)
+                        }
                         emitEvent(PaymentEvent.ShowError(validationResult.error.asUiText()))
                     }
                 }
             }
-
             is Result.Error -> {
-                _state.update { it.copy(isLoading = false) }
-                emitEvent(PaymentEvent.ShowError(discountResult.error.asUiText()))
+                emitEvent(PaymentEvent.ShowError(voucherResult.error.asUiText()))
             }
         }
     }
 
-    fun onRemoveDiscount() {
-        val originalAmount = state.value.paymentItem?.amount ?: return
+    fun onRemoveVoucher() {
+        val amount = state.value.paymentItem.amount
         updateState {
             copy(
-                appliedDiscount = null,
+                appliedVoucher = null,
+                finalAmount = amount,
                 discountCode = "",
-                earnedPoints = calculateEarnedPoints(originalAmount)
+                discountError = null,
+                earnedPoints = karmaPointsCalculator.calculatePoints(amount, paymentItem)
             )
         }
     }
 
-    private fun calculateEarnedPoints(amount: Double): Int = (amount / 10).toInt()
-
-
-    fun onPaymentMethodSelected(method: PaymentMethod) {
+    fun onPaymentMethodSelect(method: PaymentMethod) {
         updateState {
             copy(
                 selectedMethod = method,
-                paymentSystem = when (method) {
-                    PaymentMethod.CREDIT_CARD ->
-                        _state.value.creditCard?.let { card -> CreditCardPayment(card) }
-
-                    PaymentMethod.GOOGLE_PAY ->
-                        GooglePayPayment("mock_gpay_token")
-
-                    PaymentMethod.PAYPAL ->
-                        PayPalPayment("mock_paypal_token")
-                }
+                cardValidationErrors = null,
+                isPaymentEnabled = method != PaymentMethod.CREDIT_CARD
             )
         }
     }
@@ -157,6 +147,8 @@ class PaymentViewModel @Inject constructor(
         expiry: String? = null,
         cvv: String? = null
     ) {
+        if (state.value.selectedMethod != PaymentMethod.CREDIT_CARD) return
+
         val currentCard = state.value.creditCard ?: CreditCard.empty()
         val updatedCard = currentCard.copy(
             number = number ?: currentCard.number,
@@ -164,12 +156,31 @@ class PaymentViewModel @Inject constructor(
             cvv = cvv ?: currentCard.cvv
         )
 
-        updateState {
-            copy(
-                creditCard = updatedCard,
-                paymentSystem = if (selectedMethod == PaymentMethod.CREDIT_CARD)
-                    CreditCardPayment(updatedCard) else paymentSystem
-            )
+        viewModelScope.launch {
+            val validationResult = validateCreditCardUseCase(updatedCard)
+            if (validationResult.isValid) {
+                updateState {
+                    copy(
+                        creditCard = updatedCard,
+                        cardValidationErrors = null,
+                        isPaymentEnabled = true,
+                        paymentSystem = CreditCardPayment(updatedCard),
+                    )
+                }
+            } else {
+                updateState {
+                    copy(
+                        creditCard = updatedCard,
+                        paymentSystem = null,
+                        isPaymentEnabled = false,
+                        cardValidationErrors = PaymentUiState.CardValidationErrors(
+                            numberError = validationResult.numberError?.asUiText(),
+                            expiryError = validationResult.expiryError?.asUiText(),
+                            cvvError = validationResult.cvvError?.asUiText()
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -177,17 +188,22 @@ class PaymentViewModel @Inject constructor(
     fun onConfirmPayment() = viewModelScope.launch {
         val currentState = state.value
         val paymentSystem = currentState.paymentSystem ?: return@launch
-        val amount = currentState.paymentItem?.amount ?: return@launch
-        val paymentItem = currentState.paymentItem ?: return@launch
+        val amount = currentState.paymentItem.amount
+        val paymentItem = currentState.paymentItem
 
         updateState { copy(isLoading = true) }
 
         when (val validationResult = paymentValidationUseCase(paymentSystem)) {
-            is PaymentValidationResult.Valid -> processPayment(paymentSystem, paymentItem)
+            is PaymentValidationResult.Valid -> processPayment(
+                amount,
+                paymentSystem,
+                currentState.appliedVoucher
+            )
+
             is PaymentValidationResult.InvalidCreditCard -> {
                 updateState {
                     copy(
-                        cardErrors = PaymentUiState.CardErrors(
+                        cardValidationErrors = PaymentUiState.CardValidationErrors(
                             numberError = validationResult.validation.numberError?.asUiText(),
                             expiryError = validationResult.validation.expiryError?.asUiText(),
                             cvvError = validationResult.validation.cvvError?.asUiText()
@@ -205,22 +221,17 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-    private suspend fun processPayment(paymentSystem: PaymentSystem, paymentItem: PaymentItem) {
-        updateState { copy(isLoading = true) }
-        when (val result = processPaymentUseCase(paymentItem.amount, paymentSystem)) {
+    private suspend fun processPayment(
+        amount: Double,
+        paymentSystem: PaymentSystem,
+        appliedVoucher: DiscountVoucher?
+    ) {
+        when (val result = processPaymentUseCase(paymentSystem, amount, appliedVoucher)) {
             is Result.Success -> {
                 updateState { copy(isLoading = false) }
                 when (state.value.paymentItem) {
                     is PaymentItem.GiftCardPurchase -> {
-                        createGiftCardUseCase(
-                            value = paymentItem.amount,
-                            transactionId = result.data,
-                        )
-                        emitEvent(
-                            PaymentEvent.NavigateToGiftCardGenerated(
-                                transactionId = result.data
-                            )
-                        )
+                        emitEvent(PaymentEvent.NavigateToGiftCardGenerated(transactionId = result.data))
                     }
 
                     is PaymentItem.ServiceBooking -> {
@@ -231,13 +242,10 @@ class PaymentViewModel @Inject constructor(
 //                            )
 //                        )
                     }
-
-                    null -> throw IllegalStateException("Payment item not set")
                 }
             }
 
             is Result.Error -> {
-                updateState { copy(isLoading = false) }
                 emitEvent(PaymentEvent.ShowError(result.error.asUiText()))
             }
         }

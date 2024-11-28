@@ -59,17 +59,11 @@ sealed interface DataError : Error {
         INVALID_PAYMENT_INFO,
     }
 
-    enum class Discount: DataError {
-        NOT_FOUND,
-        EMPTY,
-    }
-
     enum class Voucher : DataError {
         NOT_FOUND,
         ALREADY_EXISTS,
-        EXPIRED,
         VALUE_EXCEEDS_AMOUNT,
         PERMISSION_DENIED,
-        INSUFFICIENT_POINTS   // Per voucher di tipo POINT_REWARD
+        INSUFFICIENT_POINTS
     }
 }

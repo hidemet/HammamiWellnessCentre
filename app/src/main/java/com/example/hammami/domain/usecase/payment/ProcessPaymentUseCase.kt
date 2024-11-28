@@ -3,22 +3,35 @@ package com.example.hammami.domain.usecase.payment
 import com.example.hammami.data.repositories.PaymentRepository
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
-import com.example.hammami.domain.model.payment.Discount
-import com.example.hammami.domain.model.payment.PaymentItem
+import com.example.hammami.data.repositories.VoucherRepository
+import com.example.hammami.domain.model.DiscountVoucher
 import com.example.hammami.domain.model.payment.PaymentSystem
-import com.example.hammami.domain.usecase.giftcard.CreateGiftCardUseCase
-import com.example.hammami.domain.usecase.validation.payment.ValidatePaymentSystemUseCase
 import javax.inject.Inject
 
 class ProcessPaymentUseCase @Inject constructor(
     private val paymentRepository: PaymentRepository,
-    private val createGiftCardUseCase: CreateGiftCardUseCase
+    private val voucherRepository: VoucherRepository
 ) {
     suspend operator fun invoke(
-        amount: Double,
         paymentSystem: PaymentSystem,
+        amount: Double,
+        appliedVoucher: DiscountVoucher? = null
     ): Result<String, DataError> {
-        // Calcolo dell'importo finale
-        return paymentRepository.processPayment(paymentSystem, amount)
+        val finalAmount = appliedVoucher?.let { amount - it.value } ?: amount
+
+        return when (val paymentResult = paymentRepository.processPayment(paymentSystem, finalAmount)) {
+            is Result.Success -> {
+                // Elimina il voucher solo se il pagamento ha successo
+                if (appliedVoucher != null) {
+                    when (val voucherResult = voucherRepository.deleteVoucher(appliedVoucher.code)) {
+                        is Result.Success -> Result.Success(paymentResult.data)
+                        is Result.Error -> Result.Error(voucherResult.error)
+                    }
+                } else {
+                    Result.Success(paymentResult.data)
+                }
+            }
+            is Result.Error -> Result.Error(paymentResult.error)
+        }
     }
 }

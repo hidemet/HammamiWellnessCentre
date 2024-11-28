@@ -1,9 +1,15 @@
 <resources>
+    <!-- Errori Voucher -->
+    <string name="error_invalid_voucher">Codice voucher non valido</string>
+    <string name="error_voucher_exceeds_amount">Il valore del voucher supera l\'importo dell\'acquisto</string>
+    <string name="error_voucher_code_empty">Inserisci un codice voucher</string>
+    <string name="error_voucher_not_found">Voucher non trovato</string>
+    <string name="error_voucher_already_exists">Questo voucher esiste già</string>
+    <string name="error_voucher_permission_denied">Non hai i permessi per utilizzare questo voucher</string>
+    <string name="error_insufficient_points">Punti insufficienti per riscattare questo voucher</string>
 
     <string name="earned_points_format">"Punti guadagnati: %1$d"</string>
     <string name="total_points_format">"Punti totali: %1$d"</string>
-    <string name="error_coupon_invalid">Codice coupon non valido</string>
-    <string name="error_coupon_value_exceeds_amount">Il valore del coupon supera l\'importo</string>
     <string name="error_expiry_date_empty">La data di scadenza è obbligatoria</string>
     <string name="error_expiry_date_invalid_format">Formato della data di scadenza non valido</string>
     <string name="error_expiry_date_expired">La data di scadenza è passata</string>
@@ -479,5 +485,6 @@
     <string name="error_invalid_payment_info">Rivedi i dati sulla carta di credito.</string>
     <string name="discount_code">Digita codice sconto</string>
     <string name="coupon_value_format">Coupon da %.0f €</string>
+    <string name="error_unknown_firestore">Errore sconosciuto su Firestore</string>
 
 </resources>

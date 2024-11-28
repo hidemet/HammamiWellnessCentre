@@ -6,11 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
-import com.example.hammami.databinding.ItemActiveGiftCardBinding
 import com.example.hammami.databinding.ItemActiveVoucherBinding
 import com.example.hammami.domain.model.DiscountVoucher
 import com.example.hammami.domain.model.VoucherType
-import com.example.hammami.domain.model.giftCard.GiftCard
 import java.text.SimpleDateFormat
 import java.util.Locale
 
