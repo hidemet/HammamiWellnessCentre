@@ -8,12 +8,12 @@ import com.example.hammami.core.util.asUiText
 import com.example.hammami.util.ClipboardManager
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.model.AvailableVoucher
-import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.usecase.GetAvailableVouchersUseCase
-import com.example.hammami.domain.usecase.GetDiscountVoucherUseCase
 import com.example.hammami.domain.usecase.GetUserVouchersUseCase
+import com.example.hammami.domain.usecase.GetVoucherByTransactionIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +27,7 @@ import javax.inject.Inject
 class GiftCardViewModel @Inject constructor(
     private val getAvailableVouchersUseCase: GetAvailableVouchersUseCase,
     private val getUserVouchersUseCase: GetUserVouchersUseCase,
-    private val getVoucherByTransactionUseCase: GetDiscountVoucherUseCase,
+    private val getVoucherByTransactionIdUseCase: GetVoucherByTransactionIdUseCase,
     private val clipboardManager: ClipboardManager,
 ) : ViewModel() {
 
@@ -36,6 +36,9 @@ class GiftCardViewModel @Inject constructor(
 
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
+
+    private val _generatedGiftCard = MutableStateFlow<Voucher?>(null)
+    val generatedGiftCard = _generatedGiftCard.asStateFlow()
 
     init {
         loadData()
@@ -51,7 +54,7 @@ class GiftCardViewModel @Inject constructor(
             }
 
             is Result.Error -> {
-                emitEvent(UiEvent.ShowError(result.error.asUiText()))
+                updateState { copy(isLoading = false) }
             }
         }
 
@@ -60,13 +63,13 @@ class GiftCardViewModel @Inject constructor(
             is Result.Success -> {
                 updateState {
                     copy(
-                        userGiftCards = result.data, isLoading = false
+                        userGiftCards = result.data,
+                        isLoading = false
                     )
                 }
             }
 
             is Result.Error -> {
-                emitEvent(UiEvent.ShowError(result.error.asUiText()))
                 updateState { copy(isLoading = false) }
             }
         }
@@ -76,14 +79,10 @@ class GiftCardViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
 
-            when (val result = getVoucherByTransactionUseCase(transactionId)) {
+            when (val result = getVoucherByTransactionIdUseCase(transactionId)) {
                 is Result.Success -> {
-                    updateState {
-                        copy(
-                            generatedGiftCard = result.data,
-                            isLoading = false
-                        )
-                    }
+                    _generatedGiftCard.value = result.data
+                    updateState { copy(isLoading = false) }
                 }
                 is Result.Error -> {
                     emitEvent(UiEvent.ShowError(result.error.asUiText()))
@@ -101,6 +100,7 @@ class GiftCardViewModel @Inject constructor(
     }
 
     private suspend fun emitEvent(event: UiEvent) {
+        updateState { copy(isLoading = false) }
         _uiEvent.emit(event)
     }
 
@@ -110,9 +110,9 @@ class GiftCardViewModel @Inject constructor(
 
     data class GiftCardState(
         val availableGiftCards: List<AvailableVoucher> = emptyList(),
-        val userGiftCards: List<DiscountVoucher> = emptyList(),
+        val userGiftCards: List<Voucher> = emptyList(),
         val selectedPaymentItem: PaymentItem.GiftCardPayment? = null,
-        val generatedGiftCard: DiscountVoucher? = null,
+        val generatedGiftCard: Voucher? = null,
         val isLoading: Boolean = false
     ) {
         val hasGiftCards: Boolean get() = userGiftCards.isNotEmpty()

@@ -36,17 +36,12 @@
         <action
             android:id="@+id/action_availableGiftCardsFragment_to_paymentFragment"
             app:destination="@id/paymentFragment" />
-
-        <action
-            android:id="@+id/action_availableGiftCardsFragment_to_giftCardGeneratedFragment"
-            app:destination="@id/giftCardGeneratedFragment" />
     </fragment>
 
     <!-- Fragment per il pagamento -->
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.example.hammami.presentation.ui.features.payment.PaymentFragment"
-        android:label="PaymentFragment"
         tools:layout="@layout/fragment_payment">
 
         <argument
@@ -57,19 +52,22 @@
         <action
             android:id="@+id/action_paymentFragment_to_giftCardGeneratedFragment"
             app:destination="@id/giftCardGeneratedFragment"
-            app:popUpTo="@id/giftCardsFragment"
-            />
-
+            app:popUpTo="@id/paymentFragment"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true">
+            <argument
+            android:name="transactionId"
+            app:argType="string" />
+        </action>
     </fragment>
 
     <!-- Fragment di conferma generazione gift card -->
     <fragment
         android:id="@+id/giftCardGeneratedFragment"
         android:name="com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardGeneratedFragment"
-        android:label="gift_card_created"
         tools:layout="@layout/fragment_gift_card_generated">
         <argument
-            android:name="transaction_id"
+            android:name="transactionId"
             app:argType="string" />
 
         <!-- Opzionale: azione per tornare alla home -->

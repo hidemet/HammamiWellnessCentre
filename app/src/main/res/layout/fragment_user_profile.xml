@@ -88,7 +88,7 @@
                             android:drawablePadding="8dp"
                             android:text="56 punti"
                             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                            app:drawableStartCompat="@drawable/ic_loyalty"
+                            app:drawableStartCompat="@drawable/ic_points"
                             android:textColor="?attr/colorOnSurfaceVariant" />
 
                         <com.google.android.material.button.MaterialButton

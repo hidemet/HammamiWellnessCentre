@@ -7,10 +7,9 @@ import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.model.AvailableVoucher
-import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.domain.usecase.GetUserVouchersUseCase
-import com.example.hammami.domain.usecase.coupon.CreateCouponUseCase
 import com.example.hammami.domain.usecase.coupon.GetAvailableCouponsUseCase
 import com.example.hammami.domain.usecase.coupon.RedeemCouponUseCase
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
@@ -149,12 +148,12 @@ class CouponViewModel @Inject constructor(
     }
 
     data class UiState(
-        val activeCoupons: List<DiscountVoucher> = emptyList(),
+        val activeCoupons: List<Voucher> = emptyList(),
         val availableCoupons: List<AvailableVoucher> = emptyList(),
         val userPoints: Int = 0,
         val isLoading: Boolean = false,
         val selectedCoupon: AvailableVoucher? = null,
-        val generatedCoupon: DiscountVoucher? = null
+        val generatedCoupon: Voucher? = null
     ) {
         val hasActiveCoupons: Boolean = activeCoupons.isNotEmpty()
         val canRedeemCoupons: Boolean = userPoints > 0

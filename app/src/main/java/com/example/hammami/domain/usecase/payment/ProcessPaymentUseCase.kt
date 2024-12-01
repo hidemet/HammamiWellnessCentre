@@ -4,7 +4,7 @@ import com.example.hammami.data.repositories.PaymentRepository
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
 import com.example.hammami.data.repositories.VoucherRepository
-import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.payment.PaymentSystem
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ class ProcessPaymentUseCase @Inject constructor(
     suspend operator fun invoke(
         paymentSystem: PaymentSystem,
         amount: Double,
-        appliedVoucher: DiscountVoucher? = null
+        appliedVoucher: Voucher? = null
     ): Result<String, DataError> {
         val finalAmount = appliedVoucher?.let { amount - it.value } ?: amount
 

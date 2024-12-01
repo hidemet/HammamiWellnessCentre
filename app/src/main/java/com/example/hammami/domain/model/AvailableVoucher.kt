@@ -1,8 +1,5 @@
 package com.example.hammami.domain.model
 
-import com.example.hammami.domain.model.payment.PaymentItem
-import java.util.UUID
-
 data class AvailableVoucher(
     val value: Double,
     val type: VoucherType,

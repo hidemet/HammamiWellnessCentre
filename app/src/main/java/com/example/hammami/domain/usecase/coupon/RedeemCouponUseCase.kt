@@ -1,27 +1,29 @@
 package com.example.hammami.domain.usecase.coupon
 
 import com.example.hammami.data.repositories.VoucherRepository
-import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.usecase.user.DeductUserPointsUseCase
-import com.example.hammami.domain.usecase.user.getCurrentUserIdUseCase
+import com.example.hammami.domain.usecase.user.GetCurrentUserIdUseCase
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.error.DataError
+import com.example.hammami.domain.model.VoucherType
+import com.example.hammami.domain.usecase.CreateVoucherUseCase
 
 import javax.inject.Inject
 
 class RedeemCouponUseCase @Inject constructor(
-    private val createCouponUseCase: CreateCouponUseCase,
+    private val createVoucherUseCase: CreateVoucherUseCase,
     private val deductPointsUseCase: DeductUserPointsUseCase,
-    private val getCurrentUserIdUseCase: getCurrentUserIdUseCase,
+    private val getCurrentUserIdUseCase: GetCurrentUserIdUseCase,
     private val voucherRepository: VoucherRepository
 ) {
-    suspend operator fun invoke(value: Double, requiredPoints: Int): Result<DiscountVoucher, DataError> {
+    suspend operator fun invoke(value: Double, requiredPoints: Int): Result<Voucher, DataError> {
         return when (val userIdResult = getCurrentUserIdUseCase()) {
             is Result.Success -> {
                 val userId = userIdResult.data
 
                 // 1. Crea il coupon
-                when (val couponResult = createCouponUseCase( userId, value)) {
+                when (val couponResult = createVoucherUseCase(value, VoucherType.COUPON)) {
                     is Result.Success -> {
                         // 2. Sottrae i punti
                         when (val deductResult = deductPointsUseCase(userId, requiredPoints)) {

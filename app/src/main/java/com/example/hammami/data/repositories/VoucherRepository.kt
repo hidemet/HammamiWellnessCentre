@@ -2,14 +2,11 @@ package com.example.hammami.data.repositories
 
 import com.example.hammami.data.datasource.voucher.FirebaseFirestoreVoucherDataSource
 import com.example.hammami.domain.error.DataError
-import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.core.result.Result
 import com.google.firebase.FirebaseNetworkException
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestoreException
-import java.util.Date
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,18 +16,20 @@ class VoucherRepository @Inject constructor(
     private val authRepository: AuthRepository // per gestire l'utente corrente
 ) {
 
-    suspend fun createVoucher(
-        voucher: DiscountVoucher
-    ): Result<DiscountVoucher, DataError> {
+    suspend fun saveVoucher(
+        voucher: Voucher
+    ): Result<Voucher, DataError> {
         return try {
-            dataSource.createVoucher(voucher)
+            dataSource.saveVoucher(voucher)
             Result.Success(voucher)
         } catch (e: Exception) {
             Result.Error(mapExceptionToDataError(e))
         }
     }
 
-    suspend fun getUserVouchersByType(type: VoucherType): Result<List<DiscountVoucher>, DataError> {
+
+
+    suspend fun getUserVouchersByType(type: VoucherType): Result<List<Voucher>, DataError> {
         return when (val userIdResult = authRepository.getCurrentUserId()) {
             is Result.Success -> {
                 try {
@@ -45,7 +44,18 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-    suspend fun getVoucherByCode(code: String): Result<DiscountVoucher, DataError> {
+    suspend fun getVoucherByTransactionId(transactionId: String): Result<Voucher, DataError> {
+        return try {
+            val voucher = dataSource.getVoucherByTransactionId(transactionId)
+                ?: return Result.Error(DataError.Voucher.NOT_FOUND)
+
+            Result.Success(voucher)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+    suspend fun getVoucherByCode(code: String): Result<Voucher, DataError> {
         return try {
             val voucher = dataSource.getVoucherByCode(code)
                 ?: return Result.Error(DataError.Voucher.NOT_FOUND)
@@ -56,7 +66,7 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-    suspend fun getUserVouchers(): Result<List<DiscountVoucher>, DataError> {
+    suspend fun getUserVouchers(): Result<List<Voucher>, DataError> {
         return try {
             when (val userIdResult = authRepository.getCurrentUserId()) {
                 is Result.Success -> {
@@ -81,9 +91,6 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-
-    private fun calculateExpirationDate(): Timestamp =
-        Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))
 
     private fun mapExceptionToDataError(e: Exception): DataError = when (e) {
         is FirebaseFirestoreException -> when (e.code) {

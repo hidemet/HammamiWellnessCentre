@@ -16,9 +16,9 @@ class ValidateCreditCardUseCase @Inject constructor(
         val cvvResult = validateCVV(creditCard.cvv)
 
         return ValidationResult(
-            numberError = (numberResult as? Result.Error)?.error,
-            expiryError = (expiryResult as? Result.Error)?.error,
-            cvvError = (cvvResult as? Result.Error)?.error
+            numberError = if (numberResult is Result.Success) null else (numberResult as? Result.Error)?.error,
+            expiryError = if (expiryResult is Result.Success) null else (expiryResult as? Result.Error)?.error,
+            cvvError = if (cvvResult is Result.Success) null else (cvvResult as? Result.Error)?.error
         )
     }
 
@@ -26,10 +26,5 @@ class ValidateCreditCardUseCase @Inject constructor(
         val numberError: Card.NumberError?,
         val expiryError: Card.ExpiryDateError?,
         val cvvError: Card.CvvError?
-    ) {
-        val isValid: Boolean
-            get() = numberError == null &&
-                    expiryError == null &&
-                    cvvError == null
-    }
+    )
 }

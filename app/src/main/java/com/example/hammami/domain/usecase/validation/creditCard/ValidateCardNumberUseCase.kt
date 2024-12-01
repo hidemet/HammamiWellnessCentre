@@ -8,7 +8,7 @@ import com.example.hammami.domain.error.ValidationError.Card.NumberError
 import javax.inject.Inject
 
 class ValidateCardNumberUseCase @Inject constructor() {
-    operator fun invoke(cardNumber: String): Result<Unit, ValidationError.Card.NumberError> {
+    operator fun invoke(cardNumber: String): Result<Unit, NumberError> {
 
         return when {
             cardNumber.isBlank() -> Result.Error(NumberError.EMPTY)

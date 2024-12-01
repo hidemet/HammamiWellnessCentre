@@ -1,18 +1,20 @@
 package com.example.hammami.domain.usecase
 
-import com.example.hammami.domain.error.ValidationError.DiscountError
+import com.example.hammami.domain.error.ValidationError.VoucherError
 import com.example.hammami.core.result.Result
-import com.example.hammami.domain.model.DiscountVoucher
+import com.example.hammami.domain.model.Voucher
 import javax.inject.Inject
 
 class ValidateVoucherUseCase @Inject constructor() {
     operator fun invoke(
-        voucher: DiscountVoucher,
+        voucher: Voucher,
         amount: Double
-    ): Result<Unit, DiscountError> {
+    ): Result<Unit, VoucherError> {
         return when {
-            !voucher.canBeAppliedTo(amount) ->
-                Result.Error(DiscountError.EXCEEDS_AMOUNT)
+            voucher.value > amount ->
+                Result.Error(VoucherError.EXCEEDS_AMOUNT)
+            voucher.isExpired ->
+                Result.Error(VoucherError.EXPIRED)
             else -> Result.Success(Unit)
         }
     }

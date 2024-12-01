@@ -40,9 +40,11 @@ fun TextInputEditText.setupCardNumberFormatting(
 ) {
     doAfterTextChanged { text ->
         val input = text?.toString() ?: ""
-        val formatted = input.chunked(4).joinToString(" ") { it.take(4) }
-        setText(formatted)
-        setSelection(formatter.getCursorPosition(input))
-        onValueChanged(text?.toString() ?: "")
+        val formatted = input.replace("\\s".toRegex(), "").chunked(4).joinToString(" ")
+        if (text?.toString() != formatted) {
+            setText(formatted)
+            setSelection(formatted.length)
+        }
+        onValueChanged(input.replace("\\s".toRegex(), ""))
     }
 }

@@ -1,9 +1,9 @@
 package com.example.hammami.domain.model.payment
 
 data class CreditCard private constructor(
-    val number: String,
-    val expiryDate: String,
-    val cvv: String
+    var number: String,
+    var expiryDate: String,
+    var cvv: String
 ) {
     fun isValid(): Boolean =
         isNumberValid() &&

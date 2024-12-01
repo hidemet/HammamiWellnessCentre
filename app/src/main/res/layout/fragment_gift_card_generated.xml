@@ -56,7 +56,7 @@
 
             <include
                 android:id="@+id/giftCard"
-                layout="@layout/item_active_gift_card"
+                layout="@layout/item_active_voucher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

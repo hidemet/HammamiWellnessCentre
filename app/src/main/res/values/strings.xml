@@ -43,7 +43,7 @@
     <!-- Payment Fragment Strings -->
     <string name="service_duration_format">Duration: %1$d minutes</string>
     <string name="gift_card_value_format">Gift Card da %.0f €</string>
-    <string name="price_format">$%1$.2f</string>
+    <string name="price_format">%1$.2f €</string>
     <string name="price_format_negative">-$%1$.2f</string>
     <string name="discount_amount">Sconto: -€%1$.2f</string>
     <string name="discount_applied">Sconto di €%1$.2f applicato</string>
@@ -486,5 +486,7 @@
     <string name="discount_code">Digita codice sconto</string>
     <string name="coupon_value_format">Coupon da %.0f €</string>
     <string name="error_unknown_firestore">Errore sconosciuto su Firestore</string>
+    <string name="error_empty_code">Inserisci il codice di un voucher per ricercere uno sconto</string>
+    <string name="error_voucher_expired">Il voucher risulta scaduto!</string>
 
 </resources>

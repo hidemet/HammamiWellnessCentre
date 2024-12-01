@@ -61,7 +61,6 @@ android {
         implementation(libs.firebase.firestore.ktx)
         implementation(libs.firebase.storage.ktx)
         implementation(libs.androidx.material3.android)
-        implementation(libs.androidx.ui.desktop)
 
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)

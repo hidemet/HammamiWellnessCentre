@@ -5,15 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentGiftCardGeneratedBinding
+import com.example.hammami.domain.model.Voucher
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardViewModel.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @AndroidEntryPoint
 class GiftCardGeneratedFragment : BaseFragment() {
@@ -21,7 +26,6 @@ class GiftCardGeneratedFragment : BaseFragment() {
     private val binding get() = _binding!!
     private val viewModel: GiftCardViewModel by activityViewModels()
     private val args: GiftCardGeneratedFragmentArgs by navArgs()
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +45,6 @@ class GiftCardGeneratedFragment : BaseFragment() {
 
     override fun setupUI() {
         setupTopAppBar()
-        setupGiftCardDetails()
         setupButtons()
     }
 
@@ -52,26 +55,27 @@ class GiftCardGeneratedFragment : BaseFragment() {
         }
     }
 
-    private fun setupGiftCardDetails() = with(binding.giftCard) {
+    private fun updateGiftCardUI(giftCard: Voucher) = with(binding.giftCard) {
+        titleText.text = getString(R.string.gift_card)
 
-        viewModel.state.value.generatedGiftCard?.let { giftCard ->
-            // Imposta il valore della gift card
-            giftCardValue.text = getString(
-                R.string.gift_card_value_format,
-                giftCard.value
-            )
-            // Imposta il codice della gift card
-            giftCardCode.setText(giftCard.code)
-            // Imposta la data di scadenza
-            giftCardExpiry.text = getString(
-                R.string.expires_on,
-                giftCard.expirationDate
-            )
-            // Setup del pulsante di copia
-            giftCardCodeLayout.setEndIconOnClickListener {
-                viewModel.copyGiftCardToClipboard(giftCard.code)
-            }
+        voucherValue.text = getString(
+            R.string.gift_card_value_format,
+            giftCard.value
+        )
+
+        voucherCode.setText(giftCard.code)
+
+        voucherExpiry.text = getString(
+            R.string.expires_on,
+            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                .format(giftCard.expirationDate.toDate())
+        )
+
+        voucherCodeLayout.setEndIconOnClickListener {
+            viewModel.copyGiftCardToClipboard(giftCard.code)
         }
+
+        icon.setImageResource(R.drawable.ic_gift_card)
     }
 
     private fun setupButtons() = with(binding) {
@@ -90,14 +94,27 @@ class GiftCardGeneratedFragment : BaseFragment() {
 
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiEvent.collect { event ->
-                when (event) {
-                    is UiEvent.ShowMessage -> {
-                        showSnackbar(event.message)
-                    }
-                    else -> Unit
-                }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { observeState() }
+                launch { observeEvents() }
             }
+        }
+    }
+
+    private suspend fun observeEvents() {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is UiEvent.ShowError -> {
+                    showSnackbar(event.message)
+                }
+                else -> Unit
+            }
+        }
+    }
+
+    private suspend fun observeState() {
+        viewModel.generatedGiftCard.collect { giftCard ->
+            giftCard?.let { updateGiftCardUI(it) }
         }
     }
 

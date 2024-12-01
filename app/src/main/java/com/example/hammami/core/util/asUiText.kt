@@ -4,11 +4,10 @@ import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.error.Error
-import com.example.hammami.domain.error.ValidationError
 import com.example.hammami.domain.error.ValidationError.*
 import com.example.hammami.domain.error.ValidationError.User.*
 import com.example.hammami.domain.error.ValidationError.Card.*
-import com.example.hammami.domain.error.ValidationError.DiscountError.*
+import com.example.hammami.domain.error.ValidationError.VoucherError.*
 
 fun FirstNameError.asUiText(): UiText {
     return when (this) {
@@ -21,12 +20,13 @@ fun LastNameError.asUiText(): UiText {
     return UiText.StringResource(R.string.error_last_name_empty)
 }
 
-fun DiscountError.asUiText(): UiText {
+fun VoucherError.asUiText(): UiText {
     return when (this) {
         INVALID_DISCOUNT -> UiText.StringResource(R.string.error_invalid_discount)
         EXCEEDS_AMOUNT -> UiText.StringResource(R.string.discount_exceeds_amount)
-        EMPTY_CODE -> TODO()
-        NOT_FOUND -> TODO()
+        EMPTY_CODE -> UiText.StringResource(R.string.error_empty_code)
+        NOT_FOUND -> UiText.StringResource(R.string.error_voucher_not_found)
+        EXPIRED -> UiText.StringResource(R.string.error_voucher_expired)
     }
 }
 
@@ -182,7 +182,7 @@ fun Error.asUiText(): UiText {
         is ExpiryDateError -> this.asUiText()
         is NumberError -> this.asUiText()
         is CvvError -> this.asUiText()
-        is DiscountError -> this.asUiText()
+        is VoucherError -> this.asUiText()
         is Payment -> this.asUiText()
     }
 }

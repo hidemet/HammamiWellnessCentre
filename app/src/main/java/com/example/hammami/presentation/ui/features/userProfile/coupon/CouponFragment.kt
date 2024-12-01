@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentCouponBinding
-import com.example.hammami.domain.model.VoucherType
-import com.example.hammami.presentation.ui.adapters.ActiveCouponAdapter
 import com.example.hammami.presentation.ui.adapters.ActiveVoucherAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.userProfile.coupon.CouponViewModel.*
@@ -112,7 +110,6 @@ class CouponFragment : BaseFragment() {
         progressIndicator.isVisible = state.isLoading
         updatePointsDisplay(state.userPoints)
         updateCouponsList(state)
-        updateFabState(state.canRedeemCoupons)
     }
 
     private fun updatePointsDisplay(points: Int) = with(binding) {
@@ -124,10 +121,6 @@ class CouponFragment : BaseFragment() {
         rvActiveCoupons.isVisible = state.hasActiveCoupons
         noActiveCoupons.isVisible = !state.hasActiveCoupons && !state.isLoading
         activeCouponsAdapter.submitList(state.activeCoupons)
-    }
-
-    private fun updateFabState(enabled: Boolean) = with(binding) {
-        fabRedeemCoupon.isEnabled = enabled
     }
 
     private fun setupInitialState() = with(binding) {

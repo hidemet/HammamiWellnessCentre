@@ -1,8 +1,8 @@
 package com.example.hammami.data.datasource.voucher
 
-import com.example.hammami.domain.model.DiscountVoucher
+import android.util.Log
+import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.VoucherType
-import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -16,7 +16,7 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
 ) {
     private val vouchersCollection = firestore.collection("vouchers")
 
-    suspend fun createVoucher(voucher: DiscountVoucher) {
+    suspend fun saveVoucher(voucher: Voucher) {
         try {
             val docRef = vouchersCollection.document()
             docRef.set(voucher.copy(id = docRef.id)).await()
@@ -25,7 +25,7 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
         }
     }
 
-    suspend fun getVoucherByCode(code: String): DiscountVoucher? {
+    suspend fun getVoucherByCode(code: String): Voucher? {
         return try {
             vouchersCollection
                 .whereEqualTo("code", code)
@@ -34,33 +34,48 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
                 .await()
                 .documents
                 .firstOrNull()
-                ?.toObject(DiscountVoucher::class.java)
+                ?.toObject(Voucher::class.java)
         } catch (e: Exception) {
             throw mapFirebaseException(e)
         }
     }
 
-    suspend fun getUserVouchersByType(userId: String, type: VoucherType): List<DiscountVoucher> {
+    suspend fun getUserVouchersByType(userId: String, type: VoucherType): List<Voucher> {
         return try {
             vouchersCollection
                 .whereEqualTo("createdBy", userId)
                 .whereEqualTo("type", type)
                 .get()
                 .await()
-                .toObjects(DiscountVoucher::class.java)
+                .toObjects(Voucher::class.java)
         } catch (e: Exception) {
             throw mapFirebaseException(e)
         }
     }
 
+    suspend fun getVoucherByTransactionId(transactionId: String): Voucher? {
+        return try {
+            val snapshot = vouchersCollection
+                .whereEqualTo("creationTransactionId", transactionId)
+                .limit(1)
+                .get()
+                .await()
 
-    suspend fun getVouchersByUser(userId: String): List<DiscountVoucher> {
+            snapshot.documents.firstOrNull()?.toObject(Voucher::class.java)
+        } catch (e: Exception) {
+            Log.e("VoucherDataSource", "Error getting voucher: ", e)
+            throw mapFirebaseException(e)
+        }
+    }
+
+
+    suspend fun getVouchersByUser(userId: String): List<Voucher> {
         return try {
             vouchersCollection
                 .whereEqualTo("createdBy", userId)
                 .get()
                 .await()
-                .toObjects(DiscountVoucher::class.java)
+                .toObjects(Voucher::class.java)
         } catch (e: Exception) {
             throw mapFirebaseException(e)
         }

@@ -1,17 +1,15 @@
 package com.example.hammami.presentation.ui.features.payment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.window.application
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +21,7 @@ import com.example.hammami.core.formatter.CardInputFormatter
 import com.example.hammami.core.formatter.setupCardNumberFormatting
 import com.example.hammami.core.formatter.setupExpiryDateFormatting
 import com.example.hammami.databinding.FragmentPaymentBinding
+
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.presentation.ui.features.BaseFragment
@@ -143,6 +142,11 @@ class PaymentFragment : BaseFragment() {
     }
 
     private fun setupPaymentMethods() = with(binding) {
+
+        // Seleziona la carta di credito di default
+        binding.creditCardChip.isChecked = true
+        viewModel.onPaymentMethodSelect(PaymentMethod.CREDIT_CARD)
+
         paymentMethodChips.setOnCheckedStateChangeListener { _, checkedIds ->
             if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
 
@@ -176,6 +180,7 @@ class PaymentFragment : BaseFragment() {
 
     private fun setupConfirmButton() = with(binding) {
         confirmButton.setOnClickListener {
+            Log.d("PaymentFragment", "Confirm button clicked")
             viewModel.onConfirmPayment()
         }
     }
@@ -183,6 +188,8 @@ class PaymentFragment : BaseFragment() {
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // Log per debug
+                Log.d("PaymentFragment", "Starting to observe flows")
                 launch { observeEvents() }
                 launch { observeState() }
 
@@ -226,7 +233,7 @@ class PaymentFragment : BaseFragment() {
             discountAmount.text = getString(R.string.price_format_negative, voucher.value)
         }
 
-        if (state.discountError != null) {
+        state.discountError?.let {
             discountInput.text?.clear()
             discountInput.clearFocus()
         }
@@ -255,24 +262,27 @@ class PaymentFragment : BaseFragment() {
     }
 
     private suspend fun observeEvents() {
+        var isNavigating = false
         viewModel.event.collect { event ->
-            handlePaymentEvent(event)
+            if (!isNavigating) {
+                when (event) {
+                    is PaymentEvent.NavigateToGiftCardGenerated -> {
+                        isNavigating = true
+                        navigateToGiftCardGenerated(event.transactionId)
+                    }
+                    is PaymentEvent.ShowError -> showSnackbar(event.message)
+                    else -> Unit
+                }
+            }
         }
     }
 
-    private fun handlePaymentEvent(event: PaymentEvent) {
-        when (event) {
-            is PaymentEvent.ShowError -> showSnackbar(event.message)
-            is PaymentEvent.NavigateToGiftCardGenerated -> {
-                findNavController().navigate(
-                    PaymentFragmentDirections.actionPaymentFragmentToGiftCardGeneratedFragment(
-                        event.transactionId
-                    )
-                )
-            }
-
-            is PaymentEvent.NavigateToBookingSummary -> TODO()
-            is PaymentEvent.NavigateBack -> findNavController().navigateUp()
+    private fun navigateToGiftCardGenerated(transactionId: String) {
+        val currentDestination = findNavController().currentDestination?.id
+        if (currentDestination == R.id.paymentFragment) {
+            findNavController().navigate(
+                PaymentFragmentDirections.actionPaymentFragmentToGiftCardGeneratedFragment(transactionId)
+            )
         }
     }
 
