@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.domain.model.Service
 import com.example.hammami.databinding.ItemMassaggiBenessereBinding
+import com.example.hammami.presentation.ui.features.service.MassaggiFragmentDirections
 
 class MassaggiAdapter : ListAdapter<Service, MassaggiAdapter.ViewHolder>(MassaggiDiffCallback()) {
 

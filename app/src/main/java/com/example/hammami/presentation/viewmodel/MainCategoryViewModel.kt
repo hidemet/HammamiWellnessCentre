@@ -8,6 +8,7 @@ import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
 import com.example.hammami.domain.model.Service
 import com.example.hammami.core.result.Result
+
 import com.example.hammami.domain.usecase.GetBestDealsUseCase
 import com.example.hammami.domain.usecase.GetNewServicesUseCase
 import com.example.hammami.domain.usecase.GetRecommendedUseCase
@@ -83,7 +84,6 @@ class MainCategoryViewModel @Inject constructor(
                 //Log.e(TAG, "Sono nel loadBestDealsData, FALLITO")
                 emitUiEvent(UiEvent.ShowError(resultBestDeals.error.asUiText()))
             }
-
         }
     }
 
