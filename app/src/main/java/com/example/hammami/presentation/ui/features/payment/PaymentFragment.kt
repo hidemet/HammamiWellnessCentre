@@ -67,7 +67,7 @@ class PaymentFragment : BaseFragment() {
 
     override fun setupUI() = with(binding) {
         setupTopAppBar()
-        setupPaymentDetails()
+        setupPaymentItem()
         setupDiscountSection()
         setupSummarySection()
         setupPaymentMethods()
@@ -105,7 +105,7 @@ class PaymentFragment : BaseFragment() {
     }
 
 
-    private fun setupPaymentDetails() = with(binding) {
+    private fun setupPaymentItem() = with(binding) {
         when (val item = viewModel.state.value.paymentItem) {
             is PaymentItem.ServiceBookingPayment -> {
                 serviceBookingDetails.isVisible = true

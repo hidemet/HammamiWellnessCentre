@@ -1,4 +1,4 @@
-package com.example.hammami.domain.usecase
+package com.example.hammami.domain.usecase.voucher
 
 import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.VoucherType

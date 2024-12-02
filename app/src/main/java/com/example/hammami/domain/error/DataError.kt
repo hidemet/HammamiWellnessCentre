@@ -64,6 +64,11 @@ sealed interface DataError : Error {
         ALREADY_EXISTS,
         VALUE_EXCEEDS_AMOUNT,
         PERMISSION_DENIED,
-        INSUFFICIENT_POINTS
+        INSUFFICIENT_POINTS,
+        EXPIRED,
+    }
+
+    enum class Service: DataError {
+        SERVICE_NOT_FOUND,
     }
 }

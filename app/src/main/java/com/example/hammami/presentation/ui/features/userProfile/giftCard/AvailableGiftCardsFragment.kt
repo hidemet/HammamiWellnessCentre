@@ -12,12 +12,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hammami.R
 import com.example.hammami.databinding.FragmentAvailableGiftCardsBinding
 import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.presentation.ui.adapters.AvailableGiftCardAdapter
-import com.example.hammami.presentation.ui.adapters.AvailableVoucherAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -52,17 +50,16 @@ class AvailableGiftCardsFragment : BaseFragment() {
     }
 
     private fun setupRecyclerView() {
-        giftCardAdapter = AvailableGiftCardAdapter (
-            onGiftCardSelected = { navController, voucher ->
-                navigateToPayment(navController, voucher)
-            }
-        )
+        giftCardAdapter = AvailableGiftCardAdapter { navController, voucher ->
+            navigateToPayment(navController, voucher)
+        }
 
         binding.rvAvailableGiftCards.apply {
             adapter = giftCardAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
     }
+
 
     private fun navigateToPayment(navController: NavController, voucher: AvailableVoucher) {
         val paymentItem = PaymentItem.GiftCardPayment(price = voucher.value)
@@ -93,10 +90,7 @@ class AvailableGiftCardsFragment : BaseFragment() {
             when (event) {
                 is GiftCardViewModel.UiEvent.ShowError -> showSnackbar(event.message)
                 is GiftCardViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
-                //is GiftCardViewModel.UiEvent.GiftCardPurchaseSuccess -> {
-                //    findNavController().navigate(R.id.action_availableGiftCardsFragment_to_giftCardGeneratedFragment)
-                //}
-                is GiftCardViewModel.UiEvent.NavigateToPayment -> Unit
+                //is GiftCardViewModel.UiEvent.NavigateToPayment -> Unit
             }
         }
     }

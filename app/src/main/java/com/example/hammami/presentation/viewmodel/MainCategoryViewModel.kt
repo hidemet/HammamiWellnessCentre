@@ -1,25 +1,143 @@
 package com.example.hammami.presentation.viewmodel
 
-import android.util.Log
+
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+
+import com.example.hammami.R
+import com.example.hammami.core.ui.UiText
+import com.example.hammami.core.util.asUiText
 import com.example.hammami.domain.model.Service
 import com.example.hammami.core.result.Result
-import com.example.hammami.domain.error.DataError
+import com.example.hammami.domain.usecase.GetBestDealsUseCase
+import com.example.hammami.domain.usecase.GetNewServicesUseCase
+import com.example.hammami.domain.usecase.GetRecommendedUseCase
 import javax.inject.Inject
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 private const val TAG = "MainCategoryViewModel"
 
 @HiltViewModel
 class MainCategoryViewModel @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val getBestDealsUseCase: GetBestDealsUseCase,
+    private val getNewServicesUseCase: GetNewServicesUseCase,
+    private val getRecommendedUseCase: GetRecommendedUseCase
 ) : ViewModel() {
+
+    private val supervisorJob = SupervisorJob()
+    private val viewModelScope = CoroutineScope(supervisorJob + Dispatchers.Main)
+
+    private val _allBestDeals = MutableStateFlow(MainCategoryServices())
+    val allBestDeals = _allBestDeals.asStateFlow()
+
+    private val _allRecommended = MutableStateFlow(MainCategoryServices())
+    val allRecommended = _allRecommended.asStateFlow()
+
+    private val _allNewServices = MutableStateFlow(MainCategoryServices())
+    val allNewServices = _allNewServices.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
+
+    init {
+        //fetchAllBenessere()
+        loadData()
+    }
+
+    fun loadData() {
+        viewModelScope.launch {
+            try {
+                //Log.e(TAG, "INIZIO A CARICARE LE NOVITÀ: ")
+                val newServicesDeferred = async { loadNewServicesData() }
+                //Log.e(TAG, "INIZIO A CARICARE I RACCOMANDATI: ")
+                val recommendedDeferred = async { loadRecommendedData() }
+                //Log.e(TAG, "INIZIO A CARICARE LE OFFERTE: ")
+                val bestDealsDeferred = async { loadBestDealsData() }
+
+                newServicesDeferred.await()
+                recommendedDeferred.await()
+                bestDealsDeferred.await()
+            } catch (e: Exception) {
+                //Log.e(TAG, "Errore durante il caricamento dei dati: ${e.message}", e)
+                emitUiEvent(UiEvent.ShowError(UiText.StringResource(R.string.benvenuto_)))
+            }
+        }
+    }
+
+    private suspend fun loadBestDealsData(){
+        when (val resultBestDeals = getBestDealsUseCase()) {
+            is Result.Success -> {
+                //Log.e(TAG, "Sono nel loadBestDealsData, SUCCESSO")
+                _allBestDeals.update { it.copy(servicesBestDeals = resultBestDeals.data) }
+            }
+            is Result.Error -> {
+                //Log.e(TAG, "Sono nel loadBestDealsData, FALLITO")
+                emitUiEvent(UiEvent.ShowError(resultBestDeals.error.asUiText()))
+            }
+
+        }
+    }
+
+    private suspend fun loadNewServicesData(){
+        when (val resultNewServices = getNewServicesUseCase()) {
+            is Result.Success -> {
+                //Log.e(TAG, "Sono nel loadNewServicesData, SUCCESSO")
+                _allNewServices.update { it.copy(servicesNewServices = resultNewServices.data) }
+            }
+            is Result.Error -> {
+                //Log.e(TAG, "Sono nel loadNewServicesData, FALLITO")
+                emitUiEvent(UiEvent.ShowError(resultNewServices.error.asUiText()))
+            }
+
+        }
+    }
+
+    private suspend fun loadRecommendedData(){
+        when (val resultRecommended = getRecommendedUseCase()) {
+            is Result.Success -> {
+                //Log.e(TAG, "Sono nel loadRecommendedData, SUCCESSO")
+                _allRecommended.update { it.copy(servicesRecommended = resultRecommended.data) }
+            }
+            is Result.Error -> {
+                //Log.e(TAG, "Sono nel loadRecommendedData, FALLITO")
+                emitUiEvent(UiEvent.ShowError(resultRecommended.error.asUiText()))
+            }
+
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        supervisorJob.cancel()
+    }
+
+    data class MainCategoryServices(
+        val servicesRecommended: List<Service> = emptyList(),
+        val servicesBestDeals: List<Service> = emptyList(),
+        val servicesNewServices: List<Service> = emptyList()
+    )
+
+    private fun emitUiEvent(event: UiEvent) {
+        viewModelScope.launch {
+            _uiEvent.emit(event)
+        }
+    }
+
+    sealed class UiEvent {
+        data class ShowError(val message: UiText) : UiEvent()
+        data class ShowMessage(val message: UiText) : UiEvent()
+    }
+
+    /*
 
     private val _newServices = MutableStateFlow<Result<List<Service>, DataError>>(Result.Success(emptyList()))
     val newServices: StateFlow<Result<List<Service>, DataError>> = _newServices
@@ -92,4 +210,6 @@ class MainCategoryViewModel @Inject constructor(
 
         return allServices
     }
+
+     */
 }

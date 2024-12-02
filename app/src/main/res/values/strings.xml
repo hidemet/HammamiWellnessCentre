@@ -42,7 +42,7 @@
 
     <!-- Payment Fragment Strings -->
     <string name="service_duration_format">Duration: %1$d minutes</string>
-    <string name="gift_card_value_format">Gift Card da %.0f €</string>
+    <string name="gift_card_value_format">%.0f €</string>
     <string name="price_format">%1$.2f €</string>
     <string name="price_format_negative">-$%1$.2f</string>
     <string name="discount_amount">Sconto: -€%1$.2f</string>
@@ -488,5 +488,16 @@
     <string name="error_unknown_firestore">Errore sconosciuto su Firestore</string>
     <string name="error_empty_code">Inserisci il codice di un voucher per ricercere uno sconto</string>
     <string name="error_voucher_expired">Il voucher risulta scaduto!</string>
+    <string name="content_description_voucher_icon">icona voucher</string>
+
+    <string name="indicazioni_stradali">Autostrada\nUscita BRESCIA CENTRO girare a sinistra, indicazione: tangenziale SUD VERONA; terza uscita SANT’EUFEMIA sempre dritto fino alla statale.\nDalla statale 100mt a sinistra siete arrivati in via G.Puletti.\n\nAutobus\nLINEA 3 ARANCIO Fermata SANT’EUFEMIA (Birreria)</string>
+    <string name="indirizzo">Via Guido Puletti 6, Sant’Eufemia, Brescia</string>
+    <string name="email_hammami">info@hammami.it</string>
+    <string name="numero_cellulare">+39 377 096 6340</string>
+    <string name="benessere">Benessere</string>
+    <string name="estetica">Estetica</string>
+    <string name="massaggi">Massaggi</string>
+    <string name="error_service_not_found">Il servizio non è stato trovato</string>
+
 
 </resources>

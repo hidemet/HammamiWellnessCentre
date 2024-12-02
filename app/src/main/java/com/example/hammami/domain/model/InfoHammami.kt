@@ -1,4 +1,4 @@
-package com.example.hammami.domain.model
+package com.example.hammami.model
 
 data class InfoHammami(
     val title: String,

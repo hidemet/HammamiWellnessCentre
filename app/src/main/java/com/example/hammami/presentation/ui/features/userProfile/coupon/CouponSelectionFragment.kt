@@ -23,6 +23,8 @@ class CouponSelectionFragment : BaseFragment() {
     private var _binding: FragmentCouponSelectionBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CouponViewModel by activityViewModels()
+    private lateinit var adapter: AvailableCouponAdapter
+
 
     private var confirmationDialog: MaterialAlertDialogBuilder? = null
     private var confirmationDialogView: DialogCouponConfirmationBinding? = null
@@ -74,7 +76,7 @@ class CouponSelectionFragment : BaseFragment() {
     }
 
     private fun setupAvailableCouponsRecyclerView() {
-        val adapter = AvailableCouponAdapter { availableCoupon ->
+        adapter = AvailableCouponAdapter { availableCoupon ->
             viewModel.onCouponSelected(availableCoupon)
             showConfirmationDialog()
         }

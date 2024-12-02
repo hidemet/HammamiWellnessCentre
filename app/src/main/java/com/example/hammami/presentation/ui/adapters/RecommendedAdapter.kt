@@ -1,5 +1,6 @@
 package com.example.hammami.presentation.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -9,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.hammami.R
 import com.example.hammami.domain.model.Service
 import com.example.hammami.databinding.ItemHomepageBinding
+import com.google.firebase.storage.FirebaseStorage
 
 private val TAG = "RecommendedAdapter"
 
@@ -57,5 +59,11 @@ class RecommendedAdapter : RecyclerView.Adapter<RecommendedAdapter.RecommendedVi
     override fun onBindViewHolder(holder: RecommendedViewHolder, position: Int) {
         val service = differ.currentList[position]
         holder.bind(service)
+
+        holder.itemView.setOnClickListener {
+            onClick?.invoke(service)
+        }
     }
+
+    var onClick: ((Service) -> Unit)? = null
 }

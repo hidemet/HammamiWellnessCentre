@@ -1,4 +1,4 @@
-package com.example.hammami.domain.usecase
+package com.example.hammami.domain.usecase.voucher
 
 import com.example.hammami.data.repositories.VoucherRepository
 import com.example.hammami.domain.error.DataError
@@ -23,14 +23,13 @@ class CreateVoucherUseCase @Inject constructor(
     ): Result<Voucher, DataError> {
         return when (val userResult = getCurrentUserIdUseCase()) {
             is Result.Success -> {
-                voucherRepository.saveVoucher(
-                    voucherFactory.createVoucher(
-                        value,
-                        type,
-                        userResult.data,
-                        transactionId
-                    )
+                val voucher = voucherFactory.createVoucher(
+                    userId = userResult.data,
+                    value = value,
+                    type = type,
+                    transactionId = transactionId
                 )
+                voucherRepository.saveVoucher(voucher)
             }
             is Result.Error -> Result.Error(userResult.error)
         }

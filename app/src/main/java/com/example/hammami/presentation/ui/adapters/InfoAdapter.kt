@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
-import com.example.hammami.domain.model.InfoHammami
+import com.example.hammami.model.InfoHammami
 
 class InfoAdapter (private var mList: List<InfoHammami>) :
 

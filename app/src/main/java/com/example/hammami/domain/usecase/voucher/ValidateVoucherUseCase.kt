@@ -1,4 +1,4 @@
-package com.example.hammami.domain.usecase
+package com.example.hammami.domain.usecase.voucher
 
 import com.example.hammami.domain.error.ValidationError.VoucherError
 import com.example.hammami.core.result.Result

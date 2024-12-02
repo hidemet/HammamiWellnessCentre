@@ -17,21 +17,24 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentCouponBinding
-import com.example.hammami.presentation.ui.adapters.ActiveVoucherAdapter
+import com.example.hammami.presentation.ui.adapters.ActiveCouponAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.userProfile.coupon.CouponViewModel.*
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-// CouponFragment.kt
 @AndroidEntryPoint
 class CouponFragment : BaseFragment() {
     private var _binding: FragmentCouponBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: CouponViewModel by activityViewModels()
-    private val activeCouponsAdapter by lazy { createActiveCouponsAdapter() }
+    private val activeCouponsAdapter by lazy {
+        ActiveCouponAdapter(
+            onCopyCode = { code -> viewModel.copyCouponToClipboard(code) }
+        )
+    }
 
 
     override fun onCreateView(
@@ -53,9 +56,6 @@ class CouponFragment : BaseFragment() {
         binding.topAppBar.setNavigationOnClickListener { onBackClick() }
     }
 
-    private fun createActiveCouponsAdapter() = ActiveVoucherAdapter(
-        onCopyCode = { code -> viewModel.copyCouponToClipboard(code) }
-    )
 
     private fun setupRecyclerView() = with(binding) {
         rvActiveCoupons.apply {
@@ -71,14 +71,6 @@ class CouponFragment : BaseFragment() {
             findNavController().navigate(R.id.action_couponFragment_to_couponSelectionFragment)
         }
     }
-
-
-
-    // Funzione chiamata quando un coupon è stato generato
-    fun onCouponGenerated() {
-        viewModel.loadData() // Ricarica i dati
-}
-
 
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -107,7 +99,9 @@ class CouponFragment : BaseFragment() {
     }
 
     private fun updateUI(state: UiState) = with(binding) {
+        // Aggiorna la visibilità del progress indicator
         progressIndicator.isVisible = state.isLoading
+
         updatePointsDisplay(state.userPoints)
         updateCouponsList(state)
     }

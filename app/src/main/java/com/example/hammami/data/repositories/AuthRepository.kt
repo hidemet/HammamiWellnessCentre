@@ -89,7 +89,7 @@ class AuthRepository @Inject constructor(
     }
 
 
-     fun getCurrentUserId(): Result<String, DataError> {
+    fun getCurrentUserId(): Result<String, DataError> {
         return try {
             val uid = firebaseAuthDataSource.getCurrentUser()?.uid
                 ?: return Result.Error(DataError.Auth.NOT_AUTHENTICATED)

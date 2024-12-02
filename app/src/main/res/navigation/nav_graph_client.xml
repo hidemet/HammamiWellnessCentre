@@ -9,23 +9,33 @@
     <action
         android:id="@+id/action_global_home"
         app:destination="@id/homeFragment"
+        app:launchSingleTop="true"
         app:popUpTo="@id/client_graph"
-        app:popUpToInclusive="false"
-        app:launchSingleTop="true"/>
+        app:popUpToInclusive="false" />
 
 
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.hammami.presentation.ui.features.client.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_home">
-    </fragment>
+        tools:layout="@layout/fragment_home"/>
 
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.hammami.presentation.ui.features.client.SearchFragment"
         android:label="SearchFragment"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_searchFragment_to_catalogo_servizi_benessere"
+            app:destination="@id/catalogo_servizi_benessere" />
+        <action
+            android:id="@+id/action_searchFragment_to_catalogo_servizi_massaggi"
+            app:destination="@id/catalogo_servizi_massaggi" />
+        <action
+            android:id="@+id/action_searchFragment_to_catalogo_servizi_estetica"
+            app:destination="@id/catalogo_servizi_estetica" />
+    </fragment>
+
 
     <fragment
         android:id="@+id/aboutUsFragment"
@@ -46,8 +56,52 @@
         tools:layout="@layout/fragment_gift_cards" />
 
     <!-- Action globale per GiftCards -->
-    <action
+<action
         android:id="@+id/action_global_giftCardsFragment"
         app:destination="@id/giftCardsFragment"
         app:popUpTo="@id/homeFragment" />
+
+    <fragment
+        android:id="@+id/servizioDetailFragment"
+        android:name="com.example.hammami.presentation.ui.features.service.ServiceDetailFragment"
+        android:label="ServizioDetailFragment">
+        <argument
+            android:name="service"
+            app:argType="com.example.hammami.data.Service" />
+    </fragment>
+
+    <navigation android:id="@+id/catalogo_servizi_benessere"
+        app:startDestination="@id/serviziBenessere">
+        <fragment
+            android:id="@+id/serviziBenessere"
+            android:name="com.example.hammami.presentation.ui.features.service.BenessereFragment"
+            android:label="BenessereFragment"
+            tools:layout="@layout/fragment_servizi_benessere">
+            <action
+                android:id="@+id/action_benessereFragment_to_serviceDetailFragment"
+                app:destination="@id/servizioDetailFragment" />
+        </fragment>
+    </navigation>
+
+    <navigation android:id="@+id/catalogo_servizi_massaggi"
+        app:startDestination="@id/serviziMassaggi">
+        <fragment
+            android:id="@+id/serviziMassaggi"
+            android:name="com.example.hammami.presentation.ui.features.service.MassaggiFragment"
+            android:label="MassaggiFragment"
+            tools:layout="@layout/fragment_servizi_massaggi">
+            <action
+                android:id="@+id/action_massaggiFragment_to_serviceDetailFragment"
+                app:destination="@id/servizioDetailFragment" />
+        </fragment>
+    </navigation>
+
+    <navigation android:id="@+id/catalogo_servizi_estetica"
+        app:startDestination="@id/serviziEstetica">
+        <fragment
+            android:id="@+id/serviziEstetica"
+            android:name="com.example.hammami.presentation.ui.features.service.EsteticaFragment"
+            android:label="EsteticaFragment"
+            tools:layout="@layout/fragment_servizi_estetica" />
+    </navigation>
 </navigation>

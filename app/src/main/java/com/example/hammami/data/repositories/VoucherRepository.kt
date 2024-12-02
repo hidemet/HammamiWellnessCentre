@@ -1,5 +1,6 @@
 package com.example.hammami.data.repositories
 
+import android.util.Log
 import com.example.hammami.data.datasource.voucher.FirebaseFirestoreVoucherDataSource
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.Voucher
@@ -28,20 +29,21 @@ class VoucherRepository @Inject constructor(
     }
 
 
+    suspend fun getUserVouchersByType(
+        userId: String,
+        type: VoucherType
+    ): Result<List<Voucher>, DataError> {
 
-    suspend fun getUserVouchersByType(type: VoucherType): Result<List<Voucher>, DataError> {
-        return when (val userIdResult = authRepository.getCurrentUserId()) {
-            is Result.Success -> {
-                try {
-                    val vouchers = dataSource.getUserVouchersByType(userIdResult.data, type)
-                    Result.Success(vouchers)
-                } catch (e: Exception) {
-                    Result.Error(mapExceptionToDataError(e))
-                }
-            }
+        return try {
+            Log.d("VoucherRepository", "Fetching vouchers for user: $userId, type: $type")
 
-            is Result.Error -> Result.Error(userIdResult.error)
+            val vouchers = dataSource.getUserVouchersByType(userId, type)
+            Log.d("VoucherRepository", "Query result: $vouchers")
+            Result.Success(vouchers)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
         }
+
     }
 
     suspend fun getVoucherByTransactionId(transactionId: String): Result<Voucher, DataError> {
@@ -66,22 +68,6 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-    suspend fun getUserVouchers(): Result<List<Voucher>, DataError> {
-        return try {
-            when (val userIdResult = authRepository.getCurrentUserId()) {
-                is Result.Success -> {
-                    val userId = userIdResult.data
-                    val vouchers = dataSource.getVouchersByUser(userId)
-                    Result.Success(vouchers)
-                }
-
-                is Result.Error -> Result.Error(userIdResult.error)
-            }
-        } catch (e: Exception) {
-            Result.Error(mapExceptionToDataError(e))
-        }
-    }
-
     suspend fun deleteVoucher(code: String): Result<Unit, DataError> {
         return try {
             dataSource.deleteVoucher(code)
@@ -90,7 +76,6 @@ class VoucherRepository @Inject constructor(
             Result.Error(mapExceptionToDataError(e))
         }
     }
-
 
     private fun mapExceptionToDataError(e: Exception): DataError = when (e) {
         is FirebaseFirestoreException -> when (e.code) {

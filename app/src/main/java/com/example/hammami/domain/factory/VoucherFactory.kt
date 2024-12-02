@@ -11,18 +11,18 @@ import javax.inject.Inject
 
 class VoucherFactory @Inject constructor() {
     fun createVoucher(
+        userId: String,
         value: Double,
         type: VoucherType,
-        userId: String,
         transactionId: String? = null,
     ): Voucher {
         return Voucher(
+            userId = userId,
             code = generateVoucherCode(value, type),
             value = value,
             type = type,
             expirationDate = getExpirationDate(),
             creationTransactionId = transactionId,
-            createdBy = userId
         )
     }
 
@@ -35,8 +35,7 @@ class VoucherFactory @Inject constructor() {
         Log.d("DiscountVoucher", "generateCode: $prefix$uuid${value.toInt()}")
         return "$prefix$uuid${value.toInt()}"
     }
+
     private fun getExpirationDate(): Timestamp =
         Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))
-
-
 }

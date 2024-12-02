@@ -10,16 +10,15 @@ enum class VoucherType {
 }
 
 data class Voucher(
-    val id: String = "",
+    val userId: String = "",
     val code: String = "",
     val value: Double = 0.0,
     val type: VoucherType = VoucherType.GIFT_CARD,
     val createdAt: Timestamp = Timestamp.now(),
     val expirationDate: Timestamp = Timestamp.now(),
-    val creationTransactionId: String? = null,
-    val createdBy: String  = "" // userId di chi l'ha creato/acquistato
+    val creationTransactionId: String? = null
 ) {
     @get:Exclude
     val isExpired: Boolean
-        get() = expirationDate.toDate().after(Date())
+        get() = expirationDate.toDate().before(Date())
 }

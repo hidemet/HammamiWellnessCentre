@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,7 +16,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginTop="0dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/primaLista"
@@ -25,11 +26,15 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/secondaLista"
+                app:layout_constraintBottom_toTopOf="@+id/infoView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/chiSiamo"
@@ -71,32 +76,40 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />
 
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_width="match_parent"
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/primaLista"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/infoView"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/primaLista"
+                app:layout_constraintBottom_toTopOf="@+id/secondaLista">
+
+                <TextView
+                    android:id="@+id/info_chiSiamo"
+                    android:layout_width="343dp"
                     android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:text="@string/chiSiamo"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/primaLista"
-                    app:layout_constraintBottom_toTopOf="@+id/secondaLista">>
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-                    <TextView
-                        android:id="@+id/info_chiSiamo"
-                        android:layout_width="343dp"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentLeft="true"
-                        android:text="@string/chiSiamo"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.card.MaterialCardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/secondaLista"
@@ -104,21 +117,17 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/primaLista"
-                app:layout_constraintBottom_toBottomOf="@+id/terzaLista"
+                app:layout_constraintTop_toBottomOf="@id/infoView"
+                app:layout_constraintBottom_toTopOf="@id/sezioneTeamPrimaRiga"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/ilNostroTeam"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:paddingTop="8dp"
@@ -159,16 +168,300 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/sezioneTeamPrimaRiga"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/secondaLista"
+                app:layout_constraintBottom_toTopOf="@id/sezioneTeamSecondaRiga">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMembroTeam1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/cardMembroTeam2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivCard1"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            app:shapeAppearanceOverlay="@style/roundedImageView"
+                            android:layout_centerInParent="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/direttrice"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/tvCard1"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvCard1"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="Ginevra\nTitolare"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintTop_toBottomOf="@id/ivCard1"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMembroTeam2"
+                    app:layout_constraintStart_toEndOf="@id/cardMembroTeam1"
+                    app:layout_constraintEnd_toStartOf="@id/cardMembroTeam3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivCard2"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            app:shapeAppearanceOverlay="@style/roundedImageView"
+                            android:layout_centerInParent="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/estetista1"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/tvCard2"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvCard2"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="Luca\nEstetista"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintTop_toBottomOf="@id/ivCard2"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMembroTeam3"
+                    app:layout_constraintStart_toEndOf="@id/cardMembroTeam2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivCard3"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            app:shapeAppearanceOverlay="@style/roundedImageView"
+                            android:layout_centerInParent="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/estetista2"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/tvCard3"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvCard3"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="Fiona\nEstetista"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintTop_toBottomOf="@id/ivCard3"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/sezioneTeamSecondaRiga"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sezioneTeamPrimaRiga"
+                app:layout_constraintBottom_toTopOf="@id/terzaLista">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMembroTeam4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/cardMembroTeam5"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivCard4"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            app:shapeAppearanceOverlay="@style/roundedImageView"
+                            android:layout_centerInParent="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/massaggiatrice1"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/tvCard4"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvCard4"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="Paola\nMassaggiatrice"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintTop_toBottomOf="@id/ivCard4"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMembroTeam5"
+                    app:layout_constraintStart_toEndOf="@id/cardMembroTeam4"
+                    app:layout_constraintEnd_toStartOf="@id/cardMembroTeam6"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivCard5"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            app:shapeAppearanceOverlay="@style/roundedImageView"
+                            android:layout_centerInParent="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/massaggiatrice2"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/tvCard5"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvCard5"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="Rebecca\nMassaggiatrice"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintTop_toBottomOf="@id/ivCard5"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMembroTeam6"
+                    app:layout_constraintStart_toEndOf="@id/cardMembroTeam5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivCard6"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            app:shapeAppearanceOverlay="@style/roundedImageView"
+                            android:layout_centerInParent="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/segretaria"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/tvCard6"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvCard6"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="Lucia\nSegretaria"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintTop_toBottomOf="@id/ivCard6"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/terzaLista"
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/secondaLista"
-                app:layout_constraintBottom_toTopOf="@+id/quartaLista"
+                app:layout_constraintTop_toBottomOf="@+id/sezioneTeamSecondaRiga"
+                app:layout_constraintBottom_toTopOf="@+id/dispGiorni"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
 
@@ -179,7 +472,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/orari"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:paddingTop="8dp"
@@ -220,16 +513,247 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/dispGiorni"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/terzaLista"
+                app:layout_constraintBottom_toTopOf="@id/quartaLista">
+
+                <LinearLayout
+                    android:id="@+id/day1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/day2"
+                    app:layout_constraintTop_toBottomOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Lunedì"
+                            android:layout_marginStart="32dp"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Chiuso"
+                            android:gravity="right"
+                            android:layout_marginEnd="32dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/day2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/day1"
+                    app:layout_constraintBottom_toTopOf="@id/day3">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Martedì"
+                            android:layout_marginStart="32dp"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Chiuso"
+                            android:gravity="right"
+                            android:layout_marginEnd="32dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/day3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/day2"
+                    app:layout_constraintBottom_toTopOf="@id/day4">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Mercoledì"
+                            android:layout_marginStart="32dp"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="10:00 - 20:00"
+                            android:gravity="right"
+                            android:layout_marginEnd="32dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/day4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/day3"
+                    app:layout_constraintBottom_toTopOf="@id/day5">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Giovedì"
+                            android:layout_marginStart="32dp"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="10:00 - 20:00"
+                            android:gravity="right"
+                            android:layout_marginEnd="32dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/day5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/day4"
+                    app:layout_constraintBottom_toTopOf="@id/day6">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Venerdì"
+                            android:layout_marginStart="32dp"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="10:00 - 20:00"
+                            android:gravity="right"
+                            android:layout_marginEnd="32dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/day6"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/day5"
+                    app:layout_constraintBottom_toTopOf="@id/day7">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Sabato"
+                            android:layout_marginStart="32dp"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="10:00 - 20:00"
+                            android:gravity="right"
+                            android:layout_marginEnd="32dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/day7"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/day6"
+                    app:layout_constraintBottom_toBottomOf="@id/dispGiorni">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Domenica"
+                            android:layout_marginStart="32dp"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Solo su prenotazione"
+                            android:gravity="right"
+                            android:layout_marginEnd="32dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/quartaLista"
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/terzaLista"
-                app:layout_constraintBottom_toTopOf="@+id/quintaLista"
+                app:layout_constraintTop_toBottomOf="@+id/dispGiorni"
+                app:layout_constraintBottom_toTopOf="@+id/contenutoQuartaLista"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
 
@@ -281,14 +805,64 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/contenutoQuartaLista"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/quartaLista"
+                app:layout_constraintBottom_toTopOf="@id/quintaLista">
+
+                <ImageView
+                    android:id="@+id/mappa"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/mappa"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/tvTitoloIndicazioni"
+                    app:layout_constraintTop_toBottomOf="@id/contenutoQuartaLista"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTitoloIndicazioni"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Come raggiungerci"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/mappa"
+                    app:layout_constraintBottom_toTopOf="@+id/tvContenutoIndicazioni"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvContenutoIndicazioni"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:paddingBottom="10dp"
+                    android:text="@string/indicazioni_stradali"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTitoloIndicazioni"
+                    app:layout_constraintBottom_toTopOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/quintaLista"
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/quartaLista"
-                app:layout_constraintBottom_toTopOf="@+id/sestaLista"
+                app:layout_constraintTop_toBottomOf="@+id/contenutoQuartaLista"
+                app:layout_constraintBottom_toTopOf="@+id/dispContatti"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardElevation="0dp"
@@ -342,13 +916,246 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/dispContatti"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/quintaLista"
+                app:layout_constraintBottom_toTopOf="@+id/sestaLista">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardIndirizzo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/cardCellulare"
+                    app:layout_constraintTop_toBottomOf="@id/dispContatti"
+                    android:layout_width="336dp"
+                    android:layout_height="56dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/cardContattiUno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvIndirizzo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/indirizzo"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintBottom_toBottomOf="@id/cardContattiUno"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/cardContattiUno" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardCellulare"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cardIndirizzo"
+                    app:layout_constraintBottom_toTopOf="@+id/cardEmail"
+                    android:layout_width="336dp"
+                    android:layout_height="56dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/cardContattiDue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <ImageView
+                            android:id="@+id/ic_cellulare"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/tvCellulare"
+                            android:src="@drawable/call_24px"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvCellulare"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:text="@string/numero_cellulare"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintStart_toEndOf="@id/ic_cellulare"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/cardContattiDue"
+                            app:layout_constraintBottom_toBottomOf="@id/cardContattiDue"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardEmail"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/cardTitoloSocial"
+                    app:layout_constraintTop_toBottomOf="@id/cardCellulare"
+                    android:layout_width="336dp"
+                    android:layout_height="56dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/cardContattiTre"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <ImageView
+                            android:id="@+id/ic_email"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/tvEmail"
+                            android:src="@drawable/baseline_mail_outline_24"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvEmail"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:text="@string/email_hammami"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textAlignment="center"
+                            app:layout_constraintStart_toEndOf="@id/ic_email"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/cardContattiTre"
+                            app:layout_constraintBottom_toBottomOf="@id/cardContattiTre"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardTitoloSocial"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/cardLoghiSocial"
+                    app:layout_constraintTop_toBottomOf="@id/cardEmail"
+                    android:layout_width="336dp"
+                    android:layout_height="56dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/cardContattiQuattro"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvTitoloSocial"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:text="I nostri social"
+                            android:textAlignment="center"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/cardContattiQuattro" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardLoghiSocial"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cardTitoloSocial"
+                    app:layout_constraintBottom_toBottomOf="@id/dispContatti"
+                    android:layout_width="336dp"
+                    android:layout_height="56dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/cardContattiCinque"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <ImageView
+                            android:id="@+id/ic_facebook"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/ic_instagram"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:src="@drawable/facebook"/>
+
+                        <ImageView
+                            android:id="@+id/ic_instagram"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            app:layout_constraintStart_toEndOf="@id/ic_facebook"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:src="@drawable/instagram"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/sestaLista"
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/quintaLista"
+                app:layout_constraintTop_toBottomOf="@id/dispContatti"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -383,7 +1190,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:text="Il nostro team"
+                        android:text="Scarica la brochure"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         app:layout_constraintStart_toEndOf="@id/leadingIconScarica"
                         app:layout_constraintEnd_toStartOf="@id/trailingIconScarica"

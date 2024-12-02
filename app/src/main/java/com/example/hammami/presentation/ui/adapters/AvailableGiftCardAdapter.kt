@@ -2,6 +2,7 @@ package com.example.hammami.presentation.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -12,7 +13,7 @@ import com.example.hammami.databinding.ItemAvailableVoucherBinding
 import com.example.hammami.domain.model.AvailableVoucher
 
 class AvailableGiftCardAdapter(
-private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
+    private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
 ) : ListAdapter<AvailableVoucher, AvailableGiftCardAdapter.ViewHolder>(GiftCardDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,21 +33,19 @@ private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
         private val binding: ItemAvailableVoucherBinding,
         private val onGiftCardSelected: (NavController, AvailableVoucher) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(giftCard: AvailableVoucher) = with(binding) {
+            itemIcon.setImageResource(R.drawable.ic_gift_card)
 
-        fun bind(giftCard: AvailableVoucher) {
-            with(binding) {
+            voucherValue.text = root.context.getString(
+                R.string.gift_card_value_format,
+                giftCard.value
+            )
 
-                itemIcon.setImageResource(R.drawable.ic_gift_card)
+            // Nasconde i punti per le gift card
+            voucherPoints.isVisible = false
 
-                voucherValue.text = root.context.getString(
-                    R.string.gift_card_value_format,
-                    giftCard.value
-                )
-                root.setOnClickListener {
-                    if (giftCard.isEnabled) {
-                        onGiftCardSelected(root.findNavController(),giftCard)
-                    }
-                }
+            root.setOnClickListener {
+                onGiftCardSelected(root.findNavController(), giftCard)
             }
         }
     }

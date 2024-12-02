@@ -1,5 +1,6 @@
 package com.example.hammami.presentation.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -27,36 +28,29 @@ class ActiveGiftCardAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val voucher = getItem(position)
-        if (voucher.type == VoucherType.GIFT_CARD) {
-            holder.bind(voucher)
-        }
+        Log.d("ActiveGiftCardAdapter", "Binding voucher at position $position: $voucher")
+        holder.bind(voucher)
     }
 
     class ViewHolder(
         private val binding: ItemActiveVoucherBinding,
         private val onCopyCode: (String) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
-
         fun bind(voucher: Voucher) = with(binding) {
-            // Mostra titolo "Gift Card"
             titleText.text = root.context.getString(R.string.gift_card)
+            icon.setImageResource(R.drawable.ic_gift_card)
 
-            // Mostra il valore della gift card
             voucherValue.text = root.context.getString(
                 R.string.gift_card_value_format,
                 voucher.value
             )
 
-            // Setup codice gift card con copy
             voucherCodeLayout.apply {
                 voucherCode.setText(voucher.code)
                 hint = root.context.getString(R.string.gift_card_code)
-                setEndIconOnClickListener {
-                    onCopyCode(voucher.code)
-                }
+                setEndIconOnClickListener { onCopyCode(voucher.code) }
             }
 
-            // Data di scadenza
             voucherExpiry.text = root.context.getString(
                 R.string.expires_on,
                 SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -64,17 +58,11 @@ class ActiveGiftCardAdapter(
             )
         }
     }
-}
 
-// DiffCallback comune per entrambi gli adapter
-private class VoucherDiffCallback : DiffUtil.ItemCallback<Voucher>() {
-    override fun areItemsTheSame(
-        oldItem: Voucher,
-        newItem: Voucher
-    ): Boolean = oldItem.id == newItem.id
-
-    override fun areContentsTheSame(
-        oldItem: Voucher,
-        newItem: Voucher
-    ): Boolean = oldItem == newItem
+    class VoucherDiffCallback : DiffUtil.ItemCallback<Voucher>() {
+        override fun areItemsTheSame(oldItem: Voucher, newItem: Voucher): Boolean =
+            oldItem.code == newItem.code
+        override fun areContentsTheSame(oldItem: Voucher, newItem: Voucher): Boolean =
+            oldItem == newItem
+    }
 }

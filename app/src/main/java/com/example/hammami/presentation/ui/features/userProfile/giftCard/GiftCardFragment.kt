@@ -2,6 +2,7 @@ package com.example.hammami.presentation.ui.features.userProfile.giftCard
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,13 +20,17 @@ import com.example.hammami.presentation.ui.adapters.ActiveGiftCardAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-
 @AndroidEntryPoint
 class GiftCardsFragment : BaseFragment() {
+
     private var _binding: FragmentGiftCardsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: GiftCardViewModel by activityViewModels()
-    private val activeGiftCardsAdapter by lazy { createActiveGiftCardsAdapter() }
+    private val activeGiftCardsAdapter by lazy {
+        ActiveGiftCardAdapter(
+            onCopyCode = { code -> viewModel.copyGiftCardToClipboard(code) }
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +59,9 @@ class GiftCardsFragment : BaseFragment() {
 
     private suspend fun observeState() {
         viewModel.state.collect { state ->
-            updateUI(state)
+            Log.d("GiftCardsFragment", "State updated: ${state.userGiftCards.size} gift cards")
+            binding.progressIndicator.isVisible = state.isLoading
+            updateGiftCardsList(state)
         }
     }
 
@@ -64,25 +71,26 @@ class GiftCardsFragment : BaseFragment() {
         }
     }
 
-    private fun updateUI(state: GiftCardViewModel.GiftCardState) = with(binding) {
-        progressIndicator.isVisible = state.isLoading
-        updateGiftCardsList(state)
-    }
-
     private fun updateGiftCardsList(state: GiftCardViewModel.GiftCardState) = with(binding) {
-        noGiftCards.isVisible = !state.hasGiftCards && !state.isLoading
-        activeGiftCardsTitle.isVisible = state.hasGiftCards
-        giftCardsRecyclerView.isVisible = state.hasGiftCards
+        Log.d("GiftCardsFragment", "Updating UI with ${state.userGiftCards.size} gift cards")
 
+        // Aggiorna la lista nell'adapter
         activeGiftCardsAdapter.submitList(state.userGiftCards)
+
+        // Aggiorna la visibilità delle view
+        noGiftCards.isVisible = state.userGiftCards.isEmpty()
+        activeGiftCardsContainer.isVisible = state.userGiftCards.isNotEmpty()
+        activeGiftCardsTitle.isVisible = state.userGiftCards.isNotEmpty()
+        giftCardsRecyclerView.isVisible = state.userGiftCards.isNotEmpty()
+
+        // Debug
+        Log.d("GiftCardsFragment", "Container visibility: ${activeGiftCardsContainer.isVisible}")
+        Log.d("GiftCardsFragment", "RecyclerView visibility: ${giftCardsRecyclerView.isVisible}")
+        Log.d("GiftCardsFragment", "No gift cards visibility: ${noGiftCards.isVisible}")
     }
 
     private fun setupAppBar() {
         binding.topAppBar.setNavigationOnClickListener { onBackClick() }
-    }
-
-    private fun createActiveGiftCardsAdapter() = ActiveGiftCardAdapter { code ->
-        viewModel.copyGiftCardToClipboard(code)
     }
 
     private fun setupRecyclerView() = with(binding) {
@@ -92,6 +100,8 @@ class GiftCardsFragment : BaseFragment() {
             isNestedScrollingEnabled = false
             addItemDecoration(createItemDecoration())
         }
+        Log.d("GiftCardsFragment", "RecyclerView setup completed with adapter: $activeGiftCardsAdapter")
+
     }
 
     private fun createItemDecoration() = object : RecyclerView.ItemDecoration() {
@@ -125,12 +135,12 @@ class GiftCardsFragment : BaseFragment() {
            // is GiftCardViewModel.UiEvent.GiftCardPurchaseSuccess -> {
             //    findNavController().navigate(R.id.action_availableGiftCardsFragment_to_giftCardGeneratedFragment)
             // }
-
-            is GiftCardViewModel.UiEvent.NavigateToPayment -> TODO()
+           // is GiftCardViewModel.UiEvent.NavigateToPayment -> TODO()
         }
     }
     override fun onResume() {
         super.onResume()
+        Log.d("GiftCardsFragment", "onResume: reloading data")
         viewModel.loadData()
     }
 

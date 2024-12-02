@@ -13,11 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hammami.R
+import com.example.hammami.presentation.ui.adapters.NewServicesAdapter
 import com.example.hammami.domain.model.Service
 import com.example.hammami.databinding.FragmentMainCategoryBinding
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.presentation.ui.adapters.BestDealsAdapter
-import com.example.hammami.presentation.ui.adapters.NewServicesAdapter
 import com.example.hammami.presentation.ui.adapters.RecommendedAdapter
 import com.example.hammami.core.result.Result
 import com.example.hammami.presentation.viewmodel.MainCategoryViewModel

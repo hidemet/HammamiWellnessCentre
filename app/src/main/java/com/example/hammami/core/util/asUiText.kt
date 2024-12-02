@@ -3,6 +3,7 @@ package com.example.hammami.core.util
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.domain.error.DataError
+import com.example.hammami.domain.error.DataError.Service
 import com.example.hammami.domain.error.Error
 import com.example.hammami.domain.error.ValidationError.*
 import com.example.hammami.domain.error.ValidationError.User.*
@@ -124,6 +125,7 @@ fun DataError.asUiText(): UiText {
             DataError.Voucher.VALUE_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_voucher_exceeds_amount)
             DataError.Voucher.PERMISSION_DENIED -> UiText.StringResource(R.string.error_voucher_permission_denied)
             DataError.Voucher.INSUFFICIENT_POINTS -> UiText.StringResource(R.string.error_insufficient_points)
+            DataError.Voucher.EXPIRED -> UiText.StringResource(R.string.error_voucher_expired)
         }
 
         is DataError.Payment -> when (this) {
@@ -133,6 +135,8 @@ fun DataError.asUiText(): UiText {
             DataError.Payment.DISCOUNT_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_discount_exceeds_amount)
             DataError.Payment.INVALID_PAYMENT_INFO -> UiText.StringResource(R.string.error_invalid_payment_info)
         }
+
+        Service.SERVICE_NOT_FOUND -> UiText.StringResource(R.string.error_service_not_found)
     }
 }
 
@@ -184,5 +188,6 @@ fun Error.asUiText(): UiText {
         is CvvError -> this.asUiText()
         is VoucherError -> this.asUiText()
         is Payment -> this.asUiText()
+        is Service -> this.asUiText()
     }
 }

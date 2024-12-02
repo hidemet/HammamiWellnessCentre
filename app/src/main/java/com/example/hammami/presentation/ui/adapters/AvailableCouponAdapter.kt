@@ -3,6 +3,7 @@ package com.example.hammami.presentation.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -31,28 +32,28 @@ class AvailableCouponAdapter(
         private val binding: ItemAvailableVoucherBinding,
         private val onCouponSelected: (AvailableVoucher) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(coupon: AvailableVoucher) = with(binding) {
+            root.isEnabled = coupon.isEnabled
+            root.alpha = if (coupon.isEnabled) 1.0f else 0.38f
 
-        fun bind(coupon: AvailableVoucher) {
-            with(binding) {
-                root.isEnabled = coupon.isEnabled
-                // Applica l'alpha quando disabilitato
-                root.alpha = if (coupon.isEnabled) 1.0f else 0.38f
+            itemIcon.setImageResource(R.drawable.ic_coupon)
 
-                itemIcon.setImageResource(R.drawable.ic_coupon)
+            voucherValue.text = itemView.context.getString(
+                R.string.coupon_value_format,
+                coupon.value
+            )
 
-                voucherValue.text = itemView.context.getString(
-                    R.string.coupon_value_format,
-                    coupon.value
-                )
-                voucherPoints.text = itemView.context.getString(
+            voucherPoints.apply {
+                isVisible = true
+                text = itemView.context.getString(
                     R.string.points_required_format,
                     coupon.requiredPoints
                 )
+            }
 
-                root.setOnClickListener {
-                    if (coupon.isEnabled) {
-                        onCouponSelected(coupon)
-                    }
+            root.setOnClickListener {
+                if (coupon.isEnabled) {
+                    onCouponSelected(coupon)
                 }
             }
         }

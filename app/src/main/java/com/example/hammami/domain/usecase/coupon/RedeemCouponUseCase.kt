@@ -7,7 +7,7 @@ import com.example.hammami.domain.usecase.user.GetCurrentUserIdUseCase
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.VoucherType
-import com.example.hammami.domain.usecase.CreateVoucherUseCase
+import com.example.hammami.domain.usecase.voucher.CreateVoucherUseCase
 
 import javax.inject.Inject
 
@@ -18,19 +18,19 @@ class RedeemCouponUseCase @Inject constructor(
     private val voucherRepository: VoucherRepository
 ) {
     suspend operator fun invoke(value: Double, requiredPoints: Int): Result<Voucher, DataError> {
-        return when (val userIdResult = getCurrentUserIdUseCase()) {
+        return when (val userResult = getCurrentUserIdUseCase()) {
             is Result.Success -> {
-                val userId = userIdResult.data
-
                 // 1. Crea il coupon
                 when (val couponResult = createVoucherUseCase(value, VoucherType.COUPON)) {
                     is Result.Success -> {
                         // 2. Sottrae i punti
-                        when (val deductResult = deductPointsUseCase(userId, requiredPoints)) {
+                        when (val deductResult = deductPointsUseCase(userResult.data, requiredPoints)) {
                             is Result.Success -> Result.Success(couponResult.data)
                             is Result.Error -> {
                                 // Rollback: elimina il coupon creato
-                                voucherRepository.deleteVoucher(couponResult.data.code)
+                                couponResult.data.code.let { code ->
+                                    voucherRepository.deleteVoucher(code)
+                                }
                                 Result.Error(deductResult.error)
                             }
                         }
@@ -38,7 +38,7 @@ class RedeemCouponUseCase @Inject constructor(
                     is Result.Error -> couponResult
                 }
             }
-            is Result.Error -> Result.Error(userIdResult.error)
+            is Result.Error -> Result.Error(userResult.error)
         }
     }
 }
