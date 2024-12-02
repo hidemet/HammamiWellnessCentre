@@ -67,7 +67,7 @@
         android:label="ServizioDetailFragment">
         <argument
             android:name="service"
-            app:argType="com.example.hammami.data.Service" />
+            app:argType="com.example.hammami.domain.model.Service" />
     </fragment>
 
     <navigation android:id="@+id/catalogo_servizi_benessere"
