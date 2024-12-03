@@ -143,8 +143,12 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     fun onPaymentMethodSelect(method: PaymentMethod) = viewModelScope.launch {
-        updateState { copy(selectedMethod = method,
-            isPaymentEnabled = method != PaymentMethod.CREDIT_CARD) }
+        updateState {
+            copy(
+                selectedMethod = method,
+                isPaymentEnabled = method != PaymentMethod.CREDIT_CARD
+            )
+        }
     }
 
     fun onCardDataChanged(
@@ -204,6 +208,7 @@ class PaymentViewModel @AssistedInject constructor(
             is Result.Error -> emitEvent(PaymentEvent.ShowError(paymentResult.error.asUiText()))
         }
     }
+
     private suspend fun handlePaymentSuccess(transactionId: String, paymentItem: PaymentItem) {
         Log.d("PaymentViewModel", "Payment successful with transaction ID: $transactionId")
         updateState { copy(isLoading = false) }
@@ -225,6 +230,7 @@ class PaymentViewModel @AssistedInject constructor(
                 updateState { copy(isLoading = false) }
                 _event.tryEmit(PaymentEvent.NavigateToGiftCardGenerated(transactionId))
             }
+
             is Result.Error -> emitEvent(PaymentEvent.ShowError(voucherResult.error.asUiText()))
         }
     }
@@ -234,6 +240,7 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     private suspend fun emitEvent(event: PaymentEvent) {
+        updateState { copy(isLoading = false) }
         _event.emit(event)
 
     }

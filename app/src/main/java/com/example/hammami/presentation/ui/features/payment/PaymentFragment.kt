@@ -223,9 +223,10 @@ class PaymentFragment : BaseFragment() {
     }
 
     private fun updateDiscountSection(state: PaymentUiState) = with(binding) {
-        discountInput.isEnabled = state.appliedVoucher == null
+       // discountInput.isEnabled = state.appliedVoucher == null
         applyDiscountButton.isEnabled = state.discountCode.isNotBlank() &&
                 state.appliedVoucher == null
+        textFieldDiscountVoucher.error = state.discountError?.asString(requireContext())
 
         appliedDiscountCard.isVisible = state.appliedVoucher != null
         state.appliedVoucher?.let { voucher ->

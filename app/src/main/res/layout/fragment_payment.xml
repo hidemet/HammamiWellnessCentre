@@ -151,7 +151,7 @@
                         android:orientation="horizontal">
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/discountInputLayout"
+                            android:id="@+id/textFieldDiscountVoucher"
                             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -164,7 +164,7 @@
                                 android:layout_height="wrap_content"
                                 android:inputType="textCapCharacters"
                                 android:hint="@string/discount_code"
-                                android:maxLength="10"/>
+                                android:maxLength="16"/>
 
                         </com.google.android.material.textfield.TextInputLayout>
 

@@ -38,6 +38,7 @@ class AvailableCouponAdapter(
 
             itemIcon.setImageResource(R.drawable.ic_coupon)
 
+            titleText.text = itemView.context.getString(R.string.coupon)
             voucherValue.text = itemView.context.getString(
                 R.string.coupon_value_format,
                 coupon.value
