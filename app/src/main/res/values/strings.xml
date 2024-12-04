@@ -49,7 +49,7 @@
     <string name="discount_applied">Sconto di €%1$.2f applicato</string>
     <string name="check_card_details">Per favore controlla i dettagli della tua carta</string>
     <string name="continue_text">Continua</string>
-    <string name="confirm_payment">Conferma Pagamento</string>
+    <string name="confirm_payment">Paga</string>
     <string name="processing">Elaborazione in corso</string>
     <string name="done">Fatto</string>
 
@@ -498,6 +498,10 @@
     <string name="estetica">Estetica</string>
     <string name="massaggi">Massaggi</string>
     <string name="error_service_not_found">Il servizio non è stato trovato</string>
+    <string name="karma_points">Punti Karma</string>
+    <string name="current_balance">Saldo punti karma: %d</string>
+    <string name="earned_points">Punti karma guadagnati: %d</string>
+    <string name="new_balance">Nuovo saldo punti karma: %d</string>
 
 
 </resources>

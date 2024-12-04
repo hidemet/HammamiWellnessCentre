@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
+import androidx.databinding.adapters.TextViewBindingAdapter.setText
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -125,8 +126,10 @@ class PaymentFragment : BaseFragment() {
 
     private fun setupDiscountSection() = with(binding) {
         discountInput.addTextChangedListener { text ->
-            applyDiscountButton.isEnabled = !text.isNullOrBlank()
             viewModel.onDiscountCodeChanged(text.toString())
+            applyDiscountButton.isEnabled = !text.isNullOrBlank()
+            textFieldDiscountVoucher.error = null // Rimuove l'errore quando l'utente digita il codice
+
         }
 
         applyDiscountButton.setOnClickListener {
@@ -136,9 +139,17 @@ class PaymentFragment : BaseFragment() {
 
         removeDiscountButton.setOnClickListener {
             viewModel.onRemoveVoucher()
-            discountInput.text = null
-            discountInput.clearFocus()
+            clearDiscountInput()
         }
+    }
+
+    private fun clearDiscountInput() {
+        binding.discountInput.apply {
+            setText("")
+            isEnabled = true
+            clearFocus()
+        }
+        binding.textFieldDiscountVoucher.error = null
     }
 
     private fun setupPaymentMethods() = with(binding) {
@@ -223,20 +234,19 @@ class PaymentFragment : BaseFragment() {
     }
 
     private fun updateDiscountSection(state: PaymentUiState) = with(binding) {
-       // discountInput.isEnabled = state.appliedVoucher == null
-        applyDiscountButton.isEnabled = state.discountCode.isNotBlank() &&
-                state.appliedVoucher == null
+        // Aggiorniamo sempre l'errore dal TextInputLayout
         textFieldDiscountVoucher.error = state.discountError?.asString(requireContext())
 
+        // Gestiamo lo stato del pulsante
+        applyDiscountButton.isEnabled = state.discountCode.isNotBlank() &&
+                state.appliedVoucher == null
+
+        // Gestiamo la card del voucher applicato
         appliedDiscountCard.isVisible = state.appliedVoucher != null
+        discountInputSection.isVisible = state.appliedVoucher == null
         state.appliedVoucher?.let { voucher ->
             discountCode.text = voucher.code
             discountAmount.text = getString(R.string.price_format_negative, voucher.value)
-        }
-
-        state.discountError?.let {
-            discountInput.text?.clear()
-            discountInput.clearFocus()
         }
     }
 

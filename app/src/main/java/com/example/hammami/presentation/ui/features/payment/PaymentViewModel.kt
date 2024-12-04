@@ -105,6 +105,7 @@ class PaymentViewModel @AssistedInject constructor(
                                 appliedVoucher = voucher,
                                 finalAmount = newAmount,
                                 discountCode = "",
+                                discountError = null,
                                 earnedPoints = karmaPointsCalculator.calculatePoints(
                                     newAmount,
                                     paymentItem
@@ -116,7 +117,11 @@ class PaymentViewModel @AssistedInject constructor(
 
                     is Result.Error -> {
                         updateState {
-                            copy(discountError = validationResult.error.asUiText())
+                            copy(
+                                discountError = validationResult.error.asUiText(),
+                                discountCode = "",
+                                isLoading = false
+                            )
                         }
                         emitEvent(PaymentEvent.ShowError(validationResult.error.asUiText()))
                     }
@@ -124,6 +129,13 @@ class PaymentViewModel @AssistedInject constructor(
             }
 
             is Result.Error -> {
+                updateState {
+                    copy(
+                        discountError = voucherResult.error.asUiText(),
+                        discountCode = "",
+                        isLoading = false
+                    )
+                }
                 emitEvent(PaymentEvent.ShowError(voucherResult.error.asUiText()))
             }
         }
