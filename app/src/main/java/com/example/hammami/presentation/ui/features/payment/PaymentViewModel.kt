@@ -52,8 +52,13 @@ class PaymentViewModel @AssistedInject constructor(
     private val _state = MutableStateFlow(
         PaymentUiState(
             paymentItem = paymentItem,
+            itemPrice = paymentItem.price,
             finalAmount = paymentItem.price,
-            earnedPoints = karmaPointsCalculator.calculatePoints(paymentItem.price, paymentItem)
+            currentKarmaPoints = 0,
+            earnedKarmaPoints = karmaPointsCalculator.calculatePoints(
+                paymentItem.price,
+                paymentItem
+            )
         )
     )
     val state = _state.asStateFlow()
@@ -69,47 +74,38 @@ class PaymentViewModel @AssistedInject constructor(
         loadUserPoints()
     }
 
-    private fun loadUserPoints() {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-            when (val result = getUserPointsUseCase()) {
-                is Result.Success -> {
-                    updateState { copy(totalPoints = result.data, isLoading = false) }
-                }
-
-                is Result.Error -> {
-                    emitEvent(PaymentEvent.ShowError(result.error.asUiText()))
-                }
-            }
+    private fun loadUserPoints() = viewModelScope.launch {
+        when (val result = getUserPointsUseCase()) {
+            is Result.Success -> updateState { copy(currentKarmaPoints = result.data) }
+            is Result.Error -> emitEvent(PaymentEvent.ShowError(result.error.asUiText()))
         }
     }
 
-    fun onDiscountCodeChanged(code: String) {
-        _state.update { it.copy(discountCode = code) }
-    }
+
+    fun onDiscountCodeChanged(code: String) = _state.update { it.copy(discountCode = code) }
+
 
     fun onApplyVoucher() = viewModelScope.launch {
-        val amount = state.value.paymentItem.price
-        val code = state.value.discountCode.trim()
-
+        val itemPrice = state.value.paymentItem.price
+        val discountCode = state.value.discountCode.trim()
         updateState { copy(isLoading = true) }
-
-        when (val voucherResult = getDiscountVoucherUseCase(code)) {
+        when (val voucherResult = getDiscountVoucherUseCase(discountCode)) {
             is Result.Success -> {
                 val voucher = voucherResult.data
-                when (val validationResult = validateVoucherUseCase(voucher, amount)) {
+                when (val validationResult = validateVoucherUseCase(voucher, itemPrice)) {
                     is Result.Success -> {
-                        val newAmount = amount - voucher.value
+                        val newAmount = itemPrice - voucher.value
                         updateState {
                             copy(
                                 appliedVoucher = voucher,
+                                discountValue = voucher.value,
                                 finalAmount = newAmount,
-                                discountCode = "",
-                                discountError = null,
-                                earnedPoints = karmaPointsCalculator.calculatePoints(
+                                earnedKarmaPoints = karmaPointsCalculator.calculatePoints(
                                     newAmount,
                                     paymentItem
                                 ),
+                                discountCode = "",
+                                discountError = null,
                                 isLoading = false
                             )
                         }
@@ -142,14 +138,15 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     fun onRemoveVoucher() {
-        val amount = state.value.paymentItem.price
+        val itemPrice = state.value.paymentItem.price
         updateState {
             copy(
                 appliedVoucher = null,
-                finalAmount = amount,
+                discountValue = null,
+                finalAmount = itemPrice,
+                earnedKarmaPoints = karmaPointsCalculator.calculatePoints(itemPrice, paymentItem),
                 discountCode = "",
-                discountError = null,
-                earnedPoints = karmaPointsCalculator.calculatePoints(amount, paymentItem)
+                discountError = null
             )
         }
     }

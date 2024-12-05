@@ -502,6 +502,9 @@
     <string name="current_balance">Saldo punti karma: %d</string>
     <string name="earned_points">Punti karma guadagnati: %d</string>
     <string name="new_balance">Nuovo saldo punti karma: %d</string>
+    <string name="amount">Importo</string>
+    <string name="earned_karma_points">Karma guadagnato: %d pt.</string>
+    <string name="new_karma_points_balance">Nuovo saldo karma: %d pt.</string>
 
 
 </resources>

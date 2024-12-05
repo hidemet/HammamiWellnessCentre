@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="20dp"
+        android:paddingBottom="200dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -180,14 +180,10 @@
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/appliedDiscountChip"
-                            style="@style/Widget.Material3.Chip.Assist"
+                            style="@style/Widget.Material3.Chip.Input"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:checkable="false"
-                            app:chipIcon="@drawable/ic_check_circle"
-                            app:chipIconTint="?attr/colorPrimary"
-                            app:closeIcon="@drawable/ic_close"
-                            app:closeIconTint="?attr/colorError" />
+                            android:closeIcon="@drawable/ic_close" />
 
                     </com.google.android.material.chip.ChipGroup>
 
@@ -231,13 +227,13 @@
                         android:id="@+id/paymentMethodChips"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingHorizontal="16dp"
                         app:selectionRequired="true"
-                        app:paddingHorizontal="16dp"
                         app:singleSelection="true">
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/creditCardChip"
                             style="@style/Widget.Material3.Chip.Filter"
+                            android:id="@+id/creditCardChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/credit_card"
@@ -246,8 +242,8 @@
                             app:chipIconTint="?attr/colorOnSurface" />
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/paypalChip"
                             style="@style/Widget.Material3.Chip.Filter"
+                            android:id="@+id/paypalChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/paypal"
@@ -255,8 +251,8 @@
                             app:chipIconEnabled="true" />
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/googlePayChip"
                             style="@style/Widget.Material3.Chip.Filter"
+                            android:id="@+id/googlePayChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/google_pay"
@@ -276,8 +272,8 @@
 
                         <!-- Campo numero carta migliorato -->
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/cardNumberLayout"
                             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            android:id="@+id/cardNumberLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
@@ -365,25 +361,24 @@
 
         <!-- Prezzo base -->
         <TextView
-            android:id="@+id/basePriceLabel"
+            android:id="@+id/item_price_label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="@string/base_price"
+            android:text="@string/amount"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-            app:layout_constraintEnd_toStartOf="@+id/basePrice"
+            app:layout_constraintEnd_toStartOf="@+id/item_price"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Base Price" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/basePrice"
+            android:id="@+id/item_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-            app:layout_constraintBaseline_toBaselineOf="@+id/basePriceLabel"
+            app:layout_constraintBaseline_toBaselineOf="@+id/item_price_label"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="50.00 €" />
 
@@ -398,7 +393,7 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorError"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/basePriceLabel" />
+            app:layout_constraintTop_toBottomOf="@id/item_price_label" />
 
         <TextView
             android:id="@+id/discountAmount"
@@ -431,38 +426,35 @@
             app:layout_constraintTop_toBottomOf="@id/divider" />
 
         <TextView
-            android:id="@+id/finalPrice"
+            android:id="@+id/final_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-            android:textColor="?attr/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/totalLabel"
             tools:text="40.00 €" />
 
         <TextView
-            android:id="@+id/earnedPoints"
+            android:id="@+id/earned_karma_points"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="@string/points_earned"
+            android:text="@string/earned_karma_points"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             app:layout_constraintTop_toBottomOf="@id/totalLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Punti guadagnati: 200" />
-
+            app:layout_constraintStart_toStartOf="parent"/>
         <TextView
-            android:id="@+id/newPointsBalance"
+            android:id="@+id/new_karma_points_balance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            android:text = "@string/new_karma_points_balance"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintTop_toBottomOf="@id/earnedPoints"
-            app:layout_constraintTop_toTopOf="@id/earnedPoints"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="Nuovo saldo punti: 1200" />
+            app:layout_constraintTop_toBottomOf="@id/earned_karma_points"
+            app:layout_constraintTop_toTopOf="@id/earned_karma_points"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <!-- Bottone di conferma -->
         <com.google.android.material.button.MaterialButton
@@ -472,7 +464,7 @@
             android:layout_margin="16dp"
             android:text="@string/confirm_payment"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/newPointsBalance" />
+            app:layout_constraintTop_toBottomOf="@id/new_karma_points_balance" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

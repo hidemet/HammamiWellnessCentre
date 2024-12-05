@@ -39,9 +39,9 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginBottom="16dp"
-                android:src="@drawable/ic_gift_card"
+                android:src="@drawable/ic_check_circle"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.LargeComponent"
-                app:tint="?attr/colorPrimaryContainer" />
+                app:tint="?attr/colorTertiary" />
 
             <!-- Success Message Text -->
 
