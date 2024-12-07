@@ -32,22 +32,23 @@ class UserRepository @Inject constructor(
                     Result.Error(mapExceptionToDataError(e))
                 }
             }
+
             is Result.Error -> Result.Error(uidResult.error)
         }
     }
 
-   suspend fun getUserPoints(userId: String): Result<Int, DataError> {
-       return try {
-           val points = firestoreDataSource.getUserPoints(userId)
-           Result.Success(points)
-       } catch (e: Exception) {
-           Result.Error(mapExceptionToDataError(e))
-       }
-   }
+    suspend fun getUserPoints(userId: String): Result<Int, DataError> {
+        return try {
+            val points = firestoreDataSource.getUserPoints(userId)
+            Result.Success(points)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
 
     suspend fun deductPoints(userId: String, requiredPoints: Int): Result<Unit, DataError> {
         return try {
-           val userPoints = firestoreDataSource.getUserPoints(userId)
+            val userPoints = firestoreDataSource.getUserPoints(userId)
             firestoreDataSource.setUserPoints(userId, userPoints - requiredPoints)
             Result.Success(Unit)
         } catch (e: Exception) {
@@ -89,13 +90,31 @@ class UserRepository @Inject constructor(
                             }
                         }
                     }
+
                     is Result.Error -> {
                         authRepository.deleteUser()
                         Result.Error(uidResult.error)
                     }
                 }
             }
+
             is Result.Error -> Result.Error(authResult.error)
+        }
+    }
+
+    suspend fun updateUserDataWithoutEmail(user: User): Result<Unit, DataError> {
+        return when (val uidResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                try {
+                    firestoreDataSource.updateUserDataWithoutEmail(uidResult.data, user)
+                    Result.Success(Unit)
+
+                } catch (e: Exception) {
+                    Result.Error(mapExceptionToDataError(e))
+                }
+            }
+
+            is Result.Error -> Result.Error(uidResult.error)
         }
     }
 
@@ -112,13 +131,13 @@ class UserRepository @Inject constructor(
                     Result.Error(mapExceptionToDataError(e))
                 }
             }
+
             is Result.Error -> Result.Error(uidResult.error)
         }
     }
 
 
-
-     private suspend fun saveUser(userUid: String, user: User): Result<Unit, DataError> {
+    private suspend fun saveUser(userUid: String, user: User): Result<Unit, DataError> {
         return try {
             firestoreDataSource.saveUserInformation(userUid, user)
             Result.Success(Unit)
@@ -149,6 +168,7 @@ class UserRepository @Inject constructor(
                     Result.Error(mapExceptionToDataError(e))
                 }
             }
+
             is Result.Error -> Result.Error(uidResult.error)
         }
     }
@@ -163,6 +183,7 @@ class UserRepository @Inject constructor(
                     Result.Error(mapExceptionToDataError(e))
                 }
             }
+
             is Result.Error -> Result.Error(uidResult.error)
         }
     }

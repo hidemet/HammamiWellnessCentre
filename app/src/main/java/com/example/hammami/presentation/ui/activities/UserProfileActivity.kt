@@ -40,8 +40,7 @@ class UserProfileActivity : AppCompatActivity() {
             viewModel.uiEvents.collect { event ->
                 Log.d("UserProfileActivity", "Received event: $event")
                 when (event) {
-                    is UserProfileViewModel.UiEvent.SignOut -> navigateToLogin()
-                    is UserProfileViewModel.UiEvent.AccountDeleted -> navigateToLogin()
+                    is UserProfileViewModel.UiEvent.NavigateToLogin -> navigateToLogin()
                     is UserProfileViewModel.UiEvent.UserMessage -> {
                         Log.d("UserProfileActivity", "Showing snackbar: ${event.message}")
                         Snackbar.make(
@@ -56,13 +55,11 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
     private fun navigateToLogin() {
-        val intent = Intent(this, InitialActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+        val intent = Intent(this, LoginRegisterActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         startActivity(intent)
-        finish()
+        finish() // Chiudo UserProfileActivity
     }
 
     companion object {

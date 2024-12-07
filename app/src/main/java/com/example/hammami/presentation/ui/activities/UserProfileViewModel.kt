@@ -3,7 +3,6 @@ package com.example.hammami.presentation.ui.activities
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.Navigation
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
@@ -12,9 +11,9 @@ import com.example.hammami.domain.model.User
 import com.example.hammami.domain.usecase.auth.DeleteAccountUseCase
 import com.example.hammami.domain.usecase.auth.ResetPasswordUseCase
 import com.example.hammami.domain.usecase.auth.SignOutUseCase
-import com.example.hammami.domain.usecase.user.ObserveUserStateUseCase
-import com.example.hammami.domain.usecase.user.RefreshUserStateUseCase
+import com.example.hammami.domain.usecase.user.ObserveUserChangesUseCase
 import com.example.hammami.domain.usecase.user.UpdateUserUseCase
+import com.example.hammami.domain.usecase.user.UpdateUserWithoutEmailUseCase
 import com.example.hammami.domain.usecase.user.UploadUserImageUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidateUserUseCase
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel.UserData.*
@@ -25,9 +24,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
-    private val observeUserStateUseCase: ObserveUserStateUseCase,
-    private val refreshUserStateUseCase: RefreshUserStateUseCase,
+    private val observeUserChangesUseCase: ObserveUserChangesUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
+    private val updateUserWithoutEmailUseCase: UpdateUserWithoutEmailUseCase,
     private val uploadUserImageUseCase: UploadUserImageUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
@@ -42,15 +41,31 @@ class UserProfileViewModel @Inject constructor(
     val uiEvents: SharedFlow<UiEvent> = _uiEvents.asSharedFlow()
 
     init {
-        observeUserState()
-        refreshUserState()
+        observeUserChanges()
+    }
+
+    private fun observeUserChanges() {
+        viewModelScope.launch {
+            observeUserChangesUseCase().collect { result ->
+                when (result) {
+                    is Result.Success -> updateUiState {
+                        copy(
+                            user = result.data,
+                            isLoading = false
+                        )
+                    }
+
+                    is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
+                }
+            }
+        }
     }
 
 
     fun signOut() = viewModelScope.launch {
         updateUiState { copy(isLoading = true) }
         when (val result = signOutUseCase()) {
-            is Result.Success -> emitEvent(UiEvent.SignOut)
+            is Result.Success -> emitEvent(UiEvent.NavigateToLogin)
             is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
         }
     }
@@ -58,40 +73,16 @@ class UserProfileViewModel @Inject constructor(
     fun deleteAccount() = viewModelScope.launch {
         updateUiState { copy(isLoading = true) }
         when (val result = deleteAccountUseCase()) {
-            is Result.Success -> emitEvent(UiEvent.AccountDeleted)
+            is Result.Success -> emitEvent(UiEvent.NavigateToLogin)
             is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
         }
     }
 
 
-    private fun observeUserState() = viewModelScope.launch {
-            observeUserStateUseCase().collect { result ->
-                when (result) {
-                    is Result.Success -> {
-                        updateUiState {
-                            copy(
-                                user = result.data,
-                                isLoading = false
-                            )
-                        }
-                    }
-                    is Result.Error -> emitEvent(UiEvent.UserMessage.error(result.error.asUiText()))
-                }
-            }
-        }
-
-
-    private fun refreshUserState() {
-        viewModelScope.launch {
-            updateUiState { copy(isLoading = true) }
-            refreshUserStateUseCase()
-            updateUiState { copy(isLoading = false) }
-        }
-    }
-
     fun updateUserData(info: UserData) = viewModelScope.launch {
         val currentUser = uiState.value.user ?: return@launch
         val updatedUser = info.toUser(currentUser)
+        val emailChanged = updatedUser.email != currentUser.email
 
         // Validiamo i dati utente
         val validationResult = validateUserUseCase(updatedUser)
@@ -105,13 +96,19 @@ class UserProfileViewModel @Inject constructor(
 
         // Se la validazione passa, aggiorniamo i dati utente
         updateUiState { copy(isLoading = true) }
+        if(emailChanged) {
+            when (val result = updateEmailUseCase(updatedUser.email)) {
+                is Result.Success -> {
+                    emitEvent(UiEvent.UserMessage(UiText.StringResource(R.string.profile_updated_successfully)))
+                }
 
+                is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
+            }
+        }
 
-        when (val result = updateUserUseCase(updatedUser)) {
+        when (val result = updateUserWithoutEmailUseCase(updatedUser)) {
             is Result.Success -> {
-                //updateUiState { copy(activeDialog = null) }
-                emitEvent(UiEvent.UserMessage(UiText.StringResource(R.string.profile_updated_successfully)))
-                refreshUserState()
+                 emitEvent(UiEvent.UserMessage(UiText.StringResource(R.string.profile_updated_successfully)))
             }
 
             is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
@@ -119,13 +116,11 @@ class UserProfileViewModel @Inject constructor(
     }
 
 
-
     fun uploadProfileImage(imageUri: Uri) = viewModelScope.launch {
         updateUiState { copy(isLoading = true) }
         when (val result = uploadUserImageUseCase(imageUri)) {
             is Result.Success -> {
                 emitEvent(UiEvent.UserMessage(UiText.StringResource(R.string.profile_image_updated_successfully)))
-                refreshUserState()
             }
 
             is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
@@ -144,7 +139,7 @@ class UserProfileViewModel @Inject constructor(
     fun deleteAccount(email: String) = viewModelScope.launch {
         updateUiState { copy(isLoading = true) }
         when (val result = deleteAccountUseCase()) {
-            is Result.Success -> emitEvent(UiEvent.AccountDeleted)
+            is Result.Success -> emitEvent(UiEvent.NavigateToLogin)
             is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
         }
     }
@@ -180,26 +175,10 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    sealed interface Dialog {
-        data class PersonalInfo(
-            val info: PersonalInfoData,
-            val validationState: ValidationState? = null
-        ) : Dialog
-
-        data class ContactInfo(
-            val info: ContactInfoData,
-            val validationState: ValidationState? = null
-        ) : Dialog
-
-        object DeleteAccount : Dialog
-        data class ResetPassword(val email: String? = null) : Dialog
-    }
-
     data class UiState(
         val user: User? = null,
         val userValidationError: ValidationState? = null,
         val isLoading: Boolean = false,
-        val activeDialog: Dialog? = null,
     )
 
 
@@ -209,9 +188,7 @@ class UserProfileViewModel @Inject constructor(
                 fun error(message: UiText) = UserMessage(message)
             }
         }
-
-        object AccountDeleted : UiEvent()
-        object SignOut : UiEvent()
+        object NavigateToLogin : UiEvent()
     }
 
     sealed class UserData {

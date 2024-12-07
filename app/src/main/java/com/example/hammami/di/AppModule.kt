@@ -8,7 +8,6 @@ import com.example.hammami.R
 import com.example.hammami.core.validator.AndroidEmailPatternValidator
 import com.example.hammami.core.validator.EmailPatternValidator
 import com.example.hammami.data.datasource.auth.FirebaseAuthDataSource
-import com.example.hammami.data.datasource.user.FirebaseFirestoreUserDataSource
 import com.example.hammami.data.repositories.AuthRepository
 import com.example.hammami.data.repositories.UserRepository
 import com.example.hammami.data.repositories.UserStateRepository
@@ -17,8 +16,6 @@ import com.example.hammami.domain.usecase.auth.ResetPasswordUseCase
 import com.example.hammami.domain.usecase.auth.SignInUseCase
 import com.example.hammami.domain.usecase.auth.SignUpUseCase
 import com.example.hammami.domain.usecase.auth.CheckAuthStateUseCase
-import com.example.hammami.domain.usecase.user.ObserveUserStateUseCase
-import com.example.hammami.domain.usecase.user.RefreshUserStateUseCase
 import com.example.hammami.domain.usecase.user.UpdateUserUseCase
 import com.example.hammami.domain.usecase.user.UploadUserImageUseCase
 import com.example.hammami.domain.usecase.validation.account.ValidateConfirmedPasswordUseCase
@@ -29,7 +26,6 @@ import com.example.hammami.domain.usecase.validation.user.ValidateFirstNameUseCa
 import com.example.hammami.domain.usecase.validation.user.ValidateGenderUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidateLastNameUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidatePhoneNumberUseCase
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel
 import com.example.hammami.util.ClipboardManager
 import com.example.hammami.util.PreferencesManager
 import com.google.firebase.auth.FirebaseAuth
@@ -39,7 +35,6 @@ import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
@@ -128,11 +123,6 @@ object AppModule {
     fun provideValidateConfirmedPasswordUseCase(): ValidateConfirmedPasswordUseCase =
         ValidateConfirmedPasswordUseCase()
 
-
-    @Provides
-    @Singleton
-    fun provideObserveUserStateUseCase(userStateRepository: UserStateRepository): ObserveUserStateUseCase =
-        ObserveUserStateUseCase(userStateRepository)
 
 
     @Provides

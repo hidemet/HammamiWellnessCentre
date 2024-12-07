@@ -106,8 +106,6 @@ class EditUserFragment : BaseFragment() {
         viewModel.uiEvents.collect { event ->
             when (event) {
                 is UiEvent.UserMessage -> showSnackbar(event.message)
-                is UiEvent.AccountDeleted -> navigateToLoginActivity()
-                is UiEvent.SignOut -> navigateToLoginActivity()
                 else -> Unit
             }
         }
@@ -137,20 +135,6 @@ class EditUserFragment : BaseFragment() {
                 .error(R.drawable.default_profile_image)
                 .into(profileImageView)
         }
-    }
-
-
-    private fun navigateToLoginActivity() {
-        val intent = Intent(requireContext(), LoginRegisterActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        startActivity(intent)
-        requireActivity().finish()
-    }
-
-    private fun showError(message: UiText) {
-        showSnackbar(message)
-        showLoading(false)
     }
 
 
