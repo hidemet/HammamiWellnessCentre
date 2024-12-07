@@ -11,7 +11,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.hammami.R
 import com.example.hammami.databinding.ActivityUserProfileBinding
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.play.integrity.internal.ac
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -28,9 +27,6 @@ class UserProfileActivity : AppCompatActivity() {
 
         setupNavigation()
         observeEvents()
-
-        // Carica i dati dell'utente all'avvio
-        viewModel.onEvent(UserProfileViewModel.UserProfileEvent.LoadUserData)
     }
 
     private fun setupNavigation() {
@@ -41,21 +37,12 @@ class UserProfileActivity : AppCompatActivity() {
 
     private fun observeEvents() {
         lifecycleScope.launch {
-            viewModel.events.collect { event ->
+            viewModel.uiEvents.collect { event ->
                 Log.d("UserProfileActivity", "Received event: $event")
                 when (event) {
-                    is UserProfileViewModel.UiEvent.SignOut -> {
-                        Log.d("UserProfileActivity", "Processing SignOut event")
-                        // Aggiungi questi flag per assicurarti che l'activity venga rimossa dallo stack
-                        val intent = Intent(this@UserProfileActivity, InitialActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                                    Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        }
-                        startActivity(intent)
-                        finish()
-                    }
-                    is UserProfileViewModel.UiEvent.ShowSnackbar -> {
+                    is UserProfileViewModel.UiEvent.SignOut -> navigateToLogin()
+                    is UserProfileViewModel.UiEvent.AccountDeleted -> navigateToLogin()
+                    is UserProfileViewModel.UiEvent.UserMessage -> {
                         Log.d("UserProfileActivity", "Showing snackbar: ${event.message}")
                         Snackbar.make(
                             binding.root,
@@ -63,11 +50,19 @@ class UserProfileActivity : AppCompatActivity() {
                             Snackbar.LENGTH_LONG
                         ).show()
                     }
-
-                    UserProfileViewModel.UiEvent.AccountDeleted -> TODO()
                 }
             }
         }
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(this, InitialActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        startActivity(intent)
+        finish()
     }
 
     companion object {

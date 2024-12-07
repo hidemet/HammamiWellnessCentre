@@ -14,8 +14,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.hammami.R
 import com.example.hammami.databinding.DialogEditContactInfoBinding
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel
+import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
 import com.example.hammami.util.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.UserInfo
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -32,7 +34,11 @@ class EditContactInfoDialogFragment : DialogFragment() {
         setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = DialogEditContactInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -66,53 +72,41 @@ class EditContactInfoDialogFragment : DialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.uiState.collect { updateUI(it) } }
-                launch { viewModel.events.collect { handleEvent(it) } }
+                launch { viewModel.uiEvents.collect { handleEvent(it) } }
             }
         }
     }
 
-    private fun updateUI(state: UserProfileViewModel.UiState) {
-        updateUIWithErrors(state.validationState)
+    private fun updateUI(state: UiState) {
         showLoading(state.isLoading)
-    }
-
-
-    private fun updateUIWithErrors(state: UserProfileViewModel.ValidationState) {
-        with(binding) {
-            phoneNumberInputLayout.error = state.phoneNumberError?.asString(requireContext())
-            emailInputLayout.error = state.emailError?.asString(requireContext())
+        state.userValidationError?.let { validation ->
+            with(binding) {
+                phoneNumberInputLayout.error =
+                    validation.phoneNumberError?.asString(requireContext())
+                emailInputLayout.error = validation.emailError?.asString(requireContext())
+            }
         }
     }
 
-
-
-    private fun handleEvent(event: UserProfileViewModel.UiEvent) {
+    private fun handleEvent(event: UiEvent) {
         when (event) {
-            is UserProfileViewModel.UiEvent.ShowSnackbar -> {
+            is UiEvent.UserMessage -> {
                 showSnackbar(event.message.asString(requireContext()))
                 dismiss()
             }
-            is UserProfileViewModel.UiEvent.AccountDeleted -> { /* Non gestito in questo dialog */ }
-            else -> { /* Non gestito */ }
+            else -> Unit
         }
     }
 
 
     private fun onSaveButtonClick() {
         hideKeyboard()
-        val userInfo = UserProfileViewModel.UserInfo(
-            firstName = viewModel.uiState.value.user?.firstName ?: "",
-            lastName = viewModel.uiState.value.user?.lastName ?: "",
-            birthDate = viewModel.uiState.value.user?.birthDate ?: "",
-            gender = viewModel.uiState.value.user?.gender ?: "",
-            allergies = viewModel.uiState.value.user?.allergies ?: "",
-            disabilities = viewModel.uiState.value.user?.disabilities ?: "",
+        val userInfo = UserData.ContactInfoData(
             phoneNumber = binding.phoneNumberEditText.text.toString(),
             email = binding.emailEditText.text.toString()
         )
-        viewModel.onEvent(UserProfileViewModel.UserProfileEvent.UpdateUserInfo(userInfo))
+        viewModel.updateUserData(userInfo)
     }
-
 
 
     private fun showLoading(isLoading: Boolean) {

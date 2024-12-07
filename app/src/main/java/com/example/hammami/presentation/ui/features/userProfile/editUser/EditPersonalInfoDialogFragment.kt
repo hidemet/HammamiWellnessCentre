@@ -86,51 +86,45 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.uiState.collect { updateUI(it) } }
-                launch { viewModel.events.collect { handleEvent(it) } }
+                launch { viewModel.uiState.collect { observeUiState(it) } }
+                launch { viewModel.uiEvents.collect { handleEvent(it) } }
             }
         }
     }
 
-    private fun updateUI(state: UiState) {
-        updateUIWithErrors(state.validationState)
+    private fun observeUiState(state: UiState) {
         showLoading(state.isLoading)
-    }
-
-
-    private fun updateUIWithErrors(validationState: ValidationState) {
-        binding.apply {
-            firstNameInputLayout.error = validationState.firstNameError?.asString(requireContext())
-            lastNameInputLayout.error = validationState.lastNameError?.asString(requireContext())
-            birthDateInputLayout.error = validationState.birthDateError?.asString(requireContext())
-            genderTextInputLayout.error = validationState.genderError?.asString(requireContext())
+        state.userValidationError?.let { validation ->
+            with(binding) {
+                firstNameInputLayout.error = validation.firstNameError?.asString(requireContext())
+                lastNameInputLayout.error = validation.lastNameError?.asString(requireContext())
+                birthDateInputLayout.error = validation.birthDateError?.asString(requireContext())
+            }
         }
     }
-
 
     private fun handleEvent(event: UiEvent) {
         when (event) {
-            is UiEvent.ShowSnackbar -> {
+            is UiEvent.UserMessage -> {
                 showSnackbar(event.message.asString(requireContext()))
                 dismiss()
             }
-            else -> {}
+
+            else -> Unit
         }
     }
 
-    private fun onSaveButtonClick() {
+    private fun onSaveButtonClick() = with(binding) {
         hideKeyboard()
-        val userInfo = UserInfo(
-            firstName = binding.firstNameEditText.text.toString(),
-            lastName = binding.lastNameEditText.text.toString(),
+        val info = UserData.PersonalInfoData(
+            firstName = firstNameEditText.text.toString(),
+            lastName = lastNameEditText.text.toString(),
             birthDate = binding.birthDateEditText.text.toString(),
             gender = binding.genderAutoCompleteTextView.text.toString(),
             allergies = binding.allergiesEditText.text.toString(),
             disabilities = binding.disabilitiesEditText.text.toString(),
-            phoneNumber = viewModel.uiState.value.user?.phoneNumber ?: "",
-            email = viewModel.uiState.value.user?.email ?: ""
         )
-        viewModel.onEvent(UserProfileEvent.UpdateUserInfo(userInfo))
+        viewModel.updateUserData(info)
     }
 
 
@@ -159,6 +153,7 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
             saveButton.isEnabled = !isLoading
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

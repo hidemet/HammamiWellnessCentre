@@ -18,6 +18,7 @@ import com.example.hammami.databinding.FragmentEditUserProfileBinding
 import com.example.hammami.domain.model.User
 import com.example.hammami.presentation.ui.activities.LoginRegisterActivity
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel
+import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.userProfile.editUser.ResetPasswordDialogFragment
 import com.example.hammami.presentation.ui.features.userProfile.editUser.EditContactInfoDialogFragment
@@ -37,7 +38,7 @@ class EditUserFragment : BaseFragment() {
 
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let { viewModel.onEvent(UserProfileViewModel.UserProfileEvent.UploadProfileImage(it)) }
+            uri?.let { viewModel.uploadProfileImage(it) }
         }
 
 
@@ -56,13 +57,13 @@ class EditUserFragment : BaseFragment() {
     }
 
     override fun setupUI() = with(binding) {
-            topAppBar.setNavigationOnClickListener { onBackClick() }
-            editProfileImageButton.setOnClickListener { pickImageLauncher.launch("image/*") }
-            editPersonalInfoButton.setOnClickListener { showEditPersonalInfoDialog() }
-            editContactsInfoButton.setOnClickListener { showEditContactDialog() }
-            changePasswordButton.setOnClickListener { showResetPasswordDialog() }
-            deleteAccountButton.setOnClickListener { showDeleteAccountConfirmationDialog() }
-        }
+        topAppBar.setNavigationOnClickListener { onBackClick() }
+        editProfileImageButton.setOnClickListener { pickImageLauncher.launch("image/*") }
+        editPersonalInfoButton.setOnClickListener { showEditPersonalInfoDialog() }
+        editContactsInfoButton.setOnClickListener { showEditContactDialog() }
+        changePasswordButton.setOnClickListener { showResetPasswordDialog() }
+        deleteAccountButton.setOnClickListener { showDeleteAccountConfirmationDialog() }
+    }
 
     private fun showEditPersonalInfoDialog() {
         val dialog = EditPersonalInfoDialogFragment.newInstance()
@@ -85,38 +86,39 @@ class EditUserFragment : BaseFragment() {
             .setMessage(R.string.delete_account_warning_message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.confirm) { _, _ ->
-                viewModel.onEvent(UserProfileViewModel.UserProfileEvent.DeleteAccount)
+                viewModel.deleteAccount()
             }.show()
     }
 
 
+
     override fun observeFlows() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collectLatest { handleUiState(it) }
-                viewModel.events.collectLatest { handleEvent(it) }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { observeState() }
+                launch { observeEvents() }
+
             }
         }
     }
 
-    private fun handleUiState(state: UserProfileViewModel.UiState) {
-        showLoading(state.isLoading)
-        state.user?.let { updateUI(it) }
-        handleValidationState(state.validationState)
-    }
-
-    private fun handleEvent(event: UserProfileViewModel.UiEvent) {
-        when (event) {
-            is UserProfileViewModel.UiEvent.ShowSnackbar -> showSnackbar(event.message)
-            is UserProfileViewModel.UiEvent.AccountDeleted -> navigateToLoginActivity()
-            else -> Unit
+    private suspend fun observeEvents() {
+        viewModel.uiEvents.collect { event ->
+            when (event) {
+                is UiEvent.UserMessage -> showSnackbar(event.message)
+                is UiEvent.AccountDeleted -> navigateToLoginActivity()
+                is UiEvent.SignOut -> navigateToLoginActivity()
+                else -> Unit
+            }
         }
     }
 
-    private fun handleValidationState(validationState: UserProfileViewModel.ValidationState) {
-        // Implementa la logica per mostrare gli errori di validazione
+    private suspend fun observeState() {
+        viewModel.uiState.collectLatest  { state ->
+            showLoading(state.isLoading)
+            state.user?.let { updateUI(it) }
+        }
     }
-
 
     private fun updateUI(user: User) {
         binding.apply {
