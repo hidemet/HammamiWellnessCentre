@@ -83,10 +83,11 @@ class UserProfileViewModel @Inject constructor(
     }
 
 
-    fun updateUserData(info: UserData) = viewModelScope.launch {
+    fun updateUserData(info: UserData, userPassword: String? = null) = viewModelScope.launch {
         val currentUser = uiState.value.user ?: return@launch
         val updatedUser = info.toUser(currentUser)
-        val emailChanged = updatedUser.email != currentUser.email
+        val emailChanged = currentUser.email != updatedUser.email
+        updateUiState { copy(isLoading = true) }
 
         // Validiamo i dati utente
         val validationResult = validateUserUseCase(updatedUser)
@@ -98,19 +99,7 @@ class UserProfileViewModel @Inject constructor(
             return@launch
         }
 
-        // Se la validazione passa, aggiorniamo i dati utente
-        updateUiState { copy(isLoading = true) }
-        if(emailChanged) {
-            when (val result = updateEmailUseCase(updatedUser.email)) {
-                is Result.Success -> {
-                    emitEvent(UiEvent.UserMessage(UiText.StringResource(R.string.profile_updated_successfully)))
-                }
-
-                is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
-            }
-        }
-
-        when (val result = updateUserWithoutEmailUseCase(updatedUser)) {
+        when (val result = updateUserUseCase(updatedUser, emailChanged, userPassword)) {
             is Result.Success -> {
                  emitEvent(UiEvent.UserMessage(UiText.StringResource(R.string.profile_updated_successfully)))
             }

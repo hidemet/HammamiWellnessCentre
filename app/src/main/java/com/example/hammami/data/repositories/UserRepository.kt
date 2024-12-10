@@ -9,6 +9,7 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException
 import android.net.Uri
+import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +17,8 @@ import javax.inject.Singleton
 class UserRepository @Inject constructor(
     private val firestoreDataSource: FirebaseFirestoreUserDataSource,
     private val storageDataSource: FirebaseStorageUserDataSource,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val firestore: FirebaseFirestore
 ) {
     suspend fun getUserData(): Result<User, DataError> {
         return when (val uidResult = authRepository.getCurrentUserId()) {
@@ -123,10 +125,8 @@ class UserRepository @Inject constructor(
             is Result.Success -> {
                 try {
                     firestoreDataSource.updateUser(uidResult.data, user)
-                    when (val updateResult = authRepository.updateEmail(user.email)) {
-                        is Result.Success -> Result.Success(Unit)
-                        is Result.Error -> updateResult
-                    }
+                    Result.Success(Unit)
+
                 } catch (e: Exception) {
                     Result.Error(mapExceptionToDataError(e))
                 }
@@ -136,16 +136,21 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun deductPointsAndAddVoucher(userId: String, requiredPoints: Int, voucher: Voucher): Result<Unit, DataError> {
-        return try {
-            val userPoints = firestoreDataSource.getUserPoints(userId)
-            firestoreDataSource.setUserPoints(userId, userPoints - requiredPoints)
-            firestoreDataSource.addVoucher(userId, voucher)
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(mapExceptionToDataError(e))
-        }
-    }
+
+//    suspend fun deductPointsAndAddVoucher(
+//        userId: String,
+//        requiredPoints: Int,
+//        voucher: Voucher
+//    ): Result<Unit, DataError> {
+//        return try {
+//            val userPoints = firestoreDataSource.getUserPoints(userId)
+//            firestoreDataSource.setUserPoints(userId, userPoints - requiredPoints)
+//            firestoreDataSource.addVoucher(userId, voucher)
+//            Result.Success(Unit)
+//        } catch (e: Exception) {
+//            Result.Error(mapExceptionToDataError(e))
+//        }
+//    }
 
 
     private suspend fun saveUser(userUid: String, user: User): Result<Unit, DataError> {

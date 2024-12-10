@@ -506,6 +506,8 @@
     <string name="earned_karma_points">Karma guadagnato: %d pt.</string>
     <string name="new_karma_points_balance">Nuovo saldo karma: %d pt.</string>
     <string name="contact_info">Contatti</string>
+    <string name="confirm_password_message">Inserisci la password associata alla tua email attuale (%1$s) per confermare la modifica.</string>
+    <string name="error_required_password">Inserisci la password</string>
 
 
 </resources>

@@ -125,10 +125,10 @@ object AppModule {
 
 
 
-    @Provides
-    fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserUseCase {
-        return UpdateUserUseCase(userRepository)
-    }
+//    @Provides
+//    fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserUseCase {
+//        return UpdateUserUseCase(userRepository)
+//    }
 
     @Provides
     fun provideUploadUserImageUseCase(userRepository: UserRepository): UploadUserImageUseCase {

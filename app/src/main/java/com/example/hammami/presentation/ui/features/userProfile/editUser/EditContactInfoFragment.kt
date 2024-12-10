@@ -6,7 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -55,6 +55,9 @@ class EditContactInfoFragment : BaseFragment() {
             phoneNumberEditText.setText(user.phoneNumber)
             emailEditText.setText(user.email)
         }
+        listOf(phoneNumberEditText, emailEditText).forEach {
+            it.addTextChangedListener { binding.saveButton.isEnabled = hasChanges() }
+        }
     }
 
 
@@ -68,29 +71,33 @@ class EditContactInfoFragment : BaseFragment() {
         val currentPhoneNumber = binding.phoneNumberEditText.text.toString()
         val user = viewModel.uiState.value.user
 
-        return user?.email != currentEmail || user?.phoneNumber != currentPhoneNumber
-    }
-
-    private fun updateSaveButtonVisibility() {
-        binding.saveButton.isVisible = hasChanges()
+        return user?.email != currentEmail || user.phoneNumber != currentPhoneNumber
     }
 
 
     private fun onSaveButtonClick() {
         hideKeyboard()
+        val email = binding.emailEditText.text.toString()
+        val phone = binding.phoneNumberEditText.text.toString()
         val info = UserProfileViewModel.UserData.ContactInfoData(
-            email = binding.emailEditText.text.toString(),
-            phoneNumber = binding.phoneNumberEditText.text.toString()
+            email = email,
+            phoneNumber = phone
         )
 
-        if (hasEmailChanged) {
-            showPasswordConfirmationDialog(newEmail)
+        val user = viewModel.uiState.value.user ?: return
+
+        if (user.email != email) {
+            showPasswordConfirmationDialog(info)
         } else {
-            updateContactInfo(newEmail)
+            viewModel.updateUserData(info)
         }
     }
 
-    private fun showPasswordConfirmationDialog(newEmail: String) {
+    private fun showPasswordConfirmationDialog(info: UserProfileViewModel.UserData.ContactInfoData) {
+        val user = viewModel.uiState.value.user ?: return
+        val oldEmail = user.email
+        val message = getString(R.string.confirm_password_message, oldEmail)
+
         val dialogView =
             LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm_password, null)
         val passwordEditText =
@@ -99,31 +106,23 @@ class EditContactInfoFragment : BaseFragment() {
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.confirm_password)
             .setView(dialogView)
-            .setPositiveButton(R.string.confirm) { _, _ ->
-                val password = passwordEditText.text.toString()
-                // Qui dovresti chiamare un Use Case per la reimpostazione della password
-                //  o un metodo nel ViewModel che gestisce l'aggiornamento dell'email con password.
-                //  Per ora, simuliamo l'aggiornamento.
-                updateContactInfo(newEmail)
-
-            }
+            .setPositiveButton(R.string.confirm, null) // Imposta il listener a null temporaneamente
             .setNegativeButton(R.string.cancel, null)
             .create()
 
         dialog.show()
-    }
 
-    private fun updateContactInfo(newEmail: String) {
-        val updatedUser = viewModel.uiState.value.user?.copy(
-            phoneNumber = binding.phoneNumberEditText.text.toString(),
-            email = newEmail
-        ) ?: return
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.updateUserData(updatedUser)
+        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val password = passwordEditText.text.toString()
+            if (password.isNotEmpty()) {
+                viewModel.updateUserData(info, password)
+                dialog.dismiss()
+            } else {
+                passwordEditText.error = getString(R.string.password_required)
+            }
         }
-        findNavController().navigateUp()
     }
+
 
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -142,10 +141,14 @@ class EditContactInfoFragment : BaseFragment() {
                 }
 
                 launch {
-                    viewModel.updateEvents.collect { event ->
+                    viewModel.uiEvents.collect { event ->
                         when (event) {
-                            is UiEvent.ShowSnackbar -> showSnackbar(event.message)
-                            // ... gestione di altri eventi ...
+                            is UiEvent.UserMessage -> {
+                                showSnackbar(event.message)
+                                findNavController().navigateUp()
+                            }
+
+                            else -> Unit
                         }
                     }
                 }

@@ -1,6 +1,5 @@
 package com.example.hammami.presentation.ui.features.userProfile
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,12 +10,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.hammami.R
-import com.example.hammami.core.ui.UiText
 import com.example.hammami.databinding.FragmentEditUserProfileBinding
 import com.example.hammami.domain.model.User
-import com.example.hammami.presentation.ui.activities.LoginRegisterActivity
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
 import com.example.hammami.presentation.ui.features.BaseFragment
@@ -59,26 +57,25 @@ class EditUserFragment : BaseFragment() {
     override fun setupUI() = with(binding) {
         topAppBar.setNavigationOnClickListener { onBackClick() }
         editProfileImageButton.setOnClickListener { pickImageLauncher.launch("image/*") }
-        editPersonalInfoButton.setOnClickListener { showEditPersonalInfoDialog() }
-        editContactsInfoButton.setOnClickListener { showEditContactDialog() }
-        changePasswordButton.setOnClickListener { showResetPasswordDialog() }
+        editPersonalInfoButton.setOnClickListener { navigateToEditPersonalInfoFragment() }
+        editContactsInfoButton.setOnClickListener { navigateToEditContactInfoFragment() }
+        // changePasswordButton.setOnClickListener {  showResetPasswordDialog() }
         deleteAccountButton.setOnClickListener { showDeleteAccountConfirmationDialog() }
     }
 
-    private fun showEditPersonalInfoDialog() {
+    private fun navigateToEditPersonalInfo() {
         val dialog = EditPersonalInfoDialogFragment.newInstance()
         dialog.show(childFragmentManager, "EditPersonalInfoDialog")
     }
 
-    private fun showEditContactDialog() {
-        EditContactInfoDialogFragment.newInstance()
-            .show(childFragmentManager, "EditContactInfoDialog")
+
+    private fun navigateToEditPersonalInfoFragment() {
+        findNavController().navigate(R.id.action_editUserProfileFragment_to_editPersonalInfoFragment)
     }
 
-    private fun showResetPasswordDialog() {
-        ResetPasswordDialogFragment.newInstance().show(parentFragmentManager, "ResetPasswordDialog")
+    private fun navigateToEditContactInfoFragment() {
+        findNavController().navigate(R.id.action_editUserProfileFragment_to_editContactInfoFragment)
     }
-
 
     private fun showDeleteAccountConfirmationDialog() {
         MaterialAlertDialogBuilder(requireContext())

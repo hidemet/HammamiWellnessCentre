@@ -3,6 +3,7 @@ package com.example.hammami.data.datasource.user
 import com.example.hammami.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Transaction
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +44,11 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         } catch (e: FirebaseFirestoreException) {
             throw e
         }
+    }
+
+    fun updateUserTransaction(transaction: Transaction, uid: String, user: User) {
+        val userRef = usersCollection.document(uid)
+        transaction.set(userRef, user)
     }
 
     suspend fun updateUserDataWithoutEmail(uid: String, user: User) {
