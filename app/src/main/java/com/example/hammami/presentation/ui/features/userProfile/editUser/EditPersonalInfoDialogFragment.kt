@@ -109,7 +109,6 @@ class EditPersonalInfoDialogFragment : DialogFragment() {
                 showSnackbar(event.message.asString(requireContext()))
                 dismiss()
             }
-
             else -> Unit
         }
     }

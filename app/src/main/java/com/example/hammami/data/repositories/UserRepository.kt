@@ -136,6 +136,17 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun deductPointsAndAddVoucher(userId: String, requiredPoints: Int, voucher: Voucher): Result<Unit, DataError> {
+        return try {
+            val userPoints = firestoreDataSource.getUserPoints(userId)
+            firestoreDataSource.setUserPoints(userId, userPoints - requiredPoints)
+            firestoreDataSource.addVoucher(userId, voucher)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
 
     private suspend fun saveUser(userUid: String, user: User): Result<Unit, DataError> {
         return try {

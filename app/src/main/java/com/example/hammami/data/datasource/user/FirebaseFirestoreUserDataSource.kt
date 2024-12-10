@@ -63,7 +63,6 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         }
     }
 
-
     suspend fun updateUser(uid: String, user: User) {
         try {
             usersCollection.document(uid).set(user).await()
