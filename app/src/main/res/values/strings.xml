@@ -243,7 +243,6 @@
 
     <!-- Flessibilità ed efficienza -->
     <string name="points_icon_description">Icona punti</string>
-    <string name="coupon_expiration_format">Scade il: %s</string>
 
     <!-- Design estetico e minimalista -->
     <string name="coupon_code_prefix">Codice: </string>
@@ -484,7 +483,7 @@
     <string name="error_invalid_payment_token">toker per il pagamento non valido!</string>
     <string name="error_invalid_payment_info">Rivedi i dati sulla carta di credito.</string>
     <string name="discount_code">Digita codice sconto</string>
-    <string name="coupon_value_format">Coupon da %.0f €</string>
+    <string name="coupon_value_format">%.0f €</string>
     <string name="error_unknown_firestore">Errore sconosciuto su Firestore</string>
     <string name="error_empty_code">Inserisci il codice di un voucher per ricercere uno sconto</string>
     <string name="error_voucher_expired">Il voucher risulta scaduto!</string>

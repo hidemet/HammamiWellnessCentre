@@ -10,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException
 import android.net.Uri
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Transaction
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,6 +21,25 @@ class UserRepository @Inject constructor(
     private val authRepository: AuthRepository,
     private val firestore: FirebaseFirestore
 ) {
+
+     fun deductPoints(transaction: Transaction, userId: String, pointsToDeduct: Int): Result<Unit, DataError> {
+        try {
+            val userDocument = firestore.collection("users").document(userId)
+            val userSnapshot = transaction.get(userDocument)
+            val currentPoints = userSnapshot.getLong("points")?.toInt() ?: 0
+
+            if (currentPoints < pointsToDeduct) {
+                return Result.Error(DataError.User.INSUFFICIENT_POINTS)
+            }
+
+            transaction.update(userDocument, "points", currentPoints - pointsToDeduct)
+            return Result.Success(Unit)
+        } catch (e: Exception) {
+            return Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+
     suspend fun getUserData(): Result<User, DataError> {
         return when (val uidResult = authRepository.getCurrentUserId()) {
             is Result.Success -> {

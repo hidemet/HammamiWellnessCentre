@@ -131,27 +131,41 @@ class PaymentFragment : BaseFragment() {
                 else -> return@setOnCheckedStateChangeListener
             }
             viewModel.onPaymentMethodSelect(method)
+            checkAllFieldsFilled()
         }
     }
 
     private fun setupCreditCardFields() = with(binding) {
-        cardNumberInput.setupCardNumberFormatting(
-            formatter = CardInputFormatter()
-        ) { text ->
-            viewModel.onCardDataChanged(number = text)
+        cardNumberInput.apply {
+            doAfterTextChanged {
+                checkAllFieldsFilled()
+                viewModel.onCardDataChanged(it.toString())
+            }
         }
 
-        expiryInput.setupExpiryDateFormatting(
-            formatter = CardInputFormatter()
-        ) { text ->
-            viewModel.onCardDataChanged(expiry = text)
+        expiryInput.apply {
+            doAfterTextChanged {
+                checkAllFieldsFilled()
+                viewModel.onCardDataChanged(it.toString())
+            }
         }
 
-        cvvInput.doAfterTextChanged { text ->
-            viewModel.onCardDataChanged(cvv = text?.toString() ?: "")
+        cvvInput.doAfterTextChanged {
+            checkAllFieldsFilled()
+            viewModel.onCardDataChanged(it.toString())
         }
     }
 
+    private fun checkAllFieldsFilled() = with(binding) {
+        val isCreditCardSelected = viewModel.state.value.selectedMethod == PaymentMethod.CREDIT_CARD
+        checkoutConfirmButton.isEnabled = if (isCreditCardSelected) {
+            cardNumberInput.text.toString().isNotBlank() &&
+                    expiryInput.text.toString().isNotBlank() &&
+                    cvvInput.text.toString().isNotBlank()
+        } else {
+            true // Abilita il bottone se il metodo di pagamento non è la carta di credito
+        }
+    }
 
     private fun clearDiscountInput() = with(binding) {
         discountCodeEditText.apply {

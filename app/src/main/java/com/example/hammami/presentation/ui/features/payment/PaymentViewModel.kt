@@ -106,7 +106,6 @@ class PaymentViewModel @AssistedInject constructor(
                                 ),
                                 discountCode = "",
                                 discountError = null,
-                                isLoading = false
                             )
                         }
                     }
@@ -116,7 +115,6 @@ class PaymentViewModel @AssistedInject constructor(
                             copy(
                                 discountError = validationResult.error.asUiText(),
                                 discountCode = "",
-                                isLoading = false
                             )
                         }
                         emitEvent(PaymentEvent.ShowError(validationResult.error.asUiText()))
@@ -129,7 +127,6 @@ class PaymentViewModel @AssistedInject constructor(
                     copy(
                         discountError = voucherResult.error.asUiText(),
                         discountCode = "",
-                        isLoading = false
                     )
                 }
                 emitEvent(PaymentEvent.ShowError(voucherResult.error.asUiText()))
@@ -155,56 +152,71 @@ class PaymentViewModel @AssistedInject constructor(
         updateState {
             copy(
                 selectedMethod = method,
-                isPaymentEnabled = method != PaymentMethod.CREDIT_CARD
+                isPaymentEnabled = if (method == PaymentMethod.CREDIT_CARD) {
+                    isCreditCardDataValid(creditCard)
+                } else {
+                    true
+                }
             )
         }
     }
 
-    fun onCardDataChanged(
-        number: String? = null,
-        expiry: String? = null,
-        cvv: String? = null
-    ) {
+    private fun isCreditCardDataValid(creditCard: CreditCard?): Boolean {
+        return creditCard?.number?.isNotBlank() == true &&
+                creditCard.expiryDate.isNotBlank() &&
+                creditCard.cvv.isNotBlank()
+    }
+
+
+    fun onCardDataChanged(number: String? = null, expiry: String? = null, cvv: String? = null) {
         if (state.value.selectedMethod != PaymentMethod.CREDIT_CARD) return
-
-        val currentCard = state.value.creditCard ?: CreditCard.empty().apply {
-            this.number = number ?: this.number
-            this.expiryDate = expiry ?: this.expiryDate
-            this.cvv = cvv ?: this.cvv
-        }
-
-        viewModelScope.launch {
-            val validationResult = validateCreditCardUseCase(currentCard)
-            val cardValidationErrors = PaymentUiState.CardValidationErrors(
-                numberError = validationResult.numberError?.asUiText(),
-                expiryError = validationResult.expiryError?.asUiText(),
-                cvvError = validationResult.cvvError?.asUiText()
+        val currentCard = state.value.creditCard ?: CreditCard("", "", "")
+        val updatedCard = currentCard.copy(
+            number = number ?: currentCard.number,
+            expiryDate = expiry ?: currentCard.expiryDate,
+            cvv = cvv ?: currentCard.cvv
+        )
+        updateState {
+            copy(
+                creditCard = updatedCard,
+                isPaymentEnabled = isCreditCardDataValid(updatedCard)
             )
+        }
+    }
 
+    fun onConfirmPayment() = viewModelScope.launch {
+        updateState { copy(isLoading = true) }
+        val currentState = state.value
+        when (currentState.selectedMethod) {
+            PaymentMethod.CREDIT_CARD -> processCreditCardPayment(currentState)
+            PaymentMethod.PAYPAL -> processPayment(PayPalPayment("dummy_token"), currentState)
+            PaymentMethod.GOOGLE_PAY -> processPayment(
+                GooglePayPayment("dummy_token"),
+                currentState
+            )
+        }
+    }
+
+    private suspend fun processCreditCardPayment(currentState: PaymentUiState) {
+        val creditCard = currentState.creditCard ?: return
+        val validationResult = validateCreditCardUseCase(creditCard)
+        val cardValidationErrors = PaymentUiState.CardValidationErrors(
+            numberError = validationResult.numberError?.asUiText(),
+            expiryError = validationResult.expiryError?.asUiText(),
+            cvvError = validationResult.cvvError?.asUiText()
+        )
+        if (cardValidationErrors.isCardValid()) {
+            processPayment(CreditCardPayment(creditCard), currentState)
+        } else {
             updateState {
                 copy(
-                    creditCard = currentCard,
                     cardValidationErrors = cardValidationErrors,
-                    isPaymentEnabled = cardValidationErrors.isCardValid()
+                    isLoading = false
                 )
             }
         }
     }
 
-    fun onConfirmPayment() = viewModelScope.launch {
-        val currentState = state.value
-        val paymentSystem = when (currentState.selectedMethod) {
-            PaymentMethod.CREDIT_CARD -> currentState.creditCard?.let { CreditCardPayment(it) }
-            PaymentMethod.PAYPAL -> PayPalPayment("dummy_token")
-            PaymentMethod.GOOGLE_PAY -> GooglePayPayment("dummy_token")
-        }
-
-        updateState { copy(isLoading = true) }
-
-        paymentSystem?.let {
-            processPayment(it, currentState)
-        }
-    }
 
     private suspend fun processPayment(paymentSystem: PaymentSystem, currentState: PaymentUiState) {
 

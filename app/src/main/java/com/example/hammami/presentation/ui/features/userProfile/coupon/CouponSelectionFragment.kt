@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hammami.R
 import com.example.hammami.databinding.DialogCouponConfirmationBinding
 import com.example.hammami.databinding.FragmentCouponSelectionBinding
+import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.presentation.ui.adapters.AvailableCouponAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -23,7 +24,7 @@ class CouponSelectionFragment : BaseFragment() {
     private var _binding: FragmentCouponSelectionBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CouponViewModel by activityViewModels()
-    private lateinit var adapter: AvailableCouponAdapter
+    private lateinit var couponAdapter: AvailableCouponAdapter
 
 
     private var confirmationDialog: MaterialAlertDialogBuilder? = null
@@ -76,78 +77,45 @@ class CouponSelectionFragment : BaseFragment() {
     }
 
     private fun setupAvailableCouponsRecyclerView() {
-        adapter = AvailableCouponAdapter { availableCoupon ->
-            viewModel.onCouponSelected(availableCoupon)
-            showConfirmationDialog()
+        couponAdapter = AvailableCouponAdapter { availableCoupon ->
+         //   viewModel.onCouponSelected(availableCoupon)
+            showConfirmationDialog(availableCoupon)
         }
 
         binding.rvAvailableCoupons.apply {
+            adapter = couponAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            this.adapter = adapter
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
-                adapter.submitList(state.availableCoupons)
+                couponAdapter.submitList(state.availableCoupons)
             }
         }
+
+
     }
 
-    private fun showConfirmationDialog() {
+    private fun showConfirmationDialog(coupon: AvailableVoucher) {
         val dialogBinding = DialogCouponConfirmationBinding.inflate(layoutInflater)
 
+        dialogBinding.confirmationText.text = getString(
+            R.string.confirm_redemption_message,
+            coupon.value,
+            coupon.requiredPoints
+        )
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(dialogBinding.root)
             .setCancelable(false)
+            .setPositiveButton(R.string.confirm) { dialog, _ ->
+                viewModel.onConfirmCouponSelection(coupon)
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+            }
             .create()
-
-        setupDialogContent(dialogBinding)
-        setupDialogButtons(dialog, dialogBinding)
-        observeDialogState()
-
         dialog.show()
-    }
-
-    private fun setupDialogContent(dialogBinding: DialogCouponConfirmationBinding) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                state.selectedCoupon?.let { coupon ->
-                    dialogBinding.confirmationText.text = getString(
-                        R.string.confirm_redemption_message,
-                        coupon.value,
-                        coupon.requiredPoints
-                    )
-                }
-            }
-        }
-    }
-
-    private fun setupDialogButtons(
-        dialog: androidx.appcompat.app.AlertDialog,
-        dialogBinding: DialogCouponConfirmationBinding
-    ) {
-        dialogBinding.apply {
-            buttonCancel.setOnClickListener {
-                dialog.dismiss()
-            }
-
-            buttonConfirm.setOnClickListener {
-                viewModel.onConfirmCouponSelection()
-                dialog.dismiss()
-            }
-        }
-    }
-
-    private fun observeDialogState(
-    ) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                confirmationDialogView?.apply {
-                    buttonConfirm.isEnabled = !state.isLoading
-                    progressIndicator.isVisible = state.isLoading
-                }
-            }
-        }
     }
 
 

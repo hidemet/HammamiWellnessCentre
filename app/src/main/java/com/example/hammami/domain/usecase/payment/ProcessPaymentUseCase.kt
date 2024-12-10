@@ -21,14 +21,15 @@ class ProcessPaymentUseCase @Inject constructor(
 
         return when (val paymentResult = paymentRepository.processPayment(paymentSystem, finalAmount)) {
             is Result.Success -> {
+                val transactionId = paymentResult.data
                 // Elimina il voucher solo se il pagamento ha successo
                 if (appliedVoucher != null) {
                     when (val voucherResult = voucherRepository.deleteVoucher(appliedVoucher.code)) {
-                        is Result.Success -> Result.Success(paymentResult.data)
+                        is Result.Success -> Result.Success(transactionId)
                         is Result.Error -> Result.Error(voucherResult.error)
                     }
                 } else {
-                    Result.Success(paymentResult.data)
+                    Result.Success(transactionId)
                 }
             }
             is Result.Error -> Result.Error(paymentResult.error)

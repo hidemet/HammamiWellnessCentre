@@ -26,5 +26,7 @@ class ValidateCreditCardUseCase @Inject constructor(
         val numberError: Card.NumberError?,
         val expiryError: Card.ExpiryDateError?,
         val cvvError: Card.CvvError?
-    )
+    ) {
+        fun isCardValid() = numberError == null && expiryError == null && cvvError == null
+    }
 }
