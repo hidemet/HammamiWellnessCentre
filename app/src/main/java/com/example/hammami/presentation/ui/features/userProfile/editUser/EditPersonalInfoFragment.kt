@@ -1,12 +1,9 @@
 package com.example.hammami.presentation.ui.features.userProfile.editUser
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -92,6 +89,8 @@ class EditPersonalInfoFragment : BaseFragment() {
                 disabilities = binding.disabilitiesEditText.text.toString(),
             )
             viewModel.updateUserData(info)
+            findNavController().navigateUp()
+
         }
     }
 
@@ -115,17 +114,16 @@ class EditPersonalInfoFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.uiState.collect { observeUiState(it) } }
-                launch { viewModel.uiEvents.collect { handleEvent(it) } }
+                launch { viewModel.uiEvents.collect { observeEvent(it) } }
             }
         }
     }
 
 
-    private fun handleEvent(event: UiEvent) {
+    private fun observeEvent(event: UiEvent) {
         when (event) {
             is UiEvent.UserMessage -> {
                 showSnackbar(event.message)
-                findNavController().navigateUp()
             }
 
             else -> Unit

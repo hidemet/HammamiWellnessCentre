@@ -1,8 +1,6 @@
 package com.example.hammami.presentation.ui.features.userProfile.editUser
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentEditContactInfoBinding
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel.UiEvent
+import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.util.hideKeyboard
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -28,8 +26,7 @@ class EditContactInfoFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val viewModel: UserProfileViewModel by activityViewModels()
-    private var originalUserEmail: String? = null
-    private var hasEmailChanged = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,7 +76,7 @@ class EditContactInfoFragment : BaseFragment() {
         hideKeyboard()
         val email = binding.emailEditText.text.toString()
         val phone = binding.phoneNumberEditText.text.toString()
-        val info = UserProfileViewModel.UserData.ContactInfoData(
+        val info = UserData.ContactInfoData(
             email = email,
             phoneNumber = phone
         )
@@ -90,10 +87,11 @@ class EditContactInfoFragment : BaseFragment() {
             showPasswordConfirmationDialog(info)
         } else {
             viewModel.updateUserData(info)
+            findNavController().navigateUp()
         }
     }
 
-    private fun showPasswordConfirmationDialog(info: UserProfileViewModel.UserData.ContactInfoData) {
+    private fun showPasswordConfirmationDialog(info: UserData.ContactInfoData) {
         val user = viewModel.uiState.value.user ?: return
         val oldEmail = user.email
         val message = getString(R.string.confirm_password_message, oldEmail)
@@ -123,36 +121,27 @@ class EditContactInfoFragment : BaseFragment() {
         }
     }
 
-
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.uiState.collect { state ->
-                        showLoading(state.isLoading)
-                        // Gestisci altri aggiornamenti dell'interfaccia utente in base allo stato
-                        state.userValidationError?.let { validationError ->
-                            binding.emailInputLayout.error =
-                                validationError.emailError?.asString(requireContext())
-                            binding.phoneNumberInputLayout.error =
-                                validationError.phoneNumberError?.asString(requireContext())
-                        }
-                    }
-                }
-
-                launch {
-                    viewModel.uiEvents.collect { event ->
-                        when (event) {
-                            is UiEvent.UserMessage -> {
-                                showSnackbar(event.message)
-                                findNavController().navigateUp()
-                            }
-
-                            else -> Unit
-                        }
-                    }
-                }
+                launch { viewModel.uiState.collect { observeUiState(it) } }
+                launch { viewModel.uiEvents.collect { observeEvent(it) } }
             }
+        }
+    }
+
+    private fun observeUiState(state: UiState) {
+        showLoading(state.isLoading)
+        state.userValidationError?.let { validationError ->
+            binding.emailInputLayout.error = validationError.emailError?.asString(requireContext())
+            binding.phoneNumberInputLayout.error = validationError.phoneNumberError?.asString(requireContext())
+        }
+    }
+
+    private fun observeEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.UserMessage -> showSnackbar(event.message)
+            else -> Unit
         }
     }
 

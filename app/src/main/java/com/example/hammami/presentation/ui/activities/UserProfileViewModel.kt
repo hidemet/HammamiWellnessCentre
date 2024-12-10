@@ -7,8 +7,6 @@ import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.util.asUiText
 import com.example.hammami.core.result.Result
-import com.example.hammami.domain.error.DataError
-import com.example.hammami.domain.error.ValidationError
 import com.example.hammami.domain.model.User
 import com.example.hammami.domain.usecase.auth.DeleteAccountUseCase
 import com.example.hammami.domain.usecase.auth.ResetPasswordUseCase
@@ -16,7 +14,6 @@ import com.example.hammami.domain.usecase.auth.SignOutUseCase
 import com.example.hammami.domain.usecase.user.ObserveUserChangesUseCase
 import com.example.hammami.domain.usecase.user.UpdateEmailUseCase
 import com.example.hammami.domain.usecase.user.UpdateUserUseCase
-import com.example.hammami.domain.usecase.user.UpdateUserWithoutEmailUseCase
 import com.example.hammami.domain.usecase.user.UploadUserImageUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidateUserUseCase
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel.UserData.*
@@ -29,8 +26,6 @@ import javax.inject.Inject
 class UserProfileViewModel @Inject constructor(
     private val observeUserChangesUseCase: ObserveUserChangesUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
-    private val updateEmailUseCase: UpdateEmailUseCase,
-    private val updateUserWithoutEmailUseCase: UpdateUserWithoutEmailUseCase,
     private val uploadUserImageUseCase: UploadUserImageUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
@@ -101,7 +96,7 @@ class UserProfileViewModel @Inject constructor(
 
         when (val result = updateUserUseCase(updatedUser, emailChanged, userPassword)) {
             is Result.Success -> {
-                 emitEvent(UiEvent.UserMessage(UiText.StringResource(R.string.profile_updated_successfully)))
+                 emitEvent(UiEvent.UpdateUserSuccess(UiText.StringResource(R.string.profile_updated_successfully)))
             }
 
             is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
@@ -183,6 +178,7 @@ class UserProfileViewModel @Inject constructor(
             }
         }
         object NavigateToLogin : UiEvent()
+        data class UpdateUserSuccess(val message: UiText) : UiEvent()
     }
 
     sealed class UserData {

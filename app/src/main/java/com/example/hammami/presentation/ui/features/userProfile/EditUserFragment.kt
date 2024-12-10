@@ -19,8 +19,6 @@ import com.example.hammami.presentation.ui.activities.UserProfileViewModel
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.userProfile.editUser.ResetPasswordDialogFragment
-import com.example.hammami.presentation.ui.features.userProfile.editUser.EditContactInfoDialogFragment
-import com.example.hammami.presentation.ui.features.userProfile.editUser.EditPersonalInfoDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -59,15 +57,13 @@ class EditUserFragment : BaseFragment() {
         editProfileImageButton.setOnClickListener { pickImageLauncher.launch("image/*") }
         editPersonalInfoButton.setOnClickListener { navigateToEditPersonalInfoFragment() }
         editContactsInfoButton.setOnClickListener { navigateToEditContactInfoFragment() }
-        // changePasswordButton.setOnClickListener {  showResetPasswordDialog() }
+        changePasswordButton.setOnClickListener {  showResetPasswordDialog() }
         deleteAccountButton.setOnClickListener { showDeleteAccountConfirmationDialog() }
     }
 
-    private fun navigateToEditPersonalInfo() {
-        val dialog = EditPersonalInfoDialogFragment.newInstance()
-        dialog.show(childFragmentManager, "EditPersonalInfoDialog")
+    private fun showResetPasswordDialog() {
+        ResetPasswordDialogFragment.newInstance().show(parentFragmentManager, "ResetPasswordDialog")
     }
-
 
     private fun navigateToEditPersonalInfoFragment() {
         findNavController().navigate(R.id.action_editUserProfileFragment_to_editPersonalInfoFragment)
@@ -87,8 +83,6 @@ class EditUserFragment : BaseFragment() {
             }.show()
     }
 
-
-
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -103,7 +97,9 @@ class EditUserFragment : BaseFragment() {
         viewModel.uiEvents.collect { event ->
             when (event) {
                 is UiEvent.UserMessage -> showSnackbar(event.message)
+                is UiEvent.UpdateUserSuccess -> showSnackbar(event.message)
                 else -> Unit
+
             }
         }
     }

@@ -46,29 +46,6 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         }
     }
 
-    fun updateUserTransaction(transaction: Transaction, uid: String, user: User) {
-        val userRef = usersCollection.document(uid)
-        transaction.set(userRef, user)
-    }
-
-    suspend fun updateUserDataWithoutEmail(uid: String, user: User) {
-        try {
-            usersCollection.document(uid).update(
-                "firstName", user.firstName,
-                "lastName", user.lastName,
-                "birthDate", user.birthDate,
-                "gender", user.gender,
-                "allergies", user.allergies,
-                "disabilities", user.disabilities,
-                "phoneNumber", user.phoneNumber,
-                "profileImage", user.profileImage,
-                "points", user.points
-            ).await()
-        } catch (e: FirebaseFirestoreException) {
-            throw e
-        }
-    }
-
     suspend fun updateUser(uid: String, user: User) {
         try {
             usersCollection.document(uid).set(user).await()

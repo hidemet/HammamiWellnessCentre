@@ -25,10 +25,7 @@ class UpdateUserUseCase @Inject constructor(
             if (reAuthResult is Result.Error) {
                 return reAuthResult
             }
-
-            return userRepository.updateUser(updatedUser)
         }
-
-        return Result.Success(Unit)
+        return userRepository.updateUser(updatedUser)
     }
 }

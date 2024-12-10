@@ -104,22 +104,6 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun updateUserDataWithoutEmail(user: User): Result<Unit, DataError> {
-        return when (val uidResult = authRepository.getCurrentUserId()) {
-            is Result.Success -> {
-                try {
-                    firestoreDataSource.updateUserDataWithoutEmail(uidResult.data, user)
-                    Result.Success(Unit)
-
-                } catch (e: Exception) {
-                    Result.Error(mapExceptionToDataError(e))
-                }
-            }
-
-            is Result.Error -> Result.Error(uidResult.error)
-        }
-    }
-
     suspend fun updateUser(user: User): Result<Unit, DataError> {
         return when (val uidResult = authRepository.getCurrentUserId()) {
             is Result.Success -> {

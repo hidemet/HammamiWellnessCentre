@@ -49,6 +49,7 @@ class UserProfileActivity : AppCompatActivity() {
                             Snackbar.LENGTH_LONG
                         ).show()
                     }
+                    else -> Unit
                 }
             }
         }
