@@ -16,9 +16,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AppointmentDetailFragment : BaseFragment() {
 
-    private val provaGit = "provaGit"
-    private val provaGit2 = "provaGit45eewueubwqpwnwdqowqdodwkwefowfeujqwdnqwytffffffffffffffffassssssssssssssssssgffffffffffytcytcytcycytd"
-
     private val args: AppointmentDetailFragmentArgs by navArgs()
 
     private var _binding: FragmentAppointmentDetailBinding? = null
