@@ -36,10 +36,28 @@
         android:id="@+id/editUserProfileFragment"
         android:name="com.example.hammami.presentation.ui.features.userProfile.EditUserFragment"
         android:label="EditUserProfileFragment"
-        tools:layout="@layout/fragment_edit_user_profile" />
+        tools:layout="@layout/fragment_edit_user_profile" >
+        <action
+            android:id="@+id/action_editUserProfileFragment_to_editPersonalInfoFragment"
+            app:destination="@id/editPersonalInfoFragment" />
+        <action
+            android:id="@+id/action_editUserProfileFragment_to_editContactInfoFragment"
+            app:destination="@id/editContactInfoFragment" />
+    </fragment>
 
     <include app:graph="@navigation/nav_graph_gift_cards" />
 
     <include app:graph="@navigation/nav_graph_coupons" />
+    <fragment
+        android:id="@+id/editPersonalInfoFragment"
+        android:name="com.example.hammami.presentation.ui.features.userProfile.editUser.EditPersonalInfoFragment"
+        android:label="EditPersonalInfoFragment"
+        tools:layout="@layout/fragment_edit_personal_info"/>
+    <fragment
+        android:id="@+id/editContactInfoFragment"
+        android:name="com.example.hammami.presentation.ui.features.userProfile.editUser.EditContactInfoFragment"
+        android:label="EditContactInfoFragment"
+        tools:layout="@layout/fragment_edit_contact_info"
+        />
 
 </navigation>

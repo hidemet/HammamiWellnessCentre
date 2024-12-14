@@ -36,6 +36,7 @@ class AvailableGiftCardAdapter(
         fun bind(giftCard: AvailableVoucher) = with(binding) {
             itemIcon.setImageResource(R.drawable.ic_gift_card)
 
+            titleText.text = root.context.getString(R.string.gift_card)
             voucherValue.text = root.context.getString(
                 R.string.gift_card_value_format,
                 giftCard.value

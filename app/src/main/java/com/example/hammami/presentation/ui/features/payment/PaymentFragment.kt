@@ -136,20 +136,23 @@ class PaymentFragment : BaseFragment() {
     }
 
     private fun setupCreditCardFields() = with(binding) {
-        cardNumberInput.setupCardNumberFormatting(formatter = CardInputFormatter()) { number ->
-            viewModel.onCardDataChanged(number = number)
-            checkAllFieldsFilled()
+        cardNumberInput.apply {
+            doAfterTextChanged {
+                checkAllFieldsFilled()
+                viewModel.onCardDataChanged(it.toString())
+            }
         }
 
-        // Formattazione della data di scadenza
-        expiryInput.setupExpiryDateFormatting(formatter = CardInputFormatter()) { expiry ->
-            viewModel.onCardDataChanged(expiry = expiry)
-            checkAllFieldsFilled()
+        expiryInput.apply {
+            doAfterTextChanged {
+                checkAllFieldsFilled()
+                viewModel.onCardDataChanged(it.toString())
+            }
         }
 
-        cvvInput.doAfterTextChanged { text ->
-            viewModel.onCardDataChanged(cvv = text?.toString())
+        cvvInput.doAfterTextChanged {
             checkAllFieldsFilled()
+            viewModel.onCardDataChanged(it.toString())
         }
     }
 

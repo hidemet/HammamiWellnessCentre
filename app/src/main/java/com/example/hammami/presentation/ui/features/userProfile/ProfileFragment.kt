@@ -18,6 +18,7 @@ import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.domain.model.ItemProfileOption
 import com.example.hammami.domain.model.User
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel
+import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
 import com.example.hammami.presentation.ui.userProfile.ProfileOptionAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -30,12 +31,14 @@ class ProfileFragment : BaseFragment() {
 
     private val viewModel: UserProfileViewModel by activityViewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentUserProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-
 
     override fun setupUI() {
         with(binding) {
@@ -46,7 +49,7 @@ class ProfileFragment : BaseFragment() {
             }
             logoutButton.setOnClickListener {
                 Log.d("ProfileFragment", "Logout button clicked") // Log di debug
-                viewModel.onEvent(UserProfileViewModel.UserProfileEvent.SignOut)
+                viewModel.signOut()
             }
         }
     }
@@ -72,25 +75,24 @@ class ProfileFragment : BaseFragment() {
     }
 
     private suspend fun observeUiEvents() {
-        viewModel.events.collect { event ->
+        viewModel.uiEvents.collect { event ->
             when (event) {
-                is UserProfileViewModel.UiEvent.ShowSnackbar -> showSnackbar(event.message)
-                else -> { }
+                is UiEvent.UserMessage -> showSnackbar(event.message)
+                else -> Unit
             }
         }
     }
 
-    private fun updateUI(userData: User) {
-        with(binding) {
-            userName.text = "${userData.firstName} ${userData.lastName}"
-            userPoints.text = getString(R.string.user_points, userData.points)
+    private fun updateUI(user: User) = with(binding) {
+        userName.text = "${user.firstName} ${user.lastName}"
+        userPoints.text = getString(R.string.user_points, user.points)
 
-            Glide.with(this@ProfileFragment)
-                .load(userData.profileImage)
-                .error(R.drawable.ic_profile)
-                .into(profileImage)
-        }
+        Glide.with(this@ProfileFragment)
+            .load(user.profileImage)
+            .error(R.drawable.ic_profile)
+            .into(profileImage)
     }
+
 
     private fun setupOptionsList() {
         val options = listOf(
@@ -110,11 +112,6 @@ class ProfileFragment : BaseFragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = ProfileOptionAdapter(options)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onEvent(UserProfileViewModel.UserProfileEvent.LoadUserData)
     }
 
     override fun onDestroyView() {

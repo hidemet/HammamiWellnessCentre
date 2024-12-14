@@ -50,17 +50,7 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-    fun deleteVoucher(transaction: Transaction, code: String): Result<Unit, DataError> {
-        return try {
-            val voucherDoc = firestore.collection("vouchers").document(code)
-            transaction.delete(voucherDoc)
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(mapExceptionToDataError(e))
-        }
-    }
-
-    fun createVoucherDocument(transaction: Transaction, voucher: Voucher): Result<Unit, DataError> {
+    private fun createVoucherDocument(transaction: Transaction, voucher: Voucher): Result<Unit, DataError> {
         return try {
             dataSource.createVoucherDocument(transaction, voucher)
             Result.Success(Unit)

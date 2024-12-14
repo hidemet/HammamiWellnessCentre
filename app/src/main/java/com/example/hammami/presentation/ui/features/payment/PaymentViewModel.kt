@@ -40,6 +40,7 @@ interface PaymentViewModelFactory {
 class PaymentViewModel @AssistedInject constructor(
     @Assisted private val paymentItem: PaymentItem,
     private val processPaymentUseCase: ProcessPaymentUseCase,
+    private val createVoucherUseCase: CreateVoucherUseCase,
     private val validateCreditCardUseCase: ValidateCreditCardUseCase,
     private val validateVoucherUseCase: ValidateVoucherUseCase,
     private val getDiscountVoucherUseCase: GetVoucherByCodeUseCase,
@@ -62,7 +63,11 @@ class PaymentViewModel @AssistedInject constructor(
     )
     val state = _state.asStateFlow()
 
-    private val _event = MutableSharedFlow<PaymentEvent>()
+    private val _event = MutableSharedFlow<PaymentEvent>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     val event = _event.asSharedFlow()
 
     init {
@@ -101,7 +106,6 @@ class PaymentViewModel @AssistedInject constructor(
                                 ),
                                 discountCode = "",
                                 discountError = null,
-                                isLoading = false
                             )
                         }
                     }
@@ -213,12 +217,10 @@ class PaymentViewModel @AssistedInject constructor(
         }
     }
 
-
     private suspend fun processPayment(paymentSystem: PaymentSystem, currentState: PaymentUiState) {
 
         when (val paymentResult = processPaymentUseCase(
             paymentSystem,
-            currentState.paymentItem,
             currentState.finalAmount,
             currentState.appliedVoucher
         )) {
@@ -229,10 +231,27 @@ class PaymentViewModel @AssistedInject constructor(
 
     private suspend fun handlePaymentSuccess(transactionId: String, paymentItem: PaymentItem) {
         Log.d("PaymentViewModel", "Payment successful with transaction ID: $transactionId")
-        if (paymentItem is PaymentItem.GiftCardPayment) {
-            emitEvent(PaymentEvent.NavigateToGiftCardGenerated(transactionId))
-        } else {
-            TODO()
+        updateState { copy(isLoading = false) }
+
+        when (paymentItem) {
+            is PaymentItem.GiftCardPayment -> createGiftCardVoucher(transactionId)
+            is PaymentItem.ServiceBookingPayment -> TODO()
+        }
+    }
+
+    private suspend fun createGiftCardVoucher(transactionId: String) {
+        when (val voucherResult = createVoucherUseCase(
+            value = state.value.finalAmount,
+            type = VoucherType.GIFT_CARD,
+            transactionId = transactionId
+        )) {
+            is Result.Success -> {
+                Log.d("PaymentViewModel", "Emitting NavigateToGiftCardGenerated event")
+                updateState { copy(isLoading = false) }
+                _event.tryEmit(PaymentEvent.NavigateToGiftCardGenerated(transactionId))
+            }
+
+            is Result.Error -> emitEvent(PaymentEvent.ShowError(voucherResult.error.asUiText()))
         }
     }
 
