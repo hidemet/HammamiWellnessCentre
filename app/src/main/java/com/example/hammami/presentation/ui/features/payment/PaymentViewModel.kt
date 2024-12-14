@@ -217,7 +217,6 @@ class PaymentViewModel @AssistedInject constructor(
         }
     }
 
-
     private suspend fun processPayment(paymentSystem: PaymentSystem, currentState: PaymentUiState) {
 
         when (val paymentResult = processPaymentUseCase(
