@@ -6,16 +6,70 @@ import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.core.result.Result
+import com.example.hammami.domain.factory.VoucherFactory
 import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Transaction
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class VoucherRepository @Inject constructor(
     private val dataSource: FirebaseFirestoreVoucherDataSource,
-    private val authRepository: AuthRepository // per gestire l'utente corrente
+    private val voucherFactory: VoucherFactory,
+    private val userRepository: UserRepository, // per gestire i punti dell'utente
+    private val authRepository: AuthRepository, // per gestire l'utente corrente,
+    private val firestore: FirebaseFirestore
 ) {
+
+
+    suspend fun redeemVoucher(userId: String, requiredPoints: Int, value: Double, type: VoucherType): Result<Voucher, DataError> {
+        return try {
+            val newVoucher = voucherFactory.createVoucher(userId, value,type)
+
+            firestore.runTransaction { transaction ->
+                // 1. Decrementa i punti dell'utente
+                val deductPointsResult = userRepository.deductPoints(transaction, userId, requiredPoints)
+                if (deductPointsResult is Result.Error) {
+                    throw Exception("Deduct points failed: ${deductPointsResult.error}")
+                }
+
+                // 2. Crea il documento del voucher
+                val createVoucherResult = createVoucherDocument(transaction, newVoucher)
+                if (createVoucherResult is Result.Error) {
+                    throw Exception("Create voucher failed: ${createVoucherResult.error}")
+                }
+
+                newVoucher // Restituisco il voucher creato
+            }.await()
+            Result.Success(newVoucher)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+    fun deleteVoucher(transaction: Transaction, code: String): Result<Unit, DataError> {
+        return try {
+            val voucherDoc = firestore.collection("vouchers").document(code)
+            transaction.delete(voucherDoc)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+    fun createVoucherDocument(transaction: Transaction, voucher: Voucher): Result<Unit, DataError> {
+        return try {
+            dataSource.createVoucherDocument(transaction, voucher)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+
 
     suspend fun saveVoucher(
         voucher: Voucher
@@ -70,6 +124,7 @@ class VoucherRepository @Inject constructor(
 
     suspend fun deleteVoucher(code: String): Result<Unit, DataError> {
         return try {
+
             dataSource.deleteVoucher(code)
             Result.Success(Unit)
         } catch (e: Exception) {

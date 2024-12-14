@@ -9,7 +9,6 @@ class GooglePayDataSource @Inject constructor() : PaymentDataSource<GooglePayPay
         paymentSystem: GooglePayPayment,
         amount: Double
     ): String {
-        delay(1000)
         return "GP_${System.currentTimeMillis()}"
     }
 }
