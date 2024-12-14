@@ -147,72 +147,72 @@ class BenessereFragment: BaseFragment() {
     }
 }
 
-    /*
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentBenessereBinding.inflate(inflater)
-        bindingViewPager = FragmentServiziBenessereBinding.inflate(inflater)
-        return binding.root
-    }
+/*
+override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+): View {
+    binding = FragmentBenessereBinding.inflate(inflater)
+    bindingViewPager = FragmentServiziBenessereBinding.inflate(inflater)
+    return binding.root
+}
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-        val categoriesFragments = arrayListOf<Fragment>(
-            BenessereFragment()
-        )
+    val categoriesFragments = arrayListOf<Fragment>(
+        BenessereFragment()
+    )
 
-        val viewPager2Adapter =
-            BenessereViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
-        bindingViewPager.viewpagerBenessere.orientation = ViewPager2.ORIENTATION_VERTICAL
-        bindingViewPager.viewpagerBenessere.adapter = viewPager2Adapter
+    val viewPager2Adapter =
+        BenessereViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
+    bindingViewPager.viewpagerBenessere.orientation = ViewPager2.ORIENTATION_VERTICAL
+    bindingViewPager.viewpagerBenessere.adapter = viewPager2Adapter
 
-        setupBenessereRv()
-        lifecycleScope.launchWhenStarted {
-            viewModel.allBenessere.collectLatest { result ->
-                when (result) {
-                    /*
-                    is Result.Loading -> {
-                        showLoading()
-                     */
+    setupBenessereRv()
+    lifecycleScope.launchWhenStarted {
+        viewModel.allBenessere.collectLatest { result ->
+            when (result) {
+                /*
+                is Result.Loading -> {
+                    showLoading()
+                 */
 
-                    is Result.Error -> {
-                        //hideLoading()
-                        Log.e(TAG, result.error.toString())
-                    }
+                is Result.Error -> {
+                    //hideLoading()
+                    Log.e(TAG, result.error.toString())
+                }
 
-                    is Result.Success -> {
-                        Log.d(TAG, "Received new services: ${result.data}")
-                        benessereAdapter.differ.submitList(result.data)
-                        //hideLoading()
-                    }
+                is Result.Success -> {
+                    Log.d(TAG, "Received new services: ${result.data}")
+                    benessereAdapter.differ.submitList(result.data)
+                    //hideLoading()
                 }
             }
         }
     }
+}
 
-    private fun hideLoading() {
-        binding.mainProgressBar.visibility = View.GONE
+private fun hideLoading() {
+    binding.mainProgressBar.visibility = View.GONE
+}
+
+private fun showLoading() {
+    binding.mainProgressBar.visibility = View.VISIBLE
+}
+
+private fun setupBenessereRv() {
+    benessereAdapter = BenessereAdapter()
+    binding.rvBenessere.apply{
+        layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        adapter = benessereAdapter
     }
+}
 
-    private fun showLoading() {
-        binding.mainProgressBar.visibility = View.VISIBLE
-    }
+companion object {
+    private const val TAG = "BenessereFragment"
+}
 
-    private fun setupBenessereRv() {
-        benessereAdapter = BenessereAdapter()
-        binding.rvBenessere.apply{
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = benessereAdapter
-        }
-    }
-
-    companion object {
-        private const val TAG = "BenessereFragment"
-    }
-
-     */
+ */

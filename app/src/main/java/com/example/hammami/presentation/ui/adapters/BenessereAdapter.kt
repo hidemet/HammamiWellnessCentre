@@ -107,12 +107,12 @@ class BenessereAdapter(
         }
     }
 
-        private class BenessereDiffCallback : DiffUtil.ItemCallback<Service>() {
-            override fun areItemsTheSame(oldItem: Service, newItem: Service): Boolean =
-                oldItem.id == newItem.id
+    private class BenessereDiffCallback : DiffUtil.ItemCallback<Service>() {
+        override fun areItemsTheSame(oldItem: Service, newItem: Service): Boolean =
+            oldItem.id == newItem.id
 
-            override fun areContentsTheSame(oldItem: Service, newItem: Service): Boolean =
-                oldItem == newItem
-        }
-
+        override fun areContentsTheSame(oldItem: Service, newItem: Service): Boolean =
+            oldItem == newItem
     }
+
+}

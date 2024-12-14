@@ -43,7 +43,7 @@ class ReviewsAdapter : ListAdapter<Review, ReviewsAdapter.ViewHolder>(ReviewsDif
 
     private class ReviewsDiffCallback : DiffUtil.ItemCallback<Review>() {
         override fun areItemsTheSame(oldItem: Review, newItem: Review): Boolean =
-            oldItem.id == newItem.id
+            oldItem == newItem
 
         override fun areContentsTheSame(oldItem: Review, newItem: Review): Boolean =
             oldItem == newItem

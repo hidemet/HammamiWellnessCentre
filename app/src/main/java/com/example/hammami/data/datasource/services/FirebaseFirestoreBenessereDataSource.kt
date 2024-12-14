@@ -27,7 +27,7 @@ class FirebaseFirestoreBenessereDataSource @Inject constructor(
         try {
             allServices.addAll(benessereCollection.get().await().toObjects(Service::class.java))
             return allServices
-        //_allBenessere.emit(Result.Success(allServices))
+            //_allBenessere.emit(Result.Success(allServices))
         } catch (e: FirebaseFirestoreException) {
             throw e
         }

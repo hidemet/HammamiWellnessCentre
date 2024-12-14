@@ -498,6 +498,8 @@
     <string name="estetica">Estetica</string>
     <string name="massaggi">Massaggi</string>
     <string name="error_service_not_found">Il servizio non è stato trovato</string>
+    <string name="tab_in_programma">In programma</string>
+    <string name="tab_passati">Passati</string>
 
 
 </resources>

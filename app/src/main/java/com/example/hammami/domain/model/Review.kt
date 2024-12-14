@@ -7,10 +7,10 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Review(
-    @get:PropertyName("id") @set:PropertyName("id") var id: String = "",
+    //@get:PropertyName("id") @set:PropertyName("id") var id: String = "",
     @get:PropertyName("Commento") @set:PropertyName("Commento") var commento: String = "",
     @get:PropertyName("Utente") @set:PropertyName("Utente") var utente: String = "",
-    @get:PropertyName("Valutazione") @set:PropertyName("Valutazione") var valutazione: Int = 0,
+    @get:PropertyName("Valutazione") @set:PropertyName("Valutazione") var valutazione: Float = 0f,
 ): Parcelable {
-    constructor() : this("", "", "", 0)
+    constructor() : this("", "", 0f)
 }

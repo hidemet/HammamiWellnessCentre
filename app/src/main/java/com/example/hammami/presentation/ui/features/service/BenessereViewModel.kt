@@ -44,7 +44,7 @@ class BenessereViewModel @Inject constructor(
                 _allBenessere.update { it.copy(servicesBenessere = result.data) }
             }
             is Result.Error -> {
-               emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
+                emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
             }
 
         }
