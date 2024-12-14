@@ -12,6 +12,8 @@ import com.example.hammami.databinding.FragmentCouponSuccessBinding
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @AndroidEntryPoint
 class CouponSuccessFragment : BaseFragment() {
@@ -42,21 +44,21 @@ class CouponSuccessFragment : BaseFragment() {
 
     private fun setupCouponDetails() {
         viewModel.uiState.value.generatedCoupon?.let { coupon ->
-            // Access views in the included layout using binding.couponCard
             with(binding.couponCard) {
-                // Set coupon value
+                titleText.text = getString(
+                    R.string.coupon,
+                )
                 voucherValue.text = getString(
                     R.string.coupon_value_format,
                     coupon.value
                 )
-                // Set coupon code in TextInputEditText
                 voucherCode.setText(coupon.code)
-                // Set expiration date
+
                 voucherExpiry.text = getString(
-                    R.string.coupon_expiration_format,
-                    coupon.expirationDate
+                    R.string.expires_on,
+                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        .format(coupon.expirationDate.toDate())
                 )
-                // Setup click listener for copy button
                 voucherCodeLayout.setEndIconOnClickListener {
                     viewModel.copyCouponToClipboard(coupon.code)
                 }

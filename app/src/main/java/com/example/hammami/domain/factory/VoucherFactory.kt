@@ -36,6 +36,7 @@ class VoucherFactory @Inject constructor() {
         return "$prefix$uuid${value.toInt()}"
     }
 
+
     private fun getExpirationDate(): Timestamp =
         Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365)))
 }

@@ -21,7 +21,6 @@ import com.example.hammami.core.formatter.CardInputFormatter
 import com.example.hammami.core.formatter.setupCardNumberFormatting
 import com.example.hammami.core.formatter.setupExpiryDateFormatting
 import com.example.hammami.databinding.FragmentPaymentBinding
-
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.presentation.ui.features.BaseFragment
@@ -29,6 +28,7 @@ import com.example.hammami.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class PaymentFragment : BaseFragment() {
@@ -60,20 +60,17 @@ class PaymentFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //viewModel.setPaymentItem(args.paymentItem)
         setupUI()
         observeFlows()
     }
 
-    override fun setupUI() = with(binding) {
+    override fun setupUI() {
         setupTopAppBar()
         setupPaymentItem()
         setupDiscountSection()
-        setupSummarySection()
+        setupBottomSheet()
         setupPaymentMethods()
         setupCreditCardFields()
-        setupConfirmButton()
-
     }
 
     private fun setupTopAppBar() = with(binding) {
@@ -81,29 +78,6 @@ class PaymentFragment : BaseFragment() {
             findNavController().navigateUp()
         }
     }
-
-    private fun setupSummarySection() = with(binding) {
-        // Importi
-        originalAmount.text = getString(
-            R.string.price_format,
-            viewModel.state.value.paymentItem.price
-        )
-        totalAmount.text = getString(
-            R.string.price_format,
-            viewModel.state.value.paymentItem.price
-        )
-
-        // Punti karma
-        earnedPoints.text = getString(
-            R.string.earned_points_format,
-            viewModel.state.value.earnedPoints
-        )
-        totalPoints.text = getString(
-            R.string.total_points_format,
-            viewModel.state.value.totalPoints + viewModel.state.value.earnedPoints
-        )
-    }
-
 
     private fun setupPaymentItem() = with(binding) {
         when (val item = viewModel.state.value.paymentItem) {
@@ -124,9 +98,10 @@ class PaymentFragment : BaseFragment() {
     }
 
     private fun setupDiscountSection() = with(binding) {
-        discountInput.addTextChangedListener { text ->
+        discountCodeEditText.addTextChangedListener { text ->
             applyDiscountButton.isEnabled = !text.isNullOrBlank()
             viewModel.onDiscountCodeChanged(text.toString())
+            discountCodeInput.error = null // Rimuove l'errore quando l'utente digita il codice
         }
 
         applyDiscountButton.setOnClickListener {
@@ -134,10 +109,9 @@ class PaymentFragment : BaseFragment() {
             viewModel.onApplyVoucher()
         }
 
-        removeDiscountButton.setOnClickListener {
+        appliedDiscountChip.setOnClickListener {
             viewModel.onRemoveVoucher()
-            discountInput.text = null
-            discountInput.clearFocus()
+            clearDiscountInput()
         }
     }
 
@@ -157,30 +131,54 @@ class PaymentFragment : BaseFragment() {
                 else -> return@setOnCheckedStateChangeListener
             }
             viewModel.onPaymentMethodSelect(method)
+            checkAllFieldsFilled()
         }
     }
 
     private fun setupCreditCardFields() = with(binding) {
-        cardNumberInput.setupCardNumberFormatting(
-            formatter = CardInputFormatter()
-        ) { text ->
-            viewModel.onCardDataChanged(number = text)
+        cardNumberInput.apply {
+            doAfterTextChanged {
+                checkAllFieldsFilled()
+                viewModel.onCardDataChanged(it.toString())
+            }
         }
 
-        expiryInput.setupExpiryDateFormatting(
-            formatter = CardInputFormatter()
-        ) { text ->
-            viewModel.onCardDataChanged(expiry = text)
+        expiryInput.apply {
+            doAfterTextChanged {
+                checkAllFieldsFilled()
+                viewModel.onCardDataChanged(it.toString())
+            }
         }
 
-        cvvInput.doAfterTextChanged { text ->
-            viewModel.onCardDataChanged(cvv = text?.toString() ?: "")
+        cvvInput.doAfterTextChanged {
+            checkAllFieldsFilled()
+            viewModel.onCardDataChanged(it.toString())
         }
     }
 
-    private fun setupConfirmButton() = with(binding) {
-        confirmButton.setOnClickListener {
-            Log.d("PaymentFragment", "Confirm button clicked")
+    private fun checkAllFieldsFilled() = with(binding) {
+        val isCreditCardSelected = viewModel.state.value.selectedMethod == PaymentMethod.CREDIT_CARD
+        checkoutConfirmButton.isEnabled = if (isCreditCardSelected) {
+            cardNumberInput.text.toString().isNotBlank() &&
+                    expiryInput.text.toString().isNotBlank() &&
+                    cvvInput.text.toString().isNotBlank()
+        } else {
+            true // Abilita il bottone se il metodo di pagamento non è la carta di credito
+        }
+    }
+
+    private fun clearDiscountInput() = with(binding) {
+        discountCodeEditText.apply {
+            setText("")
+            isEnabled = true
+            clearFocus()
+        }
+        binding.discountCodeInput.error = null
+    }
+
+
+    private fun setupBottomSheet() = with(binding) {
+        checkoutConfirmButton.setOnClickListener {
             viewModel.onConfirmPayment()
         }
     }
@@ -205,42 +203,52 @@ class PaymentFragment : BaseFragment() {
 
     private fun updateUI(state: PaymentUiState) {
         updateLoadingState(state.isLoading)
-        updatePaymentSummary(state)
+        updateBottomSheet(state)
         updateDiscountSection(state)
         updatePaymentMethod(state)
         updateCreditCardErrors(state)
-        updateConfirmButton(state.isPaymentEnabled)
     }
 
-    private fun updatePaymentSummary(state: PaymentUiState) = with(binding) {
-        originalAmount.text = getString(R.string.price_format, state.paymentItem.price)
-        totalAmount.text = getString(R.string.price_format, state.finalAmount)
-        earnedPoints.text = getString(R.string.earned_points_format, state.earnedPoints)
-        totalPoints.text = getString(
-            R.string.total_points_format,
-            state.totalPoints + state.earnedPoints
-        )
+    private fun updateBottomSheet(state: PaymentUiState) = with(binding) {
+        // Gestione prezzi
+        if (state.showPriceBreakdown) {
+            itemPriceLabel.isVisible = true
+            itemPrice.isVisible = true
+            discountLabel.isVisible = true
+            discountAmount.isVisible = true
+            itemPrice.text = getString(R.string.price_format, state.itemPrice)
+            discountAmount.text = getString(R.string.price_format_negative, state.discountValue)
+        } else {
+            itemPriceLabel.isVisible = false
+            itemPrice.isVisible = false
+            discountLabel.isVisible = false
+            discountAmount.isVisible = false
+        }
+
+        // Importo totale e punti karma sempre visibili
+        finalAmount.text = getString(R.string.price_format, state.finalAmount)
+        earnedKarmaPoints.text = getString(R.string.earned_points_format, state.earnedKarmaPoints)
+        newKarmaPointsBalance.text =
+            getString(R.string.total_points_format, state.newKarmaPointsBalance)
+
+        //Bottone per confermare il pagamento
+        checkoutConfirmButton.isEnabled = state.isPaymentEnabled
     }
 
     private fun updateDiscountSection(state: PaymentUiState) = with(binding) {
-        discountInput.isEnabled = state.appliedVoucher == null
+        // Aggiorniamo sempre l'errore dal TextInputLayout
+        discountCodeInput.error = state.discountError?.asString(requireContext())
+        // Gestiamo lo stato del pulsante
         applyDiscountButton.isEnabled = state.discountCode.isNotBlank() &&
                 state.appliedVoucher == null
+        // Gestiamo la card del voucher applicato
+        appliedDiscountContainer.isVisible = state.appliedVoucher != null
+        discountCodeInput.isVisible = state.appliedVoucher == null
+        applyDiscountButton.isVisible = state.appliedVoucher == null
 
-        appliedDiscountCard.isVisible = state.appliedVoucher != null
         state.appliedVoucher?.let { voucher ->
-            discountCode.text = voucher.code
-            discountAmount.text = getString(R.string.price_format_negative, voucher.value)
+            appliedDiscountChip.text = voucher.code
         }
-
-        state.discountError?.let {
-            discountInput.text?.clear()
-            discountInput.clearFocus()
-        }
-    }
-
-    private fun updateConfirmButton(enabled: Boolean) {
-        binding.confirmButton.isEnabled = enabled
     }
 
     private fun updatePaymentMethod(state: PaymentUiState) = with(binding) {
@@ -256,9 +264,8 @@ class PaymentFragment : BaseFragment() {
     }
 
 
-    private fun updateLoadingState(isLoading: Boolean) = with(binding) {
-        confirmButton.isEnabled = !isLoading
-        linearProgressIndicator.isVisible = isLoading
+    private fun updateLoadingState(isLoading: Boolean) {
+        binding.linearProgressIndicator.isVisible = isLoading
     }
 
     private suspend fun observeEvents() {
@@ -270,6 +277,7 @@ class PaymentFragment : BaseFragment() {
                         isNavigating = true
                         navigateToGiftCardGenerated(event.transactionId)
                     }
+
                     is PaymentEvent.ShowError -> showSnackbar(event.message)
                     else -> Unit
                 }
@@ -281,7 +289,9 @@ class PaymentFragment : BaseFragment() {
         val currentDestination = findNavController().currentDestination?.id
         if (currentDestination == R.id.paymentFragment) {
             findNavController().navigate(
-                PaymentFragmentDirections.actionPaymentFragmentToGiftCardGeneratedFragment(transactionId)
+                PaymentFragmentDirections.actionPaymentFragmentToGiftCardGeneratedFragment(
+                    transactionId
+                )
             )
         }
     }
@@ -292,3 +302,4 @@ class PaymentFragment : BaseFragment() {
         _binding = null
     }
 }
+

@@ -11,8 +11,6 @@ class PayPalDataSource @Inject constructor() : PaymentDataSource<PayPalPayment> 
         paymentSystem: PayPalPayment,
         amount: Double
     ): String {
-        delay(1500)
-
         return "PP_${UUID.randomUUID()}"
 
     }

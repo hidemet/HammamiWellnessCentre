@@ -1,20 +1,37 @@
 package com.example.hammami.data.datasource.voucher
 
 import android.util.Log
+import com.example.hammami.domain.model.User
 import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.VoucherType
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Transaction
 import kotlinx.coroutines.tasks.await
+import java.lang.Exception
+
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FirebaseFirestoreVoucherDataSource @Inject constructor(
-    firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore
 ) {
     private val vouchersCollection = firestore.collection("vouchers")
+    private val usersCollection = firestore.collection("users")
+
+
+
+
+     fun createVoucherDocument(transaction: Transaction, voucher: Voucher) {
+        try {
+            val voucherDocument = firestore.collection("vouchers").document()
+            transaction.set(voucherDocument, voucher)
+        } catch (e: Exception) {
+            throw mapFirebaseException(e)
+        }
+    }
 
     suspend fun saveVoucher(voucher: Voucher) {
         try {
@@ -24,6 +41,30 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
             throw mapFirebaseException(e)
         }
     }
+
+//    suspend fun executeVoucherRedemption(
+//        userId: String,
+//        requiredPoints: Int,
+//        voucher: Voucher
+//    ) {
+//        firestore.runTransaction { transaction ->
+//            val userDoc = usersCollection.document(userId)
+//            val userData = transaction.get(userDoc).toObject(User::class.java)
+//                ?: throw FirebaseFirestoreException("User not found", FirebaseFirestoreException.Code.NOT_FOUND)
+//
+//            if (userData.points < requiredPoints) {
+//                throw FirebaseFirestoreException(
+//                    "Insufficient points",
+//                    FirebaseFirestoreException.Code.FAILED_PRECONDITION
+//                )
+//            }
+//
+//            transaction.update(userDoc, "points", userData.points - requiredPoints)
+//
+//            val voucherDoc = vouchersCollection.document()
+//            transaction.set(voucherDoc, voucher)
+//        }.await()
+//    }
 
     suspend fun getVoucherByCode(code: String): Voucher? {
         return try {

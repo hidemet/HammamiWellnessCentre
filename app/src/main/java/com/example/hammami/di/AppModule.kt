@@ -16,7 +16,6 @@ import com.example.hammami.domain.usecase.auth.ResetPasswordUseCase
 import com.example.hammami.domain.usecase.auth.SignInUseCase
 import com.example.hammami.domain.usecase.auth.SignUpUseCase
 import com.example.hammami.domain.usecase.auth.CheckAuthStateUseCase
-import com.example.hammami.domain.usecase.user.ObserveUserStateUseCase
 import com.example.hammami.domain.usecase.user.UpdateUserUseCase
 import com.example.hammami.domain.usecase.user.UploadUserImageUseCase
 import com.example.hammami.domain.usecase.validation.account.ValidateConfirmedPasswordUseCase
@@ -27,7 +26,6 @@ import com.example.hammami.domain.usecase.validation.user.ValidateFirstNameUseCa
 import com.example.hammami.domain.usecase.validation.user.ValidateGenderUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidateLastNameUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidatePhoneNumberUseCase
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel
 import com.example.hammami.util.ClipboardManager
 import com.example.hammami.util.PreferencesManager
 import com.google.firebase.auth.FirebaseAuth
@@ -125,34 +123,12 @@ object AppModule {
     fun provideValidateConfirmedPasswordUseCase(): ValidateConfirmedPasswordUseCase =
         ValidateConfirmedPasswordUseCase()
 
-    @Provides
-    @Singleton
-    fun provideValidationUseCases(
-        validateFirstName: ValidateFirstNameUseCase,
-        validateLastName: ValidateLastNameUseCase,
-        validateBirthDate: ValidateBirthDateUseCase,
-        validateGender: ValidateGenderUseCase,
-        validatePhoneNumber: ValidatePhoneNumberUseCase,
-        validateEmail: ValidateEmailUseCase
-    ) = UserProfileViewModel.ValidationUseCases(
-        validateFirstName,
-        validateLastName,
-        validateBirthDate,
-        validateGender,
-        validatePhoneNumber,
-        validateEmail
-    )
-
-    @Provides
-    @Singleton
-    fun provideObserveUserStateUseCase(userStateRepository: UserStateRepository): ObserveUserStateUseCase =
-        ObserveUserStateUseCase(userStateRepository)
 
 
-    @Provides
-    fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserUseCase {
-        return UpdateUserUseCase(userRepository)
-    }
+//    @Provides
+//    fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserUseCase {
+//        return UpdateUserUseCase(userRepository)
+//    }
 
     @Provides
     fun provideUploadUserImageUseCase(userRepository: UserRepository): UploadUserImageUseCase {

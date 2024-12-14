@@ -141,6 +141,15 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    suspend fun reauthenticateUser(currentPassword: String): Result<Unit, DataError> {
+        return try {
+            firebaseAuthDataSource.reauthenticateUser(currentPassword)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapAuthExceptionToDataError(e))
+        }
+    }
+
     private fun handleAuthSuccess(): Result<Unit, DataError> {
         preferencesManager.setLoggedIn(true)
         _authState.value = Result.Success(Unit)

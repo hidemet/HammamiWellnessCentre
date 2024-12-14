@@ -64,6 +64,8 @@ class CouponFragment : BaseFragment() {
             isNestedScrollingEnabled = false
             addItemDecoration(createItemDecoration())
         }
+        Log.d("CouponFragment", "RecyclerView setup completed with adapter: $activeCouponsAdapter")
+
     }
 
     private fun setupFab() = with(binding) {

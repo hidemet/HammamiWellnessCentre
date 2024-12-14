@@ -3,7 +3,10 @@ package com.example.hammami.data.datasource.user
 import com.example.hammami.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Transaction
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,7 +17,20 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
 ) {
     private val usersCollection = firestore.collection("users")
 
-suspend fun saveUserInformation(userUid: String, user: User) {
+    fun listenToUserDocument(userId: String): Flow<User?> = callbackFlow {
+        val listenerRegistration = usersCollection.document(userId).addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error) // Chiudi il flow in caso di errore
+                return@addSnapshotListener
+            }
+
+            val user = snapshot?.toObject(User::class.java)
+            trySend(user) // Invia l'utente o null se non esiste
+        }
+        awaitClose { listenerRegistration.remove() }
+    }
+
+    suspend fun saveUserInformation(userUid: String, user: User) {
         try {
             usersCollection.document(userUid).set(user).await()
         } catch (e: FirebaseFirestoreException) {
@@ -29,7 +45,6 @@ suspend fun saveUserInformation(userUid: String, user: User) {
             throw e
         }
     }
-
 
     suspend fun updateUser(uid: String, user: User) {
         try {

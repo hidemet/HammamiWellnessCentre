@@ -98,15 +98,14 @@ class CouponViewModel @Inject constructor(
     }
 
 
-    fun onConfirmCouponSelection() {
+    fun onConfirmCouponSelection(coupon: AvailableVoucher) {
         viewModelScope.launch {
-            val selectedCoupon = _uiState.value.selectedCoupon ?: return@launch
 
             updateUiState { copy(isLoading = true) }
 
             when (val result = redeemCouponUseCase(
-                value = selectedCoupon.value,
-                requiredPoints = selectedCoupon.requiredPoints ?: 0
+                value = coupon.value,
+                requiredPoints = coupon.requiredPoints ?: 0
             )) {
                 is Result.Success -> {
                     updateUiState {

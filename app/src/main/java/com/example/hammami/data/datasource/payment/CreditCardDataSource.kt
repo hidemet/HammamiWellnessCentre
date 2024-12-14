@@ -10,7 +10,7 @@ class CreditCardDataSource @Inject constructor() : PaymentDataSource<CreditCardP
         paymentSystem: CreditCardPayment,
         amount: Double
     ): String {
-        delay(2000)
+        delay(500)
         return "CC_${paymentSystem.creditCard.number.takeLast(4)}_${System.currentTimeMillis()}"
     }
 }

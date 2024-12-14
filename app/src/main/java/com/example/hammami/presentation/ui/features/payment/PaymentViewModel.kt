@@ -52,8 +52,13 @@ class PaymentViewModel @AssistedInject constructor(
     private val _state = MutableStateFlow(
         PaymentUiState(
             paymentItem = paymentItem,
+            itemPrice = paymentItem.price,
             finalAmount = paymentItem.price,
-            earnedPoints = karmaPointsCalculator.calculatePoints(paymentItem.price, paymentItem)
+            currentKarmaPoints = 0,
+            earnedKarmaPoints = karmaPointsCalculator.calculatePoints(
+                paymentItem.price,
+                paymentItem
+            )
         )
     )
     val state = _state.asStateFlow()
@@ -69,54 +74,48 @@ class PaymentViewModel @AssistedInject constructor(
         loadUserPoints()
     }
 
-    private fun loadUserPoints() {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-            when (val result = getUserPointsUseCase()) {
-                is Result.Success -> {
-                    updateState { copy(totalPoints = result.data, isLoading = false) }
-                }
-
-                is Result.Error -> {
-                    emitEvent(PaymentEvent.ShowError(result.error.asUiText()))
-                }
-            }
+    private fun loadUserPoints() = viewModelScope.launch {
+        when (val result = getUserPointsUseCase()) {
+            is Result.Success -> updateState { copy(currentKarmaPoints = result.data) }
+            is Result.Error -> emitEvent(PaymentEvent.ShowError(result.error.asUiText()))
         }
     }
 
-    fun onDiscountCodeChanged(code: String) {
-        _state.update { it.copy(discountCode = code) }
-    }
+
+    fun onDiscountCodeChanged(code: String) = _state.update { it.copy(discountCode = code) }
+
 
     fun onApplyVoucher() = viewModelScope.launch {
-        val amount = state.value.paymentItem.price
-        val code = state.value.discountCode.trim()
-
+        val itemPrice = state.value.paymentItem.price
+        val discountCode = state.value.discountCode.trim()
         updateState { copy(isLoading = true) }
-
-        when (val voucherResult = getDiscountVoucherUseCase(code)) {
+        when (val voucherResult = getDiscountVoucherUseCase(discountCode)) {
             is Result.Success -> {
                 val voucher = voucherResult.data
-                when (val validationResult = validateVoucherUseCase(voucher, amount)) {
+                when (val validationResult = validateVoucherUseCase(voucher, itemPrice)) {
                     is Result.Success -> {
-                        val newAmount = amount - voucher.value
+                        val newAmount = itemPrice - voucher.value
                         updateState {
                             copy(
                                 appliedVoucher = voucher,
+                                discountValue = voucher.value,
                                 finalAmount = newAmount,
-                                discountCode = "",
-                                earnedPoints = karmaPointsCalculator.calculatePoints(
+                                earnedKarmaPoints = karmaPointsCalculator.calculatePoints(
                                     newAmount,
                                     paymentItem
                                 ),
-                                isLoading = false
+                                discountCode = "",
+                                discountError = null,
                             )
                         }
                     }
 
                     is Result.Error -> {
                         updateState {
-                            copy(discountError = validationResult.error.asUiText())
+                            copy(
+                                discountError = validationResult.error.asUiText(),
+                                discountCode = "",
+                            )
                         }
                         emitEvent(PaymentEvent.ShowError(validationResult.error.asUiText()))
                     }
@@ -124,72 +123,97 @@ class PaymentViewModel @AssistedInject constructor(
             }
 
             is Result.Error -> {
+                updateState {
+                    copy(
+                        discountError = voucherResult.error.asUiText(),
+                        discountCode = "",
+                    )
+                }
                 emitEvent(PaymentEvent.ShowError(voucherResult.error.asUiText()))
             }
         }
     }
 
     fun onRemoveVoucher() {
-        val amount = state.value.paymentItem.price
+        val itemPrice = state.value.paymentItem.price
         updateState {
             copy(
                 appliedVoucher = null,
-                finalAmount = amount,
+                discountValue = null,
+                finalAmount = itemPrice,
+                earnedKarmaPoints = karmaPointsCalculator.calculatePoints(itemPrice, paymentItem),
                 discountCode = "",
-                discountError = null,
-                earnedPoints = karmaPointsCalculator.calculatePoints(amount, paymentItem)
+                discountError = null
             )
         }
     }
 
     fun onPaymentMethodSelect(method: PaymentMethod) = viewModelScope.launch {
-        updateState { copy(selectedMethod = method,
-            isPaymentEnabled = method != PaymentMethod.CREDIT_CARD) }
+        updateState {
+            copy(
+                selectedMethod = method,
+                isPaymentEnabled = if (method == PaymentMethod.CREDIT_CARD) {
+                    isCreditCardDataValid(creditCard)
+                } else {
+                    true
+                }
+            )
+        }
     }
 
-    fun onCardDataChanged(
-        number: String? = null,
-        expiry: String? = null,
-        cvv: String? = null
-    ) {
+    private fun isCreditCardDataValid(creditCard: CreditCard?): Boolean {
+        return creditCard?.number?.isNotBlank() == true &&
+                creditCard.expiryDate.isNotBlank() &&
+                creditCard.cvv.isNotBlank()
+    }
+
+
+    fun onCardDataChanged(number: String? = null, expiry: String? = null, cvv: String? = null) {
         if (state.value.selectedMethod != PaymentMethod.CREDIT_CARD) return
-
-        val currentCard = state.value.creditCard ?: CreditCard.empty().apply {
-            this.number = number ?: this.number
-            this.expiryDate = expiry ?: this.expiryDate
-            this.cvv = cvv ?: this.cvv
-        }
-
-        viewModelScope.launch {
-            val validationResult = validateCreditCardUseCase(currentCard)
-            val cardValidationErrors = PaymentUiState.CardValidationErrors(
-                numberError = validationResult.numberError?.asUiText(),
-                expiryError = validationResult.expiryError?.asUiText(),
-                cvvError = validationResult.cvvError?.asUiText()
+        val currentCard = state.value.creditCard ?: CreditCard("", "", "")
+        val updatedCard = currentCard.copy(
+            number = number ?: currentCard.number,
+            expiryDate = expiry ?: currentCard.expiryDate,
+            cvv = cvv ?: currentCard.cvv
+        )
+        updateState {
+            copy(
+                creditCard = updatedCard,
+                isPaymentEnabled = isCreditCardDataValid(updatedCard)
             )
-
-            updateState {
-                copy(
-                    creditCard = currentCard,
-                    cardValidationErrors = cardValidationErrors,
-                    isPaymentEnabled = cardValidationErrors.isCardValid()
-                )
-            }
         }
     }
 
     fun onConfirmPayment() = viewModelScope.launch {
-        val currentState = state.value
-        val paymentSystem = when (currentState.selectedMethod) {
-            PaymentMethod.CREDIT_CARD -> currentState.creditCard?.let { CreditCardPayment(it) }
-            PaymentMethod.PAYPAL -> PayPalPayment("dummy_token")
-            PaymentMethod.GOOGLE_PAY -> GooglePayPayment("dummy_token")
-        }
-
         updateState { copy(isLoading = true) }
+        val currentState = state.value
+        when (currentState.selectedMethod) {
+            PaymentMethod.CREDIT_CARD -> processCreditCardPayment(currentState)
+            PaymentMethod.PAYPAL -> processPayment(PayPalPayment("dummy_token"), currentState)
+            PaymentMethod.GOOGLE_PAY -> processPayment(
+                GooglePayPayment("dummy_token"),
+                currentState
+            )
+        }
+    }
 
-        paymentSystem?.let {
-            processPayment(it, currentState)
+    private suspend fun processCreditCardPayment(currentState: PaymentUiState) {
+        val creditCard = currentState.creditCard ?: return
+        val validationResult = validateCreditCardUseCase(creditCard)
+        val cardValidationErrors = PaymentUiState.CardValidationErrors(
+            numberError = validationResult.numberError?.asUiText(),
+            expiryError = validationResult.expiryError?.asUiText(),
+            cvvError = validationResult.cvvError?.asUiText()
+        )
+        if (cardValidationErrors.isCardValid()) {
+            processPayment(CreditCardPayment(creditCard), currentState)
+        } else {
+            updateState {
+                copy(
+                    cardValidationErrors = cardValidationErrors,
+                    isLoading = false
+                )
+            }
         }
     }
 
@@ -204,6 +228,7 @@ class PaymentViewModel @AssistedInject constructor(
             is Result.Error -> emitEvent(PaymentEvent.ShowError(paymentResult.error.asUiText()))
         }
     }
+
     private suspend fun handlePaymentSuccess(transactionId: String, paymentItem: PaymentItem) {
         Log.d("PaymentViewModel", "Payment successful with transaction ID: $transactionId")
         updateState { copy(isLoading = false) }
@@ -225,6 +250,7 @@ class PaymentViewModel @AssistedInject constructor(
                 updateState { copy(isLoading = false) }
                 _event.tryEmit(PaymentEvent.NavigateToGiftCardGenerated(transactionId))
             }
+
             is Result.Error -> emitEvent(PaymentEvent.ShowError(voucherResult.error.asUiText()))
         }
     }
@@ -234,6 +260,7 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     private suspend fun emitEvent(event: PaymentEvent) {
+        updateState { copy(isLoading = false) }
         _event.emit(event)
 
     }

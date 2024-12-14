@@ -95,6 +95,7 @@ fun DataError.asUiText(): UiText {
             DataError.Auth.NOT_AUTHENTICATED -> UiText.StringResource(R.string.error_not_authenticated)
             DataError.Auth.UNKNOWN -> UiText.StringResource(R.string.error_unknown_auth)
             DataError.Auth.TOKEN_REFRESH_FAILED -> UiText.StringResource(R.string.error_token_refresh_failed)
+            DataError.Auth.REQUIRED_PASSWORD -> UiText.StringResource(R.string.error_required_password)
         }
 
         is DataError.User -> when (this) {

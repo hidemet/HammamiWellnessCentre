@@ -8,7 +8,9 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.hammami.R
 import com.example.hammami.databinding.DialogResetPasswordBinding
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel
@@ -28,7 +30,11 @@ class ResetPasswordDialogFragment : DialogFragment() {
         setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = DialogResetPasswordBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -41,7 +47,10 @@ class ResetPasswordDialogFragment : DialogFragment() {
 
     private fun setupUI() {
         with(binding) {
-            confirmButton.setOnClickListener { onConfirmClick() }
+            confirmButton.setOnClickListener {
+                val email = emailEditText.text.toString()
+                viewModel.resetPassword(email)
+            }
             topAppBar.setNavigationOnClickListener { dismiss() }
 
             emailEditText.addTextChangedListener { onTextChanged() }
@@ -54,40 +63,29 @@ class ResetPasswordDialogFragment : DialogFragment() {
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                handleUiState(state)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.events.collect { event ->
-                handleEvent(event)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { viewModel.uiState.collect { updateUI(it) } }
+                launch { viewModel.uiEvents.collect { handleEvent(it) } }
             }
         }
     }
 
-    private fun handleUiState(state: UserProfileViewModel.UiState) {
+    private fun updateUI(state: UserProfileViewModel.UiState) {
         showLoading(state.isLoading)
-        binding.emailInputLayout.error = state.validationState.emailError?.asString(requireContext())
+        state.userValidationError?.let { validationError ->
+            binding.emailInputLayout.error = validationError.emailError?.asString(requireContext())
+        }
     }
 
     private fun handleEvent(event: UserProfileViewModel.UiEvent) {
         when (event) {
-            is UserProfileViewModel.UiEvent.ShowSnackbar -> {
+            is UserProfileViewModel.UiEvent.UserMessage -> {
                 showSuccessMessage(event.message.asString(requireContext()))
                 dismiss()
             }
-            is UserProfileViewModel.UiEvent.AccountDeleted -> { /* Non gestito in questo dialog */ }
-        else -> { /* Non gestito */ }
+            else -> Unit
         }
     }
-
-    private fun onConfirmClick() {
-        val email = binding.emailEditText.text.toString()
-        viewModel.onEvent(UserProfileViewModel.UserProfileEvent.ResetPassword(email))
-    }
-
-
 
 
     private fun showLoading(isLoading: Boolean) {

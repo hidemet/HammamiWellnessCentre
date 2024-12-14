@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "MainCategoryFragment"
 
+
 @AndroidEntryPoint
 class MainCategoryFragment: BaseFragment() {
 
