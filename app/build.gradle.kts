@@ -1,20 +1,22 @@
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("kotlin-android")
+    id("kotlin-kapt")
+    id("com.android.application")
+    id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
-    id("com.google.gms.google-services")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
     namespace = "com.example.hammami"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "com.example.hammami"
-        minSdk = 24
+        minSdk = 34 //26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -30,61 +32,86 @@ android {
                 "proguard-rules.pro"
             )
         }
+
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
+        dataBinding = true
+//        parcelize = true
     }
 }
 
-dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-
-    // Material Design 3
-    implementation("com.google.android.material:material:1.12.0")
 
 
-    implementation("com.google.android.material:material-icons-core:1.6.7")
-    implementation("com.google.android.material:material-icons-extended:1.6.7")
+    dependencies {
 
-    //loading button
-    //implementation("br.com.simplepass:loading-button-android:2.2.0")
+        implementation(libs.androidx.core.ktx)
+        implementation(libs.androidx.appcompat)
 
-    //Glide
-    implementation("com.github.bumptech.glide:glide:4.13.0")
+        implementation(libs.androidx.activity)
+        implementation(libs.androidx.constraintlayout)
+        implementation(libs.firebase.firestore.ktx)
+        implementation(libs.firebase.storage.ktx)
+        implementation(libs.androidx.material3.android)
 
-    //circular image
-    implementation("de.hdodenhof:circleimageview:3.1.0")
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.androidx.junit)
+        androidTestImplementation(libs.androidx.espresso.core)
 
-    //viewpager2 indicatior
-    //implementation("io.github.vejei.viewpagerindicator:viewpagerindicator:1.0.0-alpha.1")
 
-    //stepView
-   // implementation("com.shuhart.stepview:stepview:1.5.1")
+        // Material Design 3
+        implementation(libs.material)
 
-    //Android Ktx
-    implementation("androidx.navigation:navigation-fragment-ktx:2.4.2")
 
-    //Dagger hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+        //implementation("com.google.android.material:material-icons-core:1.6.7")
+        //implementation("com.google.android.material:material-icons-extended:1.6.7")
 
-    // Firebase
-    implementation(libs.firebase.auth)
-}
+        //loading button
+        //implementation("br.com.simplepass:loading-button-android:2.2.0")
+
+        //Glide
+        implementation(libs.glide)
+        //circular image
+        implementation(libs.circleimageview)
+
+        //viewpager2 indicatior
+        //implementation("io.github.vejei.viewpagerindicator:viewpagerindicator:1.0.0-alpha.1")
+
+        //stepView
+        //implementation("com.shuhart.stepview:stepview:1.5.1")
+
+        //Android Ktx
+        implementation(libs.androidx.navigation.fragment.ktx)
+
+        //Dagger hilt
+        implementation("com.google.dagger:hilt-android:2.44")
+        kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+        // Firebase
+        implementation(libs.firebase.auth)
+        //implementation(platform("com.google.firebase:firebase-bom:32.0.0")) // Update to the latest BOM version
+        implementation("com.google.firebase:firebase-firestore-ktx") // Add Firestore dependency
+
+        //Coroutines with firebase
+        implementation(libs.kotlinx.coroutines.play.services)
+
+        //Navigation component
+        val nav_version = "2.5.0"
+        implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+        implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+
+        // Splash screen
+        implementation("androidx.core:core-splashscreen:1.0.0")
+
+        // Retrofit
+        implementation("com.squareup.retrofit2:retrofit:2.9.0")
+        implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    }

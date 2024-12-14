@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/dettagliServizio"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivServizio"
+                android:layout_width="match_parent"
+                android:layout_height="336dp"
+                android:src="@drawable/massaggio4mani"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/tvTitolo" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvTitolo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                android:text="Rituale Hammam (singolo)"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ivServizio"
+                app:layout_constraintBottom_toTopOf="@id/tvTitoloDescrizione" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvTitoloDescrizione"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                android:text="Descrizione dettagliata"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTitolo"
+                app:layout_constraintBottom_toTopOf="@id/tvContenutoDescrizione" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvContenutoDescrizione"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                android:text="Un'esperienza sensoriale ispirata ai rituali di bellezza marocchini, che include: abluzioni con acqua calda nell'hammam, esfoliazione profonda con sapone nero di Aleppo, impacco nutriente di argilla di Rassoul per ammorbidire la pelle, e un risciacquo finale con acqua saponata per una vera rinascita della pelle."
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTitoloDescrizione"
+                app:layout_constraintBottom_toTopOf="@id/durata" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/durata"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvContenutoDescrizione">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTitoloDurata"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Durata:\t"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvContenutoDurata"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00 h"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:layout_constraintStart_toEndOf="@id/tvTitoloDurata"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/prezzo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/durata">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTitoloPrezzo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Prezzo:\t"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvContenutoPrezzo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00 €"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:layout_constraintStart_toEndOf="@id/tvTitoloPrezzo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvTitoloBenefici"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                android:text="Benefici"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/prezzo"
+                app:layout_constraintBottom_toTopOf="@id/rvContenutoBenefici" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvContenutoBenefici"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTitoloBenefici"
+                app:layout_constraintBottom_toTopOf="@id/tvTitoloRecensioni" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvTitoloRecensioni"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                android:text="Recensioni"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rvContenutoBenefici"
+                app:layout_constraintBottom_toTopOf="@id/tvContenutoRecensioni" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvContenutoRecensioni"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                android:text="Questo servizio non ha ancora ricevuto recensioni."
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTitoloRecensioni"
+                app:layout_constraintBottom_toTopOf="@id/rvRecensioni" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRecensioni"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvContenutoRecensioni"
+                app:layout_constraintBottom_toTopOf="@id/button_prosegui" />
+
+            <Button
+                android:id="@+id/button_prosegui"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="0dp"
+                android:layout_height="53dp"
+                android:layout_marginTop="32dp"
+                android:text="Prosegui"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rvRecensioni" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

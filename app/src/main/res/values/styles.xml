@@ -1,52 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--
-    <style name="h4">
-        <item name="android:fontFamily">@font/poppins_thin</item>
-        <item name="android:textColor">@color/g_black</item>
-        <item name="android:textSize">@dimen/h4TextSize</item>
+
+    <style name="Theme.App.Starting.CustomProgressIndicator" parent="@style/Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="indicatorSize">80dp</item>
+        <item name="trackCornerRadius">4dp</item>
+        <item name="indicatorColor">@color/md_theme_onPrimaryContainer</item>
+        <item name="android:windowBackground">?attr/colorSurfaceContainerLowest</item>
+        <item name="android:statusBarColor">?attr/colorSurfaceContainerLowest</item>
+        <item name="android:navigationBarColor">?attr/colorSurfaceContainerLowest</item>
     </style>
 
-    <style name="h2">
-        <item name="android:fontFamily">@font/poppins_light</item>
-        <item name="android:textColor">@color/g_gray700</item>
-        <item name="android:textSize">@dimen/h2TextSize</item>
+    <style name="FullScreenDialogStyle" parent="Theme.Hammami">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+    <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="h3">
-        <item name="android:fontFamily">@font/poppins_light</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">@dimen/h3TextSize</item>
+    <style name="Widget.App.BottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="behavior_fitToContents">true</item>
+        <item name="behavior_skipCollapsed">true</item>
     </style>
 
-    <style name="blueButtonStyle">
-        <item name="android:background">@drawable/blue_background</item>
-        <item name="android:fontFamily">@font/poppins_thin</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/h2TextSize</item>
-        <item name="android:textAllCaps">false</item>
+    <style name="roundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
-
-    <style name="whiteButtonStyle">
-        <item name="android:background">@drawable/white_background</item>
-        <item name="android:fontFamily">@font/poppins_thin</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">@dimen/h2TextSize</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="editText">
-        <item name="android:background">@drawable/white_background</item>
-        <item name="android:gravity">center</item>
-        <item name="singleLine">true</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/poppins_light</item>
-    </style>
-
-
-    <dimen name="h4TextSize">35sp</dimen>
-    <dimen name="h2TextSize">17sp</dimen>
-    <dimen name="h3TextSize">22sp</dimen>
--->
 
 </resources>

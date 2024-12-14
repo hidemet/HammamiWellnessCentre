@@ -1,17 +1,503 @@
 <resources>
+    <!-- Errori Voucher -->
+    <string name="error_invalid_voucher">Codice voucher non valido</string>
+    <string name="error_voucher_exceeds_amount">Il valore del voucher supera l\'importo dell\'acquisto</string>
+    <string name="error_voucher_code_empty">Inserisci un codice voucher</string>
+    <string name="error_voucher_not_found">Voucher non trovato</string>
+    <string name="error_voucher_already_exists">Questo voucher esiste già</string>
+    <string name="error_voucher_permission_denied">Non hai i permessi per utilizzare questo voucher</string>
+    <string name="error_insufficient_points">Punti insufficienti per riscattare questo voucher</string>
+
+    <string name="earned_points_format">"Punti guadagnati: %1$d"</string>
+    <string name="total_points_format">"Punti totali: %1$d"</string>
+    <string name="error_expiry_date_empty">La data di scadenza è obbligatoria</string>
+    <string name="error_expiry_date_invalid_format">Formato della data di scadenza non valido</string>
+    <string name="error_expiry_date_expired">La data di scadenza è passata</string>
+    <string name="error_card_number_empty">Il numero della carta è obbligatorio</string>
+    <string name="error_card_number_invalid_format">Formato del numero della carta non valido</string>
+    <string name="error_card_number_invalid_card">Numero della carta non valido</string>
+    <string name="error_card_number_invalid_length">Lunghezza del numero della carta non valida</string>
+    <string name="error_invalid_credit_card">Carta di credito non valida</string>
+    <string name="error_cvv_empty">Il CVV è obbligatorio</string>
+    <string name="error_cvv_invalid_format">Formato del CVV non valido</string>
+    <string name="error_cvv_invalid_length">Lunghezza del CVV non valida</string>
+
+    <string name="coupon_generated_success_message">Il tuo coupon è stato generato con successo!</string>
+    <string name="coupon_details_format">Valore: %1$s\nScadenza: %2$s</string>
+    <string name="coupon_code_copied">Codice coupon copiato negli appunti</string>
+
+    <string name="error_gift_card_not_found">Gift card non trovata</string>
+    <string name="error_gift_card_not_valid">Gift card non valida</string>
+    <string name="error_unknown_user">Errore utente sconosciuto</string>
+    <string name="error_gift_card_validation_failed">Validazione della gift card fallita</string>
+    <string name="error_invalid_amount">Importo non valido</string>
+    <string name="error_unknown_payment">Errore pagamento sconosciuto</string>
+    <string name="error_discount_exceeds_amount">Lo sconto supera l\'importo</string>
+
+
+    <string name="confirm_coupon">Conferma il coupon</string>
+    <string name="coupon_value_details">Coupon del valore di %.2f€</string>
+    <string name="points_required_details">Richiede %d punti</string>
+    <string name="points_remaining_details">Ti rimarranno %d punti dopo il riscatto</string>
+
+    <!-- Payment Fragment Strings -->
+    <string name="service_duration_format">Duration: %1$d minutes</string>
+    <string name="gift_card_value_format">%.0f €</string>
+    <string name="price_format">%1$.2f €</string>
+    <string name="price_format_negative">-$%1$.2f</string>
+    <string name="discount_amount">Sconto: -€%1$.2f</string>
+    <string name="discount_applied">Sconto di €%1$.2f applicato</string>
+    <string name="check_card_details">Per favore controlla i dettagli della tua carta</string>
+    <string name="continue_text">Continua</string>
+    <string name="confirm_payment">Conferma Pagamento</string>
+    <string name="processing">Elaborazione in corso</string>
+    <string name="done">Fatto</string>
+
+
+    <!-- Aggiunte per fragment_gift_card_generated.xml -->
+    <string name="gift_card_created">Gift Card creata</string>
+    <string name="go_to_home">Vai alla Home</string>
+
+    <!-- Aggiunte per layout_payment_discount_section.xml -->
+    <string name="discount_codes">Codici Sconto</string>
+    <string name="enter_code">Inserisci Codice</string>
+    <string name="apply">Applica</string>
+    <string name="discount">Sconto</string>
+
+    <!-- Aggiunte per layout_payment_summary.xml -->
+    <string name="original_amount">Importo Originale</string>
+
+
+    <!-- Aggiunte per layout_payment_review.xml -->
+    <string name="review_payment">Rivedi Pagamento</string>
+
+    <!-- Aggiunte per layout_payment_enter_details.xml -->
+    <string name="enter_card_details">Inserisci i Dettagli della Carta</string>
+    <string name="expiry">Scadenza (MM/YY)</string>
+
+    <!-- Aggiunte per layout_gifcard_payment.xml -->
+    <string name="select_payment_method">Seleziona metodo di pagamento</string>
+    <string name="pay_now">Paga ora</string>
+
+    <string name="points_format">%d pt</string>
+    <string name="coupon_generated_success">Coupon Generato!</string>
+    <string name="coupon_generated_description">Puoi copare il codice e usarlo per avere uno sconto sul tuo prossimo acquisto</string>
+    <string name="select_another_coupon">Seleziona un altro coupon</string>
+    <string name="back_to_coupons">Torna ai miei coupon</string>
+    <string name="coupon_copied">Codice copiato negli appunti</string>
+
+    <string name="gift_cards">Gift Cards</string>
+    <string name="no_gift_cards">Nessuna Gift Card</string>
+    <string name="no_gift_cards_description">Non hai ancora acquistato nessuna gift card. Acquistane una per iniziare!</string>
+    <string name="your_gift_cards">Le tue Gift Cards</string>
+    <string name="purchase_gift_card">Acquista Gift Card</string>
+
+    <!-- Pagamento -->
+    <string name="discount_format">-€%.2f</string>
+    <string name="payment_method">Metodo di pagamento</string>
+
+    <!-- Metodi di pagamento -->
+    <string name="credit_card">Carta di credito</string>
+    <string name="paypal">PayPal</string>
+    <string name="google_pay">Google Pay</string>
+    <string name="in_store">In negozio</string>
+
+    <!-- Sezione sconti -->
+    <string name="discount_section_title">Applica uno sconto</string>
+    <string name="discount_section_description">Inserisci un codice gift card o un coupon per applicare uno sconto al tuo acquisto</string>
+    <string name="discount_code_hint">Codice sconto</string>
+    <string name="enter_gift_card_or_coupon">Inserisci un codice gift card (GC) o un coupon</string>
+    <string name="apply_discount">Applica</string>
+    <string name="gift_card_applied_format">Gift Card %1$s (-€%.2f)</string>
+    <string name="coupon_applied_format">Coupon %1$s (-€%.2f)</string>
+
+    <!-- Carta di credito -->
+    <string name="card_number">Numero carta</string>
+    <string name="expiry_date">Data scadenza (MM/YY)</string>
+    <string name="cvv">CVV</string>
+
+    <!-- PayPal e Google Pay -->
+    <string name="redirect_to_paypal">Verrai reindirizzato a PayPal per completare il pagamento</string>
+    <string name="proceed_with_google_pay">Procedi con Google Pay</string>
+
+    <!-- Pulsanti -->
+    <string name="proceed_to_payment">Procedi al pagamento</string>
+    <string name="copy_code">Copia codice</string>
+
+    <!-- Dialog Gift Card generata -->
+    <string name="gift_card_generated_title">Gift Card generata con successo!</string>
+    <string name="gift_card_code">Codice Gift Card</string>
+    <string name="expires_on">Scade il: %1$s</string>
+    <string name="gift_card_instructions">Condividi questo codice con chi vuoi. La gift card può essere utilizzata una sola volta per il pagamento di un servizio di valore uguale o superiore.</string>
+    <string name="code_copied_to_clipboard">Codice copiato negli appunti</string>
+
+    <!-- Messaggi di successo -->
+    <string name="discount_applied_message">Sconto di €%.2f applicato con successo</string>
+    <string name="gift_card_purchase_success">Puoi copare il codice e usarlo per avere uno sconto sul tuo prossimo acquisto</string>
+    <string name="booking_payment_success">Prenotazione confermata con successo</string>
+
+    <!-- Messaggi di errore -->
+    <string name="error_invalid_discount_code">Codice sconto non valido</string>
+    <string name="error_discount_already_applied">Uno sconto è già stato applicato</string>
+    <string name="error_gift_card_value_too_low">Il valore della gift card è inferiore al prezzo del servizio</string>
+
+    <!-- Titoli e Label -->
+    <string name="total_amount">Totale</string>
+    <string name="original_price">Prezzo</string>
+    <string name="total_to_pay">Da pagare</string>
+    <string name="payment_details">Dettagli pagamento</string>
+
+    <!-- Metodi di Pagamento -->
+    <string name="credit_card_number">Numero carta</string>
+    <string name="save_card_for_future">Salva carta per pagamenti futuri</string>
+
+
+    <!-- Coupon -->
+    <string name="coupon_code">Codice coupon</string>
+    <string name="apply_coupon">Applica</string>
+    <string name="applied_coupon_format">%1$s (%2$s)</string>
+    <string name="coupon_section_title">Hai un coupon?</string>
+
+    <!-- Header Servizi -->
+    <string name="appointment_date_format">%1$s</string>
+    <string name="appointment_time_format">%1$s-%2$s (%3$s)</string>
+    <string name="duration_format">Durata: %d minuti</string>
+    <string name="duration_hours_only">%1$d ora</string>
+    <string name="duration_minutes_only">%1$d min</string>
+
+    <!-- Gift Card -->
+    <string name="gift_card_purchase">Acquisto Gift Card</string>
+
+    <!-- Messaggi di Successo -->
+    <string name="coupon_applied_success">Coupon applicato con successo!</string>
+    <string name="coupon_removed">Coupon rimosso</string>
+    <string name="payment_successful">Pagamento completato con successo</string>
+
+    <!-- Messaggi di Errore -->
+    <string name="error_invalid_coupon">Codice coupon non valido</string>
+    <string name="error_expired_coupon">Questo coupon è scaduto</string>
+    <string name="error_already_used_coupon">Questo coupon è già stato utilizzato</string>
+    <string name="error_coupon_not_applicable">Questo coupon non può essere applicato a questo acquisto</string>
+    <string name="error_coupon_min_amount">Importo minimo per utilizzare questo coupon: %1$s</string>
+    <string name="error_payment_failed">Pagamento non riuscito. Riprova.</string>
+    <string name="error_invalid_card">Carta non valida</string>
+    <string name="error_card_expired">Carta scaduta</string>
+    <string name="error_invalid_cvv">CVV non valido</string>
+
+
+    <!-- Accessibility -->
+    <string name="close_coupon_description">Rimuovi coupon applicato</string>
+    <string name="credit_card_icon_description">Icona carta di credito</string>
+    <string name="paypal_icon_description">Logo PayPal</string>
+    <string name="google_pay_icon_description">Logo Google Pay</string>
+    <string name="scan_card_description">Scansiona carta di credito</string>
+    <string name="payment_processing">Elaborazione del pagamento in corso</string>
+
+    <!-- Dialog -->
+    <string name="confirm_payment_title">Conferma pagamento</string>
+    <string name="confirm_payment_message">Stai per effettuare un pagamento di %1$s. Vuoi procedere?</string>
+    <string name="payment_cancel_confirmation">Sei sicuro di voler annullare il pagamento?</string>
+
+    <!-- Form Validation -->
+    <string name="required_field">Campo obbligatorio</string>
+    <string name="invalid_card_number">Numero carta non valido</string>
+    <string name="invalid_expiry_date">Data di scadenza non valida</string>
+    <string name="invalid_cvv_format">CVV deve essere di 3 o 4 cifre</string>
+    <string name="card_expired">La carta è scaduta</string>
+
+    <!-- Receipt -->
+    <string name="receipt_title">Ricevuta di Pagamento</string>
+    <string name="receipt_transaction_id">ID Transazione: %1$s</string>
+    <string name="receipt_date">Data: %1$s</string>
+    <string name="receipt_payment_method">Metodo di pagamento: %1$s</string>
+    <!-- Visibilità dello stato del sistema -->
+    <string name="points_placeholder">Hai %d punti</string>
+    <string name="active_coupons_title">Coupon Attivi</string>
+    <string name="no_active_coupons">Non hai ancora nessun coupon attivo</string>
+    <string name="loading">Caricamento in corso…</string>
+
+    <!-- Match tra sistema e mondo reale -->
+    <string name="available_coupons_title">Coupon Disponibili</string>
+    <string name="available_coupons_subtitle">Scegli il coupon da riscattare con i tuoi punti</string>
+    <string name="voucher_value_format">%.0f €</string>
+    <string name="points_required_format">Richiede %d punti</string>
+
+    <!-- Controllo e libertà dell\'utente -->
+    <string name="cancel">Annulla</string>
+    <string name="close">Chiudi</string>
+    <string name="back">Indietro</string>
+
+    <!-- Coerenza e standard -->
+    <string name="confirm_redemption_title">Conferma Riscatto</string>
+    <string name="coupon_generated_title">Coupon Generato!</string>
+    <string name="coupon_code_hint">Codice Coupon</string>
+
+    <!-- Prevenzione degli errori -->
+    <string name="confirm_redemption_message">Vuoi riscattare un coupon da %.2f€ utilizzando %2$d punti?</string>
+    <string name="insufficient_points">Non hai abbastanza punti per questo coupon</string>
+    <string name="coupon_expiration_warning">Il coupon scadrà il %s</string>
+
+    <!-- Riconoscimento invece che ricordo -->
+    <string name="copy_code_description">Copia codice coupon</string>
+    <string name="select_coupon_description">Seleziona questo coupon</string>
+
+    <!-- Flessibilità ed efficienza -->
+    <string name="points_icon_description">Icona punti</string>
+    <string name="coupon_expiration_format">Scade il: %s</string>
+
+    <!-- Design estetico e minimalista -->
+    <string name="coupon_code_prefix">Codice: </string>
+    <string name="coupon_value_prefix">Valore: </string>
+
+    <!-- Aiuto e documentazione -->
+    <string name="how_points_work">Come funzionano i punti?</string>
+    <string name="help_redeem_coupon">Come utilizzare un coupon</string>
+
+    <!-- Gestione degli errori -->
+    <string name="error_generic">Si è verificato un errore. Riprova più tardi.</string>
+    <string name="error_network">Verifica la tua connessione e riprova.</string>
+    <string name="error_coupon_expired">Questo coupon è scaduto.</string>
+    <string name="error_coupon_already_used">Questo coupon è già stato utilizzato.</string>
+    <string name="error_coupon_not_found">Coupon non trovato.</string>
+    <!-- ************* -->
+
+    <!-- Titolo della schermata -->
+    <string name="coupons_title">I miei Coupons</string>
+
+    <!-- Testo per il saldo punti -->
+    <string name="points">%d pt.</string>
+    <string name="coupon_value">Coupon da $d €</string>
+
+    <!-- Titolo della sezione coupons disponibili -->
+    <string name="available_coupons">I tuoi coupon</string>
+
+    <!-- Messaggio quando non ci sono coupons disponibili -->
+    <string name="no_coupons_available">Al momento non hai coupons attivi. Accumula più punti per riscattarne!</string>
+
+    <!-- Testo del pulsante per riscattare un coupon -->
+    <string name="redeem_coupon">Riscatta Coupon</string>
+
+    <!-- Stringhe per i singoli coupons (da usare nell'adapter del RecyclerView) -->
+    <string name="coupon_value_adapter">Valore: %1$s€</string>
+    <string name="coupon_points_cost">Costo in punti: %1$d</string>
+    <string name="coupon_expiration">Scade il: %1$s</string>
+
+    <!-- Stringhe per il dialogo di riscatto coupon -->
+    <string name="redeem_coupon_dialog_title">Riscatta un Coupon</string>
+    <string name="redeem_coupon_dialog_message">Sei sicuro di voler riscattare questo coupon per %1$d punti?</string>
+    <string name="redeem_coupon_dialog_confirm">Conferma</string>
+    <string name="redeem_coupon_dialog_cancel">Annulla</string>
+
+    <!-- Messaggi di conferma o errore -->
+    <string name="coupon_redeemed_success">Coupon riscattato con successo!</string>
+    <string name="coupon_redeemed_error">Errore nel riscatto del coupon. Riprova più tardi.</string>
+
+    <string name="error_first_name_empty">Il nome è obbligatorio.</string>
+    <string name="error_first_name_too_short">Il nome è troppo corto. Deve contenere almeno 2 caratteri.</string>
+    <string name="error_last_name_empty">Il cognome è obbligatorio.</string>
+    <string name="error_birthdate_future">La data di nascita non può essere nel futuro. Inserisci una data valida.</string>
+    <string name="error_birthdate_too_old">La data di nascita sembra troppo lontana nel passato. Inserisci una data valida.</string>
+    <string name="error_birthdate_invalid_format">Il formato della data non è corretto. Usa il formato GG/MM/AAAA.</string>
+    <string name="error_gender_empty">Seleziona il tuo genere.</string>
+    <string name="error_email_empty">L\'email è obbligatoria.</string>
+    <string name="error_email_invalid_format">L\'email non è valida. Usa il formato name@domain.it.</string>
+    <string name="error_phone_empty">Il numero di telefono è obbligatorio.</string>
+    <string name="error_phone_invalid_format">Il numero di telefono deve essere di 10 cifre.</string>
+    <string name="error_password_mismatch">Le password non corrispondono. Riprova.</string>
+    <string name="error_password_empty">La password è obbligatoria.</string>
+    <string name="error_password_invalid_format">La password deve contenere almeno 8 caratteri, includendo lettere, numeri e caratteri speciali.</string>
+    <string name="error_no_internet">Nessuna connessione internet. Controlla la tua connessione e riprova.</string>
+    <string name="error_server">Errore del server. Riprova più tardi.</string>
+    <string name="error_unknown_network">Errore di rete sconosciuto. Riprova più tardi.</string>
+    <string name="error_not_authenticated">Utente non autenticato. Accedi per continuare.</string>
+    <string name="error_invalid_credentials">Credenziali non valide. Controlla e riprova.</string>
+    <string name="error_user_not_found">Utente non trovato. Verifica le informazioni e riprova.</string>
+    <string name="error_user_already_exists">L\'utente esiste già. Usa un\'email diversa.</string>
+    <string name="error_weak_password">La password è troppo debole. Usa una password più forte.</string>
+    <string name="error_too_many_requests">Troppe richieste. Riprova più tardi.</string>
+    <string name="error_operation_not_allowed">Operazione non consentita. Contatta il supporto.</string>
+
     <string name="app_name">Hammami</string>
-    <string name="benvenuto_">
-Benvenuto!
-</string>
-    <string name="placeHolderEmail">Inserisci email</string>
-    <string name="placeHolderPassword">Inserisci password</string>
+    <string name="benvenuto_">Benvenuto!</string>
+    <string name="placeholder__login_email">Inserisci email</string>
+    <string name="placeholder_login_password">Inserisci password</string>
     <string name="accedi_con_">Accedi con le credenziali del tuo account per cominciare ad utilizzare l’app</string>
-    <string name="ricordami">
-Ricordami
-</string>
-    <string name="accedi">Accedi</string>
+    <string name="ricordami">Ricordami</string>
+    <string name="sign_in">Accedi</string>
     <string name="hai_dimenticato_la_password">Hai dimenticato la password?</string>
     <string name="Register">Registrati</string>
     <string name="non_hai_un_account">Non hai un account?</string>
+
+    <string name="crea_account">Crea un account Hammami</string>
+    <string name="inserisci_info_personali">Inserisci il tuo nome e cognome</string>
+    <string name="placeholder_first_name">Nome</string>
+    <string name="placeholder_last_name">Cognome</string>
+    <string name="placeholder_phone_number">Numero di cellulare</string>
+    <string name="next">Procedi</string>
+    <string name="proseguiamo">Proseguiamo con la registrazione!</string>
+    <string name="inserisci_info_personali_2">Inserisci il tuo sesso, data di nascita, eventuali allergie e/o invalidità</string>
+    <string name="placeholder_allergy">Eventuali allergie</string>
+    <string name="placeholder_disability">Eventuali invalidità</string>
+    <string name="quasi">Ci siamo quasi!</string>
+    <string name="inserisci_credenziali">Inserisci la tua email e scegli una password per il tuo account</string>
+    <string name="placeholder_confirm">Conferma password</string>
+    <string name="placeholder_code">Inserisci codice amico</string>
+    <string name="conferma">Conferma</string>
+    <string name="opzionale">* opzionale</string>
+    <string name="conferma_registrazione">Conferma la registrazione</string>
+    <string name="controlla_registrazione">Controlla i campi inseriti prima di confermare la registrazione</string>
+    <string name="err_email_obbligatoria">Email obbligatoria</string>
+    <string name="err_password_obbligatoria">Password obbligatoria</string>
+    <string name="err_email_non_valida">Email non valida</string>
+    <string name="logohammami">logoHammami</string>
+    <string name="placeholder_gender">Genere</string>
+    <string name="informazioni_di_base">Informazioni di base</string>
+    <string name="placeholder_day">giorno</string>
+    <string name="placeholder_month">mese</string>
+    <string name="placeholder_year">anno</string>
+    <string name="contatti">Contatti</string>
+    <string name="placeholder_email">Email</string>
+    <string name="placeholder_password">Password</string>
+    <string name="crea_una_password_sicura">Crea una password sicura</string>
+    <string name="mostra_password">Mostra password</string>
+    <string name="placeholder_friend_code">Inserisci codice amico</string>
+    <string name="inserisci_data_di_nascita_genere_eventuali_allergie_e_o_invalidit">Inserisci data di nascita, genere, eventuali allergie e/o invalidità</string>
+    <string name="err_password_corta">La password deve essere di almeno 6 caratteri</string>
+    <string name="ok">OK</string>
+    <string name="errore_durante_il_login">Errore durante il login</string>
+    <string name="la_password_stata_resettata_con_successo">La password è stata resettata con successo</string>
+    <string name="errore_durante_il_reset_della_password">Errore durante il reset della password</string>
+    <string name="seleziona_il_genere">Seleziona il genere</string>
+    <string name="inserisci_il_numero_di_cellulare">Inserisci il numero di cellulare</string>
+    <string name="errore_durante_la_registrazione">Errore durante la registrazione</string>
+    <string name="login_effettuato_con_successo">Login effettuato con successo</string>
+    <string name="registrazione_effettuata_con_successo">Registrazione effettuata con successo</string>
+    <string name="l_email_per_reimpostare_la_passowrd_stata_inviata_a">L\'email per reimpostare la passowrd è stata inviata a %1$s</string>
+    <string name="coupon">Coupon</string>
+    <string name="gift_card">Gift Card</string>
+    <string name="impostazioni">Impostazioni</string>
+    <string name="andrea_rossi">Andrea Rossi</string>
+    <string name="_56_punti">56 punti</string>
+    <string name="user_full_name">%1$s %2$s</string>
+    <string name="user_points">%d</string>
+    <string name="retry">Riprova</string>
+    <string name="unknown_error">Errore sconosciuto</string>
+    <string name="personal_information">Informazioni personali</string>
+    <string name="birth_date">Data di nascita</string>
+    <string name="allergies">Allergie</string>
+    <string name="disabilities">Disabilità</string>
+    <string name="contacts">Contatti</string>
+    <string name="phone_number">Numero di telefono</string>
+    <string name="email_address">Indirizzo email</string>
+    <string name="security">Sicurezza</string>
+    <string name="password">Password</string>
+    <string name="change_password">Cambia Password</string>
+    <string name="modify">Modifica</string>
+    <string name="new_email">Nuova email</string>
+    <string name="current_password">Password attuale</string>
+    <string name="update_email">Aggiorna email</string>
+    <string name="fill_all_fields">Per favore, compila tutti i campi</string>
+    <string name="email_update_success">Email aggiornata con successo</string>
+    <string name="basic_profile_information">Informazioni di base</string>
+    <string name="chiSiamo">Un centro benessere unico nel cuore della città, un\'atmosfera magica e sognante tra colori e profumi tipici del territorio berbero.\n\nHAMMAMI è uno scorcio di Marrakech capace di regalarti attimi di assoluto relax, una tazza di thè al profumo di arancia del Marocco, un tipico hammam marocchino nel quale rigenerarsi…ma HAMMAMI è anche sinonimo di innovazione estetica avanzata.\nGrazie all\'utilizzo di tecnologie marcate DERMAL INSTITUTE propone trattamenti mirati per la tonificazione ed il rimodellamento del corpo, il ringiovanimento del viso e una pelle di seta per dire addio ai peli superflui.\n\nCentro Benessere\nLa nostra missione è rendere ogni trattamento un’esperienza, ogni esperienza un’emozione, ogni emozione un sogno.
+        L’innovazione tecnologica è il nostro futuro, la tradizione degli antichi il passato a cui ci ispiriamo.
+        Futuro e passato insieme a professionalità, competenza e passione sono i valori in cui crediamo.\n\nMassaggi\nIl massaggio è una forma di terapia antica ed anche uno dei gesti più naturali che compaiono quotidianamente che si perde nella notte dei tempi.
+        In pratica è un insieme di diverse manovre eseguite sul corpo per lenire dolore per tonificare, ma anche per preservare e migliorare il benessere psichico allentando tensioni e fatiche.</string>
+    <string name="profile_updated_successfully">Profilo utente aggiornato con successo!</string>
+    <string name="update_failed">L\'aggiornamento del profilo utene non è riuscito!</string>
+    <string name="password_changed_successfully">Password aggiornata con successo</string>
+    <string name="contacts_updated_successfully">Contatti aggiornati con successo!</string>
+    <string name="error_showing_edit_profile">Errore durante l\'apertura della schermata di modifica del profilo</string>
+    <string name="Contatti">Contatti</string>
+    <string name="reauthentication_required">Richiesta di ri-autenticazione</string>
+    <string name="confirm">Conferma</string>
+    <string name="password_required">Inserisci la password.</string>
+    <string name="choose_image_source">Da dove vuoi caricare immagine?</string>
+    <string name="upload_failed">Image upload failed</string>
+    <string name="new_password">Password nuova</string>
+    <string name="save_button">Salva</string>
+    <string-array name="image_sources">
+        <item>Galleria</item>
+        <item>Camera</item>
+    </string-array>
+
+    <string name="points_text">%d punti</string>
+    <string name="select_date">Seleziona la data</string>
+    <string name="select_birth_date">Seleziona la data di nascita</string>
+    <string name="registration">Registrazione</string>
+    <string name="registration_step2of">Passo 2 di 5: Informazioni aggiuntive</string>
+    <string name="registration_step_2_of_5">Passo 1 di 5: Informazioni di base</string>
+    <string name="registration_step_4_of_5">Passo 4 di 5: Creazione password</string>
+    <string name="logo_hammami">logo Hammami</string>
+    <string name="create_secure_password">Crea password sicura</string>
+    <string name="password_creation_subtitle">La password protegge le tue informazioni personali. Assicurati che sia forte e unica.</string>
+    <string name="password_guide">La password deve contenere almeno 8 caratteri, inclusi almeno una lettera maiuscola, una minuscola, un numero e un carattere speciale.</string>
+    <string name="confirm_password">Conferma password</string>
+    <string name="optional">Opzionale</string>
+    <string name="save">Salva</string>
+    <string name="error_fetching_user_data">Errore nel recupero dei dati utente</string>
+    <string name="reset_password_instructions">Per resettare la tua password, inserisci il tuo indirizzo email. Ti invieremo un link per il reset della password.</string>
+    <string name="reset_password_title">Resetta la password</string>
+    <string name="delete_account_warning_title">Attenzione: Eliminazione Account</string>
+    <string name="delete_account_warning_message">"Stai per eliminare definitivamente il tuo account. Questa azione è irreversibile. \n\n" + "Perderai tutti i tuoi dati e non potrai più accedere al servizio."</string>
+    <string name="edit">Modifica</string>
+    <string name="delete_account">Cancella il profilo utente</string>
+    <string name="edit_profile">Modifica il profilo utente</string>
+    <string name="contact_information">Contatti</string>
+    <string name="edit_profile_image">Modifica l\'immagine profilo</string>
+    <string name="please_correct_errors">Errore in fase di registrazione</string>
+    <string name="error_unknown">Errore sconociuto</string>
+    <string name="error_server_error">Errore a livello di server</string>
+    <string name="error_email_already_in_use">L\'email è già in uso.</string>
+    <string name="error_permission_denied">Permesso negato.</string>
+    <string name="error_update_failed">Aggiornamento fallito.</string>
+    <string name="error_bucket_not_found">Bucket non trovato.</string>
+    <string name="error_quota_exceeded">Quota superata.</string>
+    <string name="error_upload_failed">Caricamento fallito.</string>
+    <string name="error_unknown_auth">Errore di autenticazione sconosciuto. Per favore, riprova o contatta il supporto.</string>
+    <string name="error_token_refresh_failed">Impossibile aggiornare il token di autenticazione. Verifica la tua connessione internet e riprova. Se il problema persiste, contatta il supporto.</string>
+    <string name="registration_successful">Registrazione avvenuta con successo!</string>
+    <string name="error_creating_image_file">Errore durante l\'apertura della fotocamera</string>
+    <string name="profile_image_updated_successfully">Immagine caricata con successo!</string>
+    <string name="invalid_input">I dati inseriti non sono corretti</string>
+    <string name="user_not_logged_in">L\'utente non è loggato</string>
+    <string name="password_reset_email_sent">E\' stata inviata un\'email per il recupero della password</string>
+    <string name="settings">Impostazioni</string>
+    <string name="error_operation_cancelled">L\'operazione è stata cancellata</string>
+    <string name="error_invalid_input">Input non valido</string>
+    <string name="error_coupon_already_exists">Il coupon esiste già.</string>
+    <string name="coupon_generated_successfully">Coupon generato con successo!</string>
+    <string name="error_auth_required">Errore: E\' richiesta l\'autenticazione!</string>
+    <string name="error_service_unavailable">Servizio al momento non disponibile. Riprovare più tardi.</string>
+    <string name="discount_exceeds_amount">Attenzione: Lo sconto che stai applicando è superiore al totale da pagare.</string>
+    <string name="gift_card_code_copied">La gif card è stata copiata!</string>
+    <string name="available_gift_cards">Gift card disponibili</string>
+    <string name="payment">Pagamento</string>
+    <string name="select_gift_card">Seleziona una Gift Card</string>
+    <string name="coupon_created">Coupon creato</string>
+    <string name="back_to_gift_cards">Torna alle mie Gift Card</string>
+    <string name="gift_card_icon">icona gift card\n</string>
+    <string name="remove_discount">Rimuovi sconto</string>
+    <string name="check_payment_details">Per favore controlla i dettagli della tua carta di credito!\n</string>
+    <string name="discount_applied_format">Sconto di €%1$.2f applicato</string>
+    <string name="error_invalid_discount">Lo sconto non è valido!</string>
+    <string name="error_invalid_payment_token">toker per il pagamento non valido!</string>
+    <string name="error_invalid_payment_info">Rivedi i dati sulla carta di credito.</string>
+    <string name="discount_code">Digita codice sconto</string>
+    <string name="coupon_value_format">Coupon da %.0f €</string>
+    <string name="error_unknown_firestore">Errore sconosciuto su Firestore</string>
+    <string name="error_empty_code">Inserisci il codice di un voucher per ricercere uno sconto</string>
+    <string name="error_voucher_expired">Il voucher risulta scaduto!</string>
+    <string name="content_description_voucher_icon">icona voucher</string>
+
+    <string name="indicazioni_stradali">Autostrada\nUscita BRESCIA CENTRO girare a sinistra, indicazione: tangenziale SUD VERONA; terza uscita SANT’EUFEMIA sempre dritto fino alla statale.\nDalla statale 100mt a sinistra siete arrivati in via G.Puletti.\n\nAutobus\nLINEA 3 ARANCIO Fermata SANT’EUFEMIA (Birreria)</string>
+    <string name="indirizzo">Via Guido Puletti 6, Sant’Eufemia, Brescia</string>
+    <string name="email_hammami">info@hammami.it</string>
+    <string name="numero_cellulare">+39 377 096 6340</string>
+    <string name="benessere">Benessere</string>
+    <string name="estetica">Estetica</string>
+    <string name="massaggi">Massaggi</string>
+    <string name="error_service_not_found">Il servizio non è stato trovato</string>
+
 
 </resources>

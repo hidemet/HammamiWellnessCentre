@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Payment Method Chip IDs -->
+    <item name="chipCreditCard" type="id"/>
+    <item name="chipPayPal" type="id"/>
+    <item name="chipGooglePay" type="id"/>
+    <item name="chipInStore" type="id"/>
+</resources>
