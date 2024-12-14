@@ -5,7 +5,6 @@ import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.payment.CreditCard
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
-import com.example.hammami.domain.model.payment.PaymentSystem
 
 data class PaymentUiState(
     val paymentItem: PaymentItem,
@@ -13,14 +12,25 @@ data class PaymentUiState(
     val appliedVoucher: Voucher? = null,
     val creditCard: CreditCard? = null,
     val cardValidationErrors: CardValidationErrors? = null,
-    val finalAmount: Double = 0.0,
-    val earnedPoints: Int = 0,
-    val totalPoints: Int = 0,
+
+    // Prezzi e sconti
+    val itemPrice: Double,
+    val discountValue: Double? = null,
     val discountCode: String = "",
     val discountError: UiText? = null,
+    val finalAmount: Double,
+
+    // Punti karma
+    val currentKarmaPoints: Int,
+    val earnedKarmaPoints: Int,
+
+    // State UI
     val isPaymentEnabled: Boolean = false,
     val isLoading: Boolean = false,
 ) {
+
+    val showPriceBreakdown: Boolean = discountValue != null
+    val newKarmaPointsBalance: Int = currentKarmaPoints + earnedKarmaPoints
 
     data class CardValidationErrors(
         val numberError: UiText? = null,

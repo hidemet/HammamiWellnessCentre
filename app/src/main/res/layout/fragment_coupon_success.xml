@@ -34,18 +34,17 @@
             android:padding="24dp">
 
             <!-- Header Image with Rounded Corners -->
+
+            <!-- Title Text -->
+
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginBottom="16dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_coupon"
+                android:src="@drawable/ic_check_circle"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.LargeComponent"
-                app:tint="?attr/colorPrimaryContainer" />
+                app:tint="?attr/colorTertiary" />
 
-            <!-- Title Text -->
-
-            <!-- Card with Details -->
             <TextView
                 android:id="@+id/titleText"
                 android:layout_width="wrap_content"

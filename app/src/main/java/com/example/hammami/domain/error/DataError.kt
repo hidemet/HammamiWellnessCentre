@@ -23,6 +23,7 @@ sealed interface DataError : Error {
         TOKEN_REFRESH_FAILED,
         INVALID_CREDENTIALS,
         EMAIL_ALREADY_IN_USE,
+        REQUIRED_PASSWORD,
         WEAK_PASSWORD,
         NOT_AUTHENTICATED,
         UNKNOWN

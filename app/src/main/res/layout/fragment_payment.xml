@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:windowSoftInputMode="adjustResize"
+    android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    android:layout_height="match_parent">
+    android:windowSoftInputMode="adjustResize">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -23,19 +23,16 @@
             android:id="@+id/linearProgressIndicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:indeterminate="true"
-            />
+            android:visibility="gone" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="16dp"
-        android:fillViewport="true"
-        android:paddingBottom="200dp"
         android:clipToPadding="false"
+        android:paddingBottom="200dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -46,8 +43,8 @@
 
             <!-- Service/Gift Card Details Section -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/detailsCard"
-                style="@style/Widget.Material3.CardView.Outlined"
+                android:id="@+id/itemCard"
+                style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp">
@@ -59,7 +56,7 @@
                     android:padding="16dp">
 
                     <!-- Service Booking Details -->
-                    <LinearLayout
+                     <LinearLayout
                         android:id="@+id/serviceBookingDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -70,7 +67,7 @@
                             android:id="@+id/serviceName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"/>
+                            android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                         <TextView
                             android:id="@+id/serviceDateTime"
@@ -78,8 +75,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:drawablePadding="8dp"
-                            app:drawableStartCompat="@drawable/ic_calendar"
-                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            app:drawableStartCompat="@drawable/ic_calendar" />
 
                         <TextView
                             android:id="@+id/serviceDuration"
@@ -87,8 +84,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:drawablePadding="8dp"
-                            app:drawableStartCompat="@drawable/ic_schedule"
-                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            app:drawableStartCompat="@drawable/ic_schedule" />
                     </LinearLayout>
 
                     <!-- Gift Card Details -->
@@ -96,8 +93,8 @@
                         android:id="@+id/giftCardDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/giftCardTitle"
@@ -111,13 +108,12 @@
                             android:id="@+id/giftCardValue"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
                             android:text="50.00 €"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
-                            android:textColor="?attr/colorOnSurface"
-                            android:gravity="end"
-                             />
+                            android:textColor="?attr/colorOnSurface" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -126,7 +122,7 @@
 
             <!-- Discount Section -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/discountCard"
+                android:id="@+id/discountSection"
                 style="@style/Widget.Material3.CardView.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,96 +134,65 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
-
-                    <!-- Input discount code -->
+                    <!-- Sezione input codice sconto -->
                     <LinearLayout
+                        android:id="@+id/discountInputContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/discountInputLayout"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            android:id="@+id/discountCodeInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginEnd="8dp">
+                            app:endIconMode="clear_text"
+                            app:errorIconDrawable="@null">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/discountInput"
+                                android:id="@+id/discountCodeEditText"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="textCapCharacters"
                                 android:hint="@string/discount_code"
-                                android:maxLength="10"/>
+                                android:imeOptions="actionDone"
+                                android:inputType="textCapCharacters"
+                                android:maxLength="16" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/applyDiscountButton"
+                            style="@style/Widget.Material3.Button.TonalButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
                             android:enabled="false"
-                            android:text="@string/apply"/>
+                            android:text="@string/apply_discount" />
 
                     </LinearLayout>
 
-                    <!-- Applied discount info -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/appliedDiscountCard"
-                        style="@style/Widget.Material3.CardView.Filled"
+                    <!-- Codice sconto applicato (visibile solo quando attivo) -->
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/appliedDiscountContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:visibility="gone">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/appliedDiscountChip"
+                            style="@style/Widget.Material3.Chip.Input"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:padding="16dp">
+                            android:closeIcon="@drawable/ic_close" />
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/discountCode"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
-
-                                <TextView
-                                    android:id="@+id/discountAmount"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
-
-                            </LinearLayout>
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/removeDiscountButton"
-                                style="@style/Widget.Material3.Button.IconButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:contentDescription="@string/remove_discount"
-                                app:icon="@drawable/ic_close"/>
-
-                        </LinearLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.chip.ChipGroup>
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Payment Method Section with Card Details -->
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/paymentMethodCard"
                 style="@style/Widget.Material3.CardView.Outlined"
@@ -241,75 +206,97 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <!-- Header con titolo e sottotitolo -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
                         android:text="@string/payment_method"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
+                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/select_payment_method"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <!-- Gruppo di chip migliorato per i metodi di pagamento -->
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/paymentMethodChips"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        app:singleSelection="true"
-                        app:selectionRequired="true">
+                        android:paddingHorizontal="16dp"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/creditCardChip"
                             style="@style/Widget.Material3.Chip.Filter"
+                            android:id="@+id/creditCardChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/credit_card"
-                            app:chipIcon="@drawable/ic_credit_card"/>
+                            app:chipIcon="@drawable/ic_credit_card"
+                            app:chipIconEnabled="true"
+                            app:chipIconTint="?attr/colorOnSurface" />
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/paypalChip"
                             style="@style/Widget.Material3.Chip.Filter"
+                            android:id="@+id/paypalChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/paypal"
-                            app:chipIcon="@drawable/ic_paypal"/>
+                            app:chipIcon="@drawable/ic_paypal"
+                            app:chipIconEnabled="true" />
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/googlePayChip"
                             style="@style/Widget.Material3.Chip.Filter"
+                            android:id="@+id/googlePayChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/google_pay"
-                            app:chipIcon="@drawable/ic_google_pay"/>
+                            app:chipIcon="@drawable/ic_google_pay"
+                            app:chipIconEnabled="true" />
 
                     </com.google.android.material.chip.ChipGroup>
 
-                    <!-- Credit Card Details (Initially Gone) -->
+                    <!-- Container per i dettagli della carta di credito -->
                     <LinearLayout
                         android:id="@+id/creditCardDetailsContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
                         android:layout_marginTop="16dp"
-                        android:visibility="gone">
+                        android:orientation="vertical"
+                        android:visibility="visible">
 
+                        <!-- Campo numero carta migliorato -->
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/cardNumberLayout"
                             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            android:id="@+id/cardNumberLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:hint="@string/card_number">
+                            android:layout_marginBottom="16dp"
+                            app:errorIconDrawable="@null"
+                            app:startIconDrawable="@drawable/ic_credit_card"
+                            app:startIconTint="?attr/colorOnSurfaceVariant">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/cardNumberInput"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:hint="@string/card_number"
                                 android:inputType="number"
-                                android:maxLength="20"/>
+                                android:maxLength="19"
+                                android:paddingStart="40dp" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
+                        <!-- Container per data scadenza e CVV -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:baselineAligned="false"
                             android:orientation="horizontal">
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -317,39 +304,43 @@
                                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:layout_marginEnd="8dp"
-                                android:hint="@string/expiry">
+                                android:layout_weight="1"
+                                android:hint="@string/expiry"
+                                app:placeholderText="MM/YY"
+                                app:startIconDrawable="@drawable/ic_calendar"
+                                app:startIconTint="?attr/colorOnSurfaceVariant">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/expiryInput"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:inputType="date"
-                                    android:maxLength="5"/>
+                                    android:maxLength="5" />
 
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/cvvLayout"
                                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                                android:layout_width="100dp"
+                                android:layout_width="120dp"
                                 android:layout_height="wrap_content"
-                                android:hint="@string/cvv">
+                                android:hint="@string/cvv"
+                                app:passwordToggleEnabled="true"
+                                app:startIconDrawable="@drawable/ic_lock"
+                                app:startIconTint="?attr/colorOnSurfaceVariant">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/cvvInput"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:inputType="numberPassword"
-                                    android:maxLength="3"/>
+                                    android:maxLength="3" />
 
                             </com.google.android.material.textfield.TextInputLayout>
 
                         </LinearLayout>
-
                     </LinearLayout>
-
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -358,97 +349,122 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Sheet Summary -->
-    <LinearLayout
-        android:id="@+id/paymentSummary"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/persistent_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:orientation="vertical"
-        android:background="?attr/colorSurface"
-        android:padding="16dp">
+        android:background="?attr/colorSurfaceContainerLow"
+        android:elevation="8dp"
+        tools:layout_height="200dp">
 
-        <!-- Summary Section -->
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <!-- Prezzo base -->
+        <TextView
+            android:id="@+id/item_price_label"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Total Amount -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id = "@+id/originalAmount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
-
-                <!-- Discount Line -->
-                <LinearLayout
-                    android:id="@+id/discountLine"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/discountLabel"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/discount"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
-
-                    <TextView
-                        android:id="@+id/discountValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
-
-                </LinearLayout>
-
-                    <TextView
-                    android:id="@+id/totalAmount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
-
-            </LinearLayout>
-
-            <!-- Karma Points -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="8dp">
-
-                <TextView
-                    android:id="@+id/earnedPoints"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
-
-                <TextView
-                    android:id="@+id/totalPoints"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/confirmButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="@string/confirm_payment"/>
+            android:text="@string/amount"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            app:layout_constraintEnd_toStartOf="@+id/item_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/item_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            app:layout_constraintBaseline_toBaselineOf="@+id/item_price_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="50.00 €" />
 
+        <!-- Sconto -->
+        <TextView
+            android:id="@+id/discountLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/discount"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorError"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/item_price_label" />
+
+        <TextView
+            android:id="@+id/discountAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorError"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/discountLabel"
+            tools:text="-10.00 €" />
+
+        <!-- Separatore -->
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintTop_toBottomOf="@id/discountAmount" />
+
+        <!-- Totale finale -->
+        <TextView
+            android:id="@+id/totalLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/total_to_pay"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider" />
+
+        <TextView
+            android:id="@+id/final_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/totalLabel"
+            tools:text="40.00 €" />
+
+        <TextView
+            android:id="@+id/earned_karma_points"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/earned_karma_points"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            app:layout_constraintTop_toBottomOf="@id/totalLabel"
+            app:layout_constraintStart_toStartOf="parent"/>
+        <TextView
+            android:id="@+id/new_karma_points_balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text = "@string/new_karma_points_balance"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            app:layout_constraintTop_toBottomOf="@id/earned_karma_points"
+            app:layout_constraintTop_toTopOf="@id/earned_karma_points"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Bottone di conferma -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/checkoutConfirmButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/confirm_payment"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/new_karma_points_balance" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
