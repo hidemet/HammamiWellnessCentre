@@ -5,6 +5,7 @@ import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.usecase.user.GetCurrentUserIdUseCase
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.error.DataError
+import com.example.hammami.domain.model.VoucherType
 
 import javax.inject.Inject
 
@@ -15,7 +16,7 @@ class RedeemCouponUseCase @Inject constructor(
     suspend operator fun invoke(value: Double, requiredPoints: Int): Result<Voucher, DataError> {
         return when (val userResult = getCurrentUserIdUseCase()) {
             is Result.Success -> {
-                voucherRepository.redeemVoucher(userResult.data, requiredPoints, value, Voucher.Type.COUPON)
+                voucherRepository.redeemVoucher(userResult.data, requiredPoints, value, VoucherType.COUPON)
             }
             is Result.Error -> Result.Error(userResult.error)
         }
