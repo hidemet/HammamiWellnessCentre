@@ -16,7 +16,6 @@ import java.io.IOException
 import java.io.InputStream
 
 class AboutUsFragment: Fragment(R.layout.fragment_about_us) {
-
     private lateinit var binding: FragmentAboutUsBinding
 
     override fun onCreateView(
