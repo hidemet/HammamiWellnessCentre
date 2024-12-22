@@ -26,6 +26,7 @@ class BookingRepository @Inject constructor(
         private const val CLOSING_HOUR = 19
     }
 
+
     suspend fun createBooking(serviceId: String, date: String, startTime: String, serviceDuration: Int): Result<Unit, DataError> {
         return try {
             // Recupera l'ID dell'utente corrente
