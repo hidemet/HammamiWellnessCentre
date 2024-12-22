@@ -28,6 +28,7 @@ class BookingRepository @Inject constructor(
 
 // prova
     // testo
+    // testo
     suspend fun createBooking(serviceId: String, date: String, startTime: String, serviceDuration: Int): Result<Unit, DataError> {
         return try {
             // Recupera l'ID dell'utente corrente
