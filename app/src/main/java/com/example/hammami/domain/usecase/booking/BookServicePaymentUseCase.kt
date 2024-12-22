@@ -1,4 +1,4 @@
-package com.example.hammami.domain.usecase
+package com.example.hammami.domain.usecase.booking
 
 //class BookServicePaymentUseCase @Inject constructor(
 //    private val processPaymentUseCase: ProcessPaymentUseCase,
