@@ -117,6 +117,7 @@
             tools:layout="@layout/fragment_appointment_detail">
             <argument
                 android:name="appointment"
+
                 app:argType="com.example.hammami.domain.model.ServiceAppointment" />
         </fragment>
 
