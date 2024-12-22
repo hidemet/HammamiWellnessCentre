@@ -13,11 +13,11 @@ sealed class PaymentItem : Parcelable {
     @Parcelize
     data class ServiceBookingPayment(
         override val price: Double,
-        val title: String,
-        val description: String,
+        val serviceName: String,
         val serviceId: String,
-        val dateTime: LocalDateTime,
-        val duration: Int
+        val date: String,
+        val startTime: String,
+        val endTime: String,
     ) : PaymentItem()
 
     @Parcelize
@@ -26,14 +26,14 @@ sealed class PaymentItem : Parcelable {
     ) : PaymentItem()
 }
 
-fun Service.toPaymentItem(dateTime: LocalDateTime) = PaymentItem.ServiceBookingPayment(
-    price = price!!.toDouble(),
-    title = name,
-    description = description,
-    serviceId = id,
-    dateTime = dateTime,
-    duration = length?.toInt() ?: 0
-)
+//fun Service.toPaymentItem(dateTime: LocalDateTime) = PaymentItem.ServiceBookingPayment(
+//    price = price!!.toDouble(),
+//    title = name,
+//    description = description,
+//    serviceId = id,
+//    dateTime = dateTime,
+//    duration = length?.toInt() ?: 0
+//)
 
 fun AvailableVoucher.toPaymentItem() = PaymentItem.GiftCardPayment(
     price = value
