@@ -1,4 +1,4 @@
-package com.example.hammami.domain.usecase
+package com.example.hammami.domain.usecase.booking
 
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.payment.PaymentSystem

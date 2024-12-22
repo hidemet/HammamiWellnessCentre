@@ -2,15 +2,15 @@ package com.example.hammami.domain.error
 
 sealed interface DataError : Error {
 
-    enum class Firestore: DataError{
+    enum class Firestore : DataError {
         UNKNOWN,
     }
 
-    enum class Unknown: DataError {
+    enum class Unknown : DataError {
         UNKNOWN,
     }
 
-    enum class Network: DataError {
+    enum class Network : DataError {
         NO_INTERNET,
         UNKNOWN,
         SERVER_ERROR,
@@ -18,7 +18,7 @@ sealed interface DataError : Error {
         SERVICE_UNAVAILABLE,
     }
 
-    enum class Auth: DataError {
+    enum class Auth : DataError {
         USER_NOT_FOUND,
         TOKEN_REFRESH_FAILED,
         INVALID_CREDENTIALS,
@@ -30,7 +30,7 @@ sealed interface DataError : Error {
 
     }
 
-    enum class User: DataError {
+    enum class User : DataError {
         USER_NOT_FOUND,
         USER_ALREADY_EXISTS,
         PERMISSION_DENIED,
@@ -46,7 +46,7 @@ sealed interface DataError : Error {
         UNKNOWN
     }
 
-    enum class Storage: DataError {
+    enum class Storage : DataError {
         BUCKET_NOT_FOUND,
         QUOTA_EXCEEDED,
         UPLOAD_FAILED,
@@ -69,7 +69,14 @@ sealed interface DataError : Error {
         EXPIRED,
     }
 
-    enum class Service: DataError {
+    enum class Service : DataError {
         SERVICE_NOT_FOUND,
+    }
+
+    enum class Booking : DataError {
+        INVALID_TIME,
+        INVALID_DATE,
+        NO_OPERATORS_AVAILABLE,
+        SLOT_NOT_AVAILABLE,
     }
 }

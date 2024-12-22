@@ -104,4 +104,23 @@
             android:label="EsteticaFragment"
             tools:layout="@layout/fragment_servizi_estetica" />
     </navigation>
+
+    <fragment
+        android:id="@+id/bookingFragment"
+        android:name="com.example.hammami.presentation.ui.features.booking.BookingFragment"
+        android:label="Prenotazione">
+
+        <argument
+            android:name="serviceId"
+            app:argType="string" />
+        <argument
+            android:name="serviceDuration"
+            app:argType="integer" />
+        <argument
+            android:name="serviceName"
+            app:argType="string" />
+        <argument
+            android:name="servicePrice"
+            app:argType="float" />
+    </fragment>
 </navigation>
