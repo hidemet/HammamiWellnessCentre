@@ -52,6 +52,7 @@ class BenessereViewModel @Inject constructor(
 
     private fun onServiceSelected(service: Service) {
         //emitUiEvent(UiEvent.NavigateToBenessereDetail(service))
+        //bisogna implementare la navigazione
     }
 
     data class BenessereServices(
