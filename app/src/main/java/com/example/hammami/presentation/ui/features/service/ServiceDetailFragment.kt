@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -89,7 +90,7 @@ class ServiceDetailFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { observeReviews() }
-                //launch { observeEvents() }
+                launch { observeEvents() }
             }
         }
     }
@@ -101,13 +102,21 @@ class ServiceDetailFragment : BaseFragment() {
         }
     }
 
-    /*
     private suspend fun observeEvents() {
-        viewModel.uiEvent.collect { event ->
-            handleEvent(event)
+        binding.buttonProsegui.setOnClickListener {
+            val serviceId = args.service.id
+            val serviceDuration = args.service.length
+            val serviceName = args.service.name
+            val servicePrice = args.service.price
+            val action = ServiceDetailFragmentDirections.actionServiceDetailFragmentToBookingFragment(serviceId,
+                serviceDuration!!.toFloat(), serviceName,
+                servicePrice!!
+            )
+            findNavController().navigate(action)
         }
     }
 
+    /*
 
     private fun updateUI(state: ServiceDetailViewModel.ServiceReviews) = with(binding) {
         //progressIndicator.isVisible = state.isLoading

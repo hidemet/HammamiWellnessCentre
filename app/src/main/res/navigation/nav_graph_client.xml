@@ -73,6 +73,22 @@
         <argument
             android:name="service"
             app:argType="com.example.hammami.domain.model.Service" />
+        <action
+            android:id="@+id/action_serviceDetailFragment_to_bookingFragment"
+            app:destination="@id/bookingFragment">
+            <argument
+                android:name="serviceId"
+                app:argType="string" />
+            <argument
+                android:name="serviceDuration"
+                app:argType="float" />
+            <argument
+                android:name="serviceName"
+                app:argType="string" />
+            <argument
+                android:name="servicePrice"
+                app:argType="float" />
+        </action>
     </fragment>
 
     <navigation android:id="@+id/catalogo_servizi_benessere"
