@@ -1,6 +1,5 @@
 package com.example.hammami.data.repositories
 
-import com.example.hammami.data.datasource.auth.FirebaseAuthDataSource
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
 import com.example.hammami.util.PreferencesManager
@@ -10,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 import android.util.Log
+import com.example.hammami.data.datasource.auth.FirebaseAuthDataSource
 import com.google.firebase.FirebaseNetworkException
 import kotlinx.coroutines.tasks.await
 

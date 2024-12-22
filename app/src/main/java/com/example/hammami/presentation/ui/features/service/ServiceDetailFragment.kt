@@ -79,7 +79,7 @@ class ServiceDetailFragment : BaseFragment() {
     }
 
     override fun setupUI() {
-        //setupAppBar()
+        setupAppBar()
         setupInfo()
         setupRecyclerView()
         //setupInitialState()
@@ -120,11 +120,9 @@ class ServiceDetailFragment : BaseFragment() {
 
      */
 
-    /*
     private fun setupAppBar() {
         binding.topAppBar.setNavigationOnClickListener { onBackClick() }
     }
-     */
 
     private fun handleEvent(event: ServiceDetailViewModel.UiEvent) {
         when (event) {

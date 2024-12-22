@@ -1,13 +1,5 @@
 package com.example.hammami.domain.usecase.booking
 
-import com.example.hammami.domain.model.Booking
-import com.example.hammami.domain.model.payment.PaymentSystem
-import com.example.hammami.core.result.Result
-import com.example.hammami.data.repositories.BookingRepository
-import com.example.hammami.domain.error.DataError
-import com.example.hammami.domain.usecase.payment.ProcessPaymentUseCase
-import javax.inject.Inject
-
 //class BookServicePaymentUseCase @Inject constructor(
 //    private val processPaymentUseCase: ProcessPaymentUseCase,
 //    private val bookingRepository: BookingRepository

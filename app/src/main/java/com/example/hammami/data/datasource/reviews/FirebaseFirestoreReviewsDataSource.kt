@@ -15,14 +15,6 @@ class FirebaseFirestoreReviewsDataSource @Inject constructor(
 ) {
     private val reviewsCollection = firestore.collection("/Recensioni")
 
-    suspend fun saveReviewsInformation(userUid: String, user: User) {
-        try {
-            reviewsCollection.document(userUid).set(user).await()
-        } catch (e: FirebaseFirestoreException) {
-            throw e
-        }
-    }
-
     suspend fun fetchReviewsData(reviewsPathList: List<DocumentReference>?) : List<Review> {
         val allReviews = mutableListOf<Review>()
         try {
@@ -36,10 +28,10 @@ class FirebaseFirestoreReviewsDataSource @Inject constructor(
         return allReviews
     }
 
-    suspend fun fetchBenessereData(serviceId: String) : Review {
+    suspend fun addReviewData(review: Review) : String{
         try {
-            return reviewsCollection.document(serviceId).get().await().toObject(Review::class.java)!!
-            //_allBenessere.emit(Result.Success(allServices))
+            val document = reviewsCollection.add(review).await()
+            return document.path
         } catch (e: FirebaseFirestoreException) {
             throw e
         }
