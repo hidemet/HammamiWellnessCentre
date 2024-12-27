@@ -129,6 +129,18 @@ class AddReviewFragment : BaseFragment() {
             val rating = binding.ratingBar.rating
             val reviewToAdd = viewModel.uiState.value.user?.let { it1 -> Review(textReview, it1.firstName, rating) }
 
+            if (textReview.isEmpty()) {
+                //showAlert("Per favore, inserisci una recensione.")
+                binding.editTextReview.error = "Per favore, inserisci una recensione."
+                return@setOnClickListener
+            }
+
+            if (rating == 0.0f) {
+                //showAlert("Per favore, inserisci un voto.")
+                //binding.ratingBar.error = "Per favore, inserisci un voto."
+                return@setOnClickListener
+            }
+
             viewLifecycleOwner.lifecycleScope.launch {
                 if (reviewToAdd != null) {
                     when (val result = setReviewUseCase(reviewToAdd)) {
@@ -137,10 +149,10 @@ class AddReviewFragment : BaseFragment() {
                             when(val result2 = getIdFromNameUseCase("Stone massage")) {
                                 is Result.Success -> {
                                     val serviceId = result2.data.toString()
-                                    Log.e("AddReview", "Nome servizio: $nomeServizio")
-                                    Log.e("AddReview", "serviceId: $serviceId")
+                                    //Log.e("AddReview", "Nome servizio: $nomeServizio")
+                                    //Log.e("AddReview", "serviceId: $serviceId")
                                     addReviewToServiceUseCase(serviceId, reviewId)
-                                    Log.e("AddReview", "Recensione aggiunta al servizio")
+                                    //Log.e("AddReview", "Recensione aggiunta al servizio")
                                     }
                                 is Result.Error -> {
                                     // Gestisci l'errore

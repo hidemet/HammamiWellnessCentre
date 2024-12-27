@@ -157,7 +157,7 @@
             app:argType="string" />
         <argument
             android:name="serviceDuration"
-            app:argType="integer" />
+            app:argType="float" />
         <argument
             android:name="serviceName"
             app:argType="string" />

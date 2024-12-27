@@ -76,7 +76,6 @@ class ServiceDetailFragment : BaseFragment() {
 
          */
 
-
     }
 
     override fun setupUI() {
@@ -104,6 +103,7 @@ class ServiceDetailFragment : BaseFragment() {
 
     private suspend fun observeEvents() {
         binding.buttonProsegui.setOnClickListener {
+            /*
             val serviceId = args.service.id
             val serviceDuration = args.service.length
             val serviceName = args.service.name
@@ -112,6 +112,19 @@ class ServiceDetailFragment : BaseFragment() {
                 serviceDuration!!.toFloat(), serviceName,
                 servicePrice!!
             )
+            findNavController().navigate(action)
+        }
+
+             */
+
+            val serviceId = args.service.id
+            val serviceDuration = args.service.length?.toFloat() ?: 0.0f
+            val serviceName = args.service.name
+            val servicePrice = args.service.price ?: 0.0f
+            val action =
+                ServiceDetailFragmentDirections.actionServiceDetailFragmentToBookingFragment(
+                    serviceId, serviceDuration, serviceName, servicePrice
+                )
             findNavController().navigate(action)
         }
     }
@@ -188,19 +201,17 @@ class ServiceDetailFragment : BaseFragment() {
 
         if(beneficiList.isNotEmpty()){
             beneficiAdapter = BeneficiAdapter(beneficiList)
-                binding.rvContenutoBenefici.apply {
-                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                    adapter = beneficiAdapter
-                }
+            binding.rvContenutoBenefici.apply {
+                layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                adapter = beneficiAdapter
+            }
             beneficiAdapter.submitList(beneficiList)
         }else{
             Log.e("ServiceDetailFragment", "Benefits is null")
             binding.tvTitoloBenefici.visibility = View.GONE
             binding.rvContenutoBenefici.visibility = View.GONE
         }
-
     }
-
 
     private fun setupRecyclerView() {
         //serviceDetailAdapter = ServiceDetailAdapter()
