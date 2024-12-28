@@ -75,6 +75,7 @@ class PaymentRepository @Inject constructor(
                 transaction.update(userDocRef, "points", user.points + earnedPoints)
 
 
+
                 // 3. Creo il documento appropriato in base al tipo di acquisto
                 when (paymentItem) {
                     is PaymentItem.GiftCardPayment -> {
