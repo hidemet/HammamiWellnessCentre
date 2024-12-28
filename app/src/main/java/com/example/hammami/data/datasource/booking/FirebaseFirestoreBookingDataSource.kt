@@ -1,9 +1,11 @@
 package com.example.hammami.data.datasource.booking
 
 import com.example.hammami.domain.model.Booking
+import com.example.hammami.domain.model.BookingStatus
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Transaction
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 import javax.inject.Inject
@@ -38,6 +40,14 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
     suspend fun saveBooking(booking: Booking) : DocumentReference {
         try {
             return bookingsCollection.add(booking).await()
+        } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
+    }
+
+    fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus)) {
+        try {
+            val bookingRef = bookingsCollection.document(bookingId)
         } catch (e: FirebaseFirestoreException) {
             throw e
         }

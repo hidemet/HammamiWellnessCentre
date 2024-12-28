@@ -5,8 +5,10 @@ import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
 import com.example.hammami.data.datasource.booking.FirebaseFirestoreBookingDataSource
+import com.example.hammami.domain.model.BookingStatus
 import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Transaction
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,6 +42,16 @@ class BookingRepository @Inject constructor(
             Result.Success(Unit)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel salvare la prenotazione", e)
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+    fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus): Result<Unit, DataError> {
+        return try {
+            bookingDataSource.updateBooking(transaction,bookingId, status)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Log.e("BookingRepository", "Errore nell'aggiornare la prenotazione", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }

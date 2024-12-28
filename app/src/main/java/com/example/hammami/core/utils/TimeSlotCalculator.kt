@@ -54,7 +54,7 @@ class TimeSlotCalculator @Inject constructor() {
                     availableSlots.add(formattedSlotStart)
                 }
             }
-            currentSlotStart = currentSlotStart.plus(slotInterval)
+            currentSlotStart = if(currentSlotStart.minute == 0) { currentSlotStart.plusMinutes(30)} else { currentSlotStart.plusHours(1).withMinute(0) }
         }
 
         return availableSlots.distinct().sorted()

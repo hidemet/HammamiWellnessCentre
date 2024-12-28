@@ -28,6 +28,7 @@ class PaymentRepository @Inject constructor(
     private val payPalDataSource: PayPalDataSource,
     private val googlePayDataSource: GooglePayDataSource,
     private val voucherRepository: VoucherRepository,
+    private val bookingRepository: BookingRepository,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val firestore: FirebaseFirestore,
@@ -93,8 +94,12 @@ class PaymentRepository @Inject constructor(
 
                     is PaymentItem.ServiceBookingPayment -> {
                         val bookingId = paymentItem.bookingId
-                        val bookingRef = firestore.collection("bookings").document(bookingId)
-                        transaction.update(bookingRef, "status", BookingStatus.CONFIRMED)
+                        when(val result = bookingRepository.updateBookingStatus(transaction, bookingId, BookingStatus.CONFIRMED)) {
+                            is Result.Error -> return@runTransaction result
+                            is Result.Success -> Unit
+                        }
+                       // val bookingRef = firestore.collection("bookings").document(bookingId)
+                       // transaction.update(bookingRef, "status", BookingStatus.CONFIRMED)
                     }
                 }
                 // 3. Restituisco l'ID transazione
