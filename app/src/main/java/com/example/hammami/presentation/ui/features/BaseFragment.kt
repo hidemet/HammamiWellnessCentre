@@ -34,7 +34,6 @@ abstract class BaseFragment : Fragment() {
             handleUnexpectedError(e)
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d(TAG, "${javaClass.simpleName} onDestroyView")
