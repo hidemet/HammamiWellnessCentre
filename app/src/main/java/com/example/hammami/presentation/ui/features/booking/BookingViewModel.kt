@@ -260,10 +260,5 @@ class BookingViewModel @Inject constructor(
         data class ShowUserMassage(val message: UiText) : BookingUiEvent
         data class ShowError(val message: UiText) : BookingUiEvent
         object BookingSuccess : BookingUiEvent
-        data class NavigateToPayment(
-            val service: Service,
-            val selectedDate: Date,
-            val selectedTimeSlot: String
-        ) : BookingUiEvent
     }
 }

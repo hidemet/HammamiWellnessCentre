@@ -6,8 +6,6 @@ import com.example.hammami.data.repositories.BookingRepository
 import com.example.hammami.domain.error.DataError
 import java.util.Date
 import javax.inject.Inject
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 private const val NUMBER_OF_OPERATORS = 3
 class GetAvailableTimeSlotsUseCase @Inject constructor(

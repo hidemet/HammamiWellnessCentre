@@ -87,7 +87,7 @@ class PaymentFragment : BaseFragment() {
                 serviceName.text = item.serviceName
                 serviceDateTime.text = item.date.toString()
                 serviceDuration.text = getString(R.string.service_duration_format, 60)
-                TODO("Convertire la durata startTime-endTime in minuti oppure cambiare il formato del layout")
+                // TODO("Convertire la durata startTime-endTime in minuti oppure cambiare il formato del layout")
             }
 
             is PaymentItem.GiftCardPayment -> {

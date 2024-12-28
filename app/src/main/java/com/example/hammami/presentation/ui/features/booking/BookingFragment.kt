@@ -62,10 +62,6 @@ class BookingFragment : BaseFragment() {
         when (event) {
             is BookingViewModel.BookingUiEvent.ShowError -> showSnackbar(event.message)
             is BookingViewModel.BookingUiEvent.ShowUserMassage -> showSnackbar(event.message)
-            is BookingViewModel.BookingUiEvent.NavigateToPayment -> {
-                navigateToPayment(event)
-            }
-
             is BookingViewModel.BookingUiEvent.BookingSuccess -> {}
         }
     }
@@ -111,19 +107,31 @@ class BookingFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToPayment(event: BookingViewModel.BookingUiEvent.NavigateToPayment) {
+//    private fun navigateToPayment(event: BookingViewModel.BookingUiEvent.NavigateToPayment) {
+//        val paymentItem = PaymentItem.ServiceBookingPayment(
+//            serviceName = event.service.name,
+//            price = event.service.price?.toDouble() ?: 0.0,
+//            bookingId = viewModel.uiState.value.currentBookingId ?: "",
+//            date = viewModel.uiState.value.selectedDate,
+//            startTime = viewModel.uiState.value.selectedTimeSlot ?: "",
+//            duration = event.service.length?.toInt() ?: 0
+//        )
+//        findNavController().navigate(
+//            BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem))
+//    }
+
+     private fun navigateToPayment() {
         val paymentItem = PaymentItem.ServiceBookingPayment(
-            serviceName = event.service.name,
-            price = event.service.price?.toDouble() ?: 0.0,
+            serviceName = service.name,
+            price = service.price?.toDouble() ?: 0.0,
             bookingId = viewModel.uiState.value.currentBookingId ?: "",
             date = viewModel.uiState.value.selectedDate,
             startTime = viewModel.uiState.value.selectedTimeSlot ?: "",
-            duration = event.service.length?.toInt() ?: 0
+            duration = service.length?.toInt() ?: 0
         )
         findNavController().navigate(
             BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem))
     }
-
 
     private fun setupTopAppBar() {
         binding.topAppBar.setNavigationOnClickListener {
@@ -139,7 +147,7 @@ class BookingFragment : BaseFragment() {
         }
 
         binding.bookButton.setOnClickListener {
-          navigateToPayment()
+           navigateToPayment()
         }
     }
 
