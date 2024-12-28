@@ -16,7 +16,7 @@ sealed class PaymentItem : Parcelable {
         override val price: Double,
         val serviceName: String,
         val bookingId: String,
-        val date: Date?,
+        val date: String?,
         val startTime: String,
         val duration: Int
     ) : PaymentItem()

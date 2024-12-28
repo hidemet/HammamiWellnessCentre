@@ -94,7 +94,7 @@ class PaymentRepository @Inject constructor(
 
                     is PaymentItem.ServiceBookingPayment -> {
                         val bookingId = paymentItem.bookingId
-                        when(val result = bookingRepository.updateBookingStatus(transaction, bookingId, BookingStatus.CONFIRMED)) {
+                        when(val result = bookingRepository.updateBooking(transaction, bookingId, BookingStatus.CONFIRMED)) {
                             is Result.Error -> return@runTransaction result
                             is Result.Success -> Unit
                         }

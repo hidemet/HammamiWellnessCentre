@@ -45,9 +45,10 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         }
     }
 
-    fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus)) {
+    fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus) {
         try {
             val bookingRef = bookingsCollection.document(bookingId)
+            transaction.update(bookingRef, "status", BookingStatus.CONFIRMED)
         } catch (e: FirebaseFirestoreException) {
             throw e
         }

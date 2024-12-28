@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.hammami.R
 import com.example.hammami.databinding.FragmentBookingBinding
 import com.example.hammami.domain.model.Service
 import com.example.hammami.domain.model.payment.PaymentItem
@@ -19,7 +18,9 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 @AndroidEntryPoint
 class BookingFragment : BaseFragment() {
@@ -100,9 +101,7 @@ class BookingFragment : BaseFragment() {
             text = timeSlot
             isCheckable = true
             setOnClickListener {
-                lifecycleScope.launch {
-                    viewModel.onTimeSlotSelected(timeSlot)
-                }
+                viewModel.onTimeSlotSelected(timeSlot)
             }
         }
     }
@@ -120,7 +119,7 @@ class BookingFragment : BaseFragment() {
 //            BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem))
 //    }
 
-     private fun navigateToPayment() {
+    private fun navigateToPayment() {
         val paymentItem = PaymentItem.ServiceBookingPayment(
             serviceName = service.name,
             price = service.price?.toDouble() ?: 0.0,
@@ -130,7 +129,8 @@ class BookingFragment : BaseFragment() {
             duration = service.length?.toInt() ?: 0
         )
         findNavController().navigate(
-            BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem))
+            BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem)
+        )
     }
 
     private fun setupTopAppBar() {
@@ -143,11 +143,16 @@ class BookingFragment : BaseFragment() {
         binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val calendar = Calendar.getInstance()
             calendar.set(year, month, dayOfMonth)
-            viewModel.onDateSelected(calendar.time)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val formattedDate = dateFormat.format(calendar.time)
+            viewModel.onDateSelected(formattedDate)
         }
 
         binding.bookButton.setOnClickListener {
-           navigateToPayment()
+            lifecycleScope.launch {
+                viewModel.reserveSlot()
+            }
+            navigateToPayment()
         }
     }
 

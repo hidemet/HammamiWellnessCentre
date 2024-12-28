@@ -11,12 +11,13 @@ data class Booking(
     val serviceId: String = "",
     val userId: String = "",
     val serviceName: String = "",
-    val date: Date? = null,
+    val date: String? = null,
     val startTime: String = "", // formato: "HH:mm"
     val endTime: String = "", // formato: "HH:mm"
     val status: BookingStatus = BookingStatus.RESERVED,
     val creationTimestamp: Timestamp = Timestamp.now(),
-    val reservationTimestamp: Timestamp = Timestamp.now()
+    val reservationTimestamp: Timestamp = Timestamp.now(),
+    val transactionId: String? = null
 ) : Parcelable
 
 enum class BookingStatus {

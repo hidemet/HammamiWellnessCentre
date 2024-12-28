@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
@@ -54,10 +56,12 @@ class BookingViewModel @Inject constructor(
         _uiState.update { it.copy(service = service) }
     }
 
-     fun onDateSelected(date: Date) {
-        _uiState.update { it.copy(selectedDate = date, availableTimeSlots = emptyList()) }
+     fun onDateSelected(dateString: String) {
+        _uiState.update { it.copy(selectedDate = dateString, availableTimeSlots = emptyList()) }
         viewModelScope.launch {
-            loadAvailableTimeSlots(date)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = dateFormat.parse(dateString)
+                loadAvailableTimeSlots(date)
         }
     }
 
@@ -67,11 +71,10 @@ class BookingViewModel @Inject constructor(
 
     fun onTimeSlotSelected(timeSlot: String) = viewModelScope.launch {
         _uiState.update { it.copy(selectedTimeSlot = timeSlot) }
-        reserveSlot()
     }
 
 
-    private suspend fun reserveSlot() {
+     suspend fun reserveSlot() {
         val service = uiState.value.service ?: return
         val selectedDate = uiState.value.selectedDate ?: return
         val selectedTimeSlot = uiState.value.selectedTimeSlot ?: return
@@ -248,7 +251,7 @@ class BookingViewModel @Inject constructor(
         val service: Service? = null,
         val currentBookingId: String? = null,
         val availableTimeSlots: List<String> = emptyList(),
-        val selectedDate: Date? = null,
+        val selectedDate: String? = null,
         val selectedTimeSlot: String? = null,
         val isBookingConfirmed: Boolean = false,
         val isSlotReserved: Boolean = false,
