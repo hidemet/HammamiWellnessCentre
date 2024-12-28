@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.core.util.asUiText
+import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.model.Service
 import com.example.hammami.core.result.Result
 

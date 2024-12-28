@@ -96,4 +96,6 @@ abstract class BaseFragment : Fragment() {
         showSnackbar(UiText.DynamicString("Si è verificato un errore inaspettato: ${e.message}"))
     }
 
+    abstract fun navigateToPayment()
+
 }

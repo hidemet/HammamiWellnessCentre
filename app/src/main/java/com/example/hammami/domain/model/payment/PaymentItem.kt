@@ -5,6 +5,7 @@ import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.Service
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
+import java.util.Date
 
 @Parcelize
 sealed class PaymentItem : Parcelable {
@@ -14,10 +15,10 @@ sealed class PaymentItem : Parcelable {
     data class ServiceBookingPayment(
         override val price: Double,
         val serviceName: String,
-        val serviceId: String,
-        val date: String,
+        val bookingId: String,
+        val date: Date?,
         val startTime: String,
-        val endTime: String,
+        val duration: Int
     ) : PaymentItem()
 
     @Parcelize

@@ -1,4 +1,4 @@
-package com.example.hammami.core.util
+package com.example.hammami.core.utils
 
 import com.example.hammami.domain.model.payment.PaymentItem
 import javax.inject.Inject

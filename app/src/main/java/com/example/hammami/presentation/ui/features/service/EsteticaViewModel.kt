@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.model.Service
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.core.util.asUiText
+import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.usecase.GetEpilazioneUseCase
 import com.example.hammami.domain.usecase.GetTrattCorpoUseCase
 import com.example.hammami.domain.usecase.GetTrattVisoUseCase

@@ -3,7 +3,7 @@ package com.example.hammami.presentation.ui.features.service
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.core.util.asUiText
+import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.model.Review
 import com.example.hammami.domain.model.Service
 import com.example.hammami.domain.usecase.GetReviewsUseCase

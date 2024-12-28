@@ -1,4 +1,23 @@
 <resources>
+
+    <string name="booking_summary">Riepilogo Prenotazione</string>
+    <string name="booking_summary_title">La tua prenotazione è confermata!</string>
+    <string name="service_name_label">Servizio:</string>
+    <string name="booking_date_label">Data:</string>
+    <string name="booking_time_label">Orario:</string>
+
+    <string name="book_appointment_title">Prenota l\'appuntamento</string>
+    <string name="select_time">Seleziona l\'orario</string>
+    <string name="book_now">Prenota ora</string>
+
+    <!-- Errori relativi alle prenotazioni (DataError.Booking) -->
+    <string name="error_invalid_time">Orario non valido. Seleziona un orario valido.</string>
+    <string name="error_invalid_date">Data non valida. Seleziona una data valida.</string>
+    <string name="error_no_operators_available">Nessun operatore disponibile per l\'orario selezionato. Prova un altro orario o un\'altra data.</string>
+    <string name="error_slot_not_available">Questo orario non è più disponibile. Seleziona un altro orario.</string>
+    <string name="error_booking_not_found">Prenotazione non trovata.</string>
+    <string name="error_booking_already_exists">Hai già una prenotazione per questo servizio in questo orario.</string>
+
     <!-- Errori Voucher -->
     <string name="error_invalid_voucher">Codice voucher non valido</string>
     <string name="error_voucher_exceeds_amount">Il valore del voucher supera l\'importo dell\'acquisto</string>

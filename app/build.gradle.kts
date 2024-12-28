@@ -102,7 +102,7 @@ android {
 
         //Coroutines with firebase
         implementation(libs.kotlinx.coroutines.play.services)
-
+        implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
         //Navigation component
         val nav_version = "2.5.0"
         implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")

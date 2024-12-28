@@ -5,6 +5,8 @@
     android:id="@+id/client_graph"
     app:startDestination="@id/homeFragment">
 
+    <include app:graph="@navigation/nav_graph_gift_cards" />
+
     <!-- Azione globale per tornare alla home da qualsiasi punto -->
     <action
         android:id="@+id/action_global_home"
@@ -17,7 +19,7 @@
         android:id="@+id/homeFragment"
         android:name="com.example.hammami.presentation.ui.features.client.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_home"/>
+        tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/searchFragment"
@@ -77,21 +79,14 @@
             android:id="@+id/action_serviceDetailFragment_to_bookingFragment"
             app:destination="@id/bookingFragment">
             <argument
-                android:name="serviceId"
-                app:argType="string" />
-            <argument
-                android:name="serviceDuration"
-                app:argType="float" />
-            <argument
-                android:name="serviceName"
-                app:argType="string" />
-            <argument
-                android:name="servicePrice"
-                app:argType="float" />
+                android:name="service"
+                app:argType="com.example.hammami.domain.model.Service" />
         </action>
+
     </fragment>
 
-    <navigation android:id="@+id/catalogo_servizi_benessere"
+    <navigation
+        android:id="@+id/catalogo_servizi_benessere"
         app:startDestination="@id/serviziBenessere">
         <fragment
             android:id="@+id/serviziBenessere"
@@ -104,7 +99,8 @@
         </fragment>
     </navigation>
 
-    <navigation android:id="@+id/catalogo_servizi_massaggi"
+    <navigation
+        android:id="@+id/catalogo_servizi_massaggi"
         app:startDestination="@id/serviziMassaggi">
         <fragment
             android:id="@+id/serviziMassaggi"
@@ -117,7 +113,8 @@
         </fragment>
     </navigation>
 
-    <navigation android:id="@+id/catalogo_servizi_estetica"
+    <navigation
+        android:id="@+id/catalogo_servizi_estetica"
         app:startDestination="@id/serviziEstetica">
         <fragment
             android:id="@+id/serviziEstetica"
@@ -126,32 +123,46 @@
             tools:layout="@layout/fragment_servizi_estetica" />
     </navigation>
 
-        <fragment
-            android:id="@+id/AppointmentDetailFragment"
-            android:name="com.example.hammami.presentation.ui.features.appointments.AppointmentDetailFragment"
-            android:label="AppointmentDetailFragment"
-            tools:layout="@layout/fragment_appointment_detail">
-            <argument
-                android:name="appointment"
+    <fragment
+        android:id="@+id/AppointmentDetailFragment"
+        android:name="com.example.hammami.presentation.ui.features.appointments.AppointmentDetailFragment"
+        android:label="AppointmentDetailFragment"
+        tools:layout="@layout/fragment_appointment_detail">
+        <argument
+            android:name="appointment"
 
-                app:argType="com.example.hammami.domain.model.ServiceAppointment" />
-        </fragment>
+            app:argType="com.example.hammami.domain.model.Booking" />
+    </fragment>
 
     <fragment
-            android:id="@+id/AddReviewFragment"
-            android:name="com.example.hammami.presentation.ui.features.appointments.AddReviewFragment"
-            android:label="AddReviewFragment"
-            tools:layout="@layout/fragment_add_review">
-            <argument
-                android:name="appointment"
-                app:argType="com.example.hammami.domain.model.ServiceAppointment" />
-        </fragment>
+        android:id="@+id/AddReviewFragment"
+        android:name="com.example.hammami.presentation.ui.features.appointments.AddReviewFragment"
+        android:label="AddReviewFragment"
+        tools:layout="@layout/fragment_add_review">
+        <argument
+            android:name="appointment"
+            app:argType="com.example.hammami.domain.model.Booking" />
+    </fragment>
 
     <fragment
         android:id="@+id/bookingFragment"
         android:name="com.example.hammami.presentation.ui.features.booking.BookingFragment"
         android:label="Prenotazione">
 
+        <argument
+            android:name="service"
+            app:argType="com.example.hammami.domain.model.Service" />
+
+        <action
+            android:id="@+id/action_bookingFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment">
+            <argument
+                android:name="paymentItem"
+                app:argType="com.example.hammami.domain.model.payment.PaymentItem" />
+        </action>
+
+        <!-- Rimuovi questi argomenti duplicati o correggili se necessario -->
+        <!--
         <argument
             android:name="serviceId"
             app:argType="string" />
@@ -164,6 +175,51 @@
         <argument
             android:name="servicePrice"
             app:argType="float" />
+        -->
+    </fragment>
+
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.example.hammami.presentation.ui.features.payment.PaymentFragment"
+        android:label="Pagamento"
+        tools:layout="@layout/fragment_payment">
+
+        <argument
+            android:name="paymentItem"
+            app:argType="com.example.hammami.domain.model.payment.PaymentItem" />
+
+        <action
+            android:id="@+id/action_paymentFragment_to_bookingSummaryFragment"
+            app:destination="@id/bookingSummaryFragment"
+            app:popUpTo="@id/bookingFragment"
+            app:popUpToInclusive="false" />
+
+        <action
+            android:id="@+id/action_paymentFragment_to_giftCardGeneratedFragment"
+            app:destination="@id/giftCardGeneratedFragment"
+            app:popUpTo="@id/paymentFragment"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true">
+            <argument
+                android:name="transactionId"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookingSummaryFragment"
+        android:name="com.example.hammami.presentation.ui.features.booking.BookingSummaryFragment"
+        android:label="Riepilogo Prenotazione"
+        tools:layout="@layout/fragment_booking_summary">
+        <argument
+            android:name="booking"
+            app:argType="com.example.hammami.domain.model.Booking" />
+
+        <action
+            android:id="@+id/action_bookingSummaryFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/client_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>
