@@ -78,6 +78,17 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         }
     }
 
+    suspend fun getBookingById(bookingId: String): Booking {
+        return try {
+            bookingsCollection.document(bookingId)
+                .get()
+                .await()
+                .toObject(Booking::class.java)!!
+        } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
+    }
+
     suspend fun deleteBooking(bookingId: String) {
         try {
             bookingsCollection.document(bookingId).delete().await()

@@ -16,13 +16,14 @@ class GetAvailableTimeSlotsUseCase @Inject constructor(
         serviceId: String,
         date: Date,
         serviceDurationMinutes: Int
-    ): Result<List<String>, DataError> {
+    ): Result<List<TimeSlotCalculator.AvailableSlot>, DataError> {
         return when (val existingBookingsResult = bookingRepository.getBookingsForDate(date)) {
             is Result.Success -> {
                 val bookedTimeSlots = existingBookingsResult.data.map {
                     TimeSlotCalculator.BookedTimeSlot(
                         startTime = it.startTime,
-                        endTime = it.endTime
+                        endTime = it.endTime,
+                        operatorId = it.operatorId
                     )
                 }
                 val availableSlots = timeSlotCalculator.generateAvailableTimeSlots(

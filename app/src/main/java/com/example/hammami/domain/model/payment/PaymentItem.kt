@@ -18,12 +18,15 @@ sealed class PaymentItem : Parcelable {
         val bookingId: String,
         val date: String?,
         val startTime: String,
-        val duration: Int
+        val endTime: String,
+        val operatorId: Int? = null, // Aggiunto
+        val discountCode: String? = null // Aggiunto
     ) : PaymentItem()
 
     @Parcelize
     data class GiftCardPayment(
-        override val price: Double
+        override val price: Double,
+        val discountCode: String? = null //
     ) : PaymentItem()
 }
 

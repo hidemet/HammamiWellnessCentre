@@ -5,7 +5,6 @@
     android:id="@+id/client_graph"
     app:startDestination="@id/homeFragment">
 
-    <include app:graph="@navigation/nav_graph_gift_cards" />
 
     <!-- Azione globale per tornare alla home da qualsiasi punto -->
     <action
@@ -14,6 +13,8 @@
         app:launchSingleTop="true"
         app:popUpTo="@id/client_graph"
         app:popUpToInclusive="false" />
+
+
 
     <fragment
         android:id="@+id/homeFragment"
@@ -55,18 +56,6 @@
             android:id="@+id/action_appointmentsFragment_to_AddReviewFragment"
             app:destination="@id/AddReviewFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/giftCardsFragment"
-        android:name="com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardsFragment"
-        android:label="GiftCardsFragment"
-        tools:layout="@layout/fragment_gift_cards" />
-
-    <!-- Action globale per GiftCards -->
-    <action
-        android:id="@+id/action_global_giftCardsFragment"
-        app:destination="@id/giftCardsFragment"
-        app:popUpTo="@id/homeFragment" />
 
     <fragment
         android:id="@+id/servizioDetailFragment"
@@ -192,16 +181,10 @@
             android:id="@+id/action_paymentFragment_to_bookingSummaryFragment"
             app:destination="@id/bookingSummaryFragment"
             app:popUpTo="@id/bookingFragment"
-            app:popUpToInclusive="false" />
-
-        <action
-            android:id="@+id/action_paymentFragment_to_giftCardGeneratedFragment"
-            app:destination="@id/giftCardGeneratedFragment"
-            app:popUpTo="@id/paymentFragment"
             app:popUpToInclusive="true"
             app:launchSingleTop="true">
             <argument
-                android:name="transactionId"
+                android:name="bookingId"
                 app:argType="string" />
         </action>
     </fragment>
@@ -212,8 +195,8 @@
         android:label="Riepilogo Prenotazione"
         tools:layout="@layout/fragment_booking_summary">
         <argument
-            android:name="booking"
-            app:argType="com.example.hammami.domain.model.Booking" />
+            android:name="bookingId"
+            app:argType="string" />
 
         <action
             android:id="@+id/action_bookingSummaryFragment_to_homeFragment"
@@ -221,5 +204,45 @@
             app:popUpTo="@id/client_graph"
             app:popUpToInclusive="true" />
     </fragment>
+
+    <fragment
+        android:id="@+id/giftCardsFragment"
+        android:name="com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardsFragment"
+        android:label="GiftCardsFragment"
+        tools:layout="@layout/fragment_gift_cards">
+        <action
+            android:id="@+id/action_giftCardsFragment_to_availableGiftCardsFragment"
+            app:destination="@id/availableGiftCardsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/availableGiftCardsFragment"
+        android:name="com.example.hammami.presentation.ui.features.userProfile.giftCard.AvailableGiftCardsFragment"
+        android:label="Acquista Gift Card"
+        tools:layout="@layout/fragment_available_gift_cards">
+        <action
+            android:id="@+id/action_availableGiftCardsFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" >
+            <argument
+                android:name="paymentItem"
+                app:argType="com.example.hammami.domain.model.payment.PaymentItem" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/giftCardGeneratedFragment"
+        android:name="com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardGeneratedFragment"
+        tools:layout="@layout/fragment_gift_card_generated">
+        <argument
+            android:name="transactionId"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_giftCardGeneratedFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/client_graph"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
 
 </navigation>

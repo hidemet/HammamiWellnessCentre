@@ -76,6 +76,16 @@ class BookingRepository @Inject constructor(
         }
     }
 
+    suspend fun getBookingById(bookingId: String): Result<Booking, DataError> {
+        return try {
+            val booking = bookingDataSource.getBookingById(bookingId)
+            Result.Success(booking)
+        } catch (e: Exception) {
+            Log.e("BookingRepository", "Errore nel recuperare la prenotazione", e)
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
     suspend fun deleteBooking(bookingId: String): Result<Unit, DataError> {
         return try {
             bookingDataSource.deleteBooking(bookingId)

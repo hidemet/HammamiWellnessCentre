@@ -24,9 +24,12 @@ import com.example.hammami.databinding.FragmentPaymentBinding
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.presentation.ui.features.BaseFragment
+import com.example.hammami.presentation.ui.features.payment.PaymentFragmentDirections
 import com.example.hammami.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -84,9 +87,10 @@ class PaymentFragment : BaseFragment() {
             is PaymentItem.ServiceBookingPayment -> {
                 serviceBookingDetails.isVisible = true
                 giftCardDetails.isVisible = false
-                serviceName.text = item.serviceName
-                serviceDateTime.text = item.date.toString()
-                serviceDuration.text = getString(R.string.service_duration_format, 60)
+                bookingCard.serviceName.text = item.serviceName
+                bookingCard.bookingDate.text =
+                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(item.date)
+                bookingCard.bookingTime.text = "${item.startTime} - ${item.endTime}"
                 // TODO("Convertire la durata startTime-endTime in minuti oppure cambiare il formato del layout")
             }
 
@@ -267,32 +271,55 @@ class PaymentFragment : BaseFragment() {
     }
 
     private suspend fun observeEvents() {
-        var isNavigating = false
         viewModel.event.collect { event ->
-            if (!isNavigating) {
-                when (event) {
-                    is PaymentEvent.NavigateToGiftCardGenerated -> {
-                        isNavigating = true
-                        navigateToGiftCardGenerated(event.transactionId)
+            when (event) {
+                is PaymentEvent.NavigateToGiftCardGenerated -> {
+                    if (args.paymentItem is PaymentItem.GiftCardPayment) {
+                        findNavController().navigate(
+                            PaymentFragmentDirections.actionPaymentFragmentToGiftCardGeneratedFragment(
+                                event.transactionId
+                            )
+                        )
                     }
-
-                    is PaymentEvent.ShowError -> showSnackbar(event.message)
-                    else -> Unit
                 }
+
+                is PaymentEvent.NavigateToBookingSummary -> {
+                    if (args.paymentItem is PaymentItem.ServiceBookingPayment) {
+                        findNavController().navigate(
+                            PaymentFragmentDirections.actionPaymentFragmentToBookingSummaryFragment(
+                                event.bookingId
+                            )
+                        )
+                    }
+                }
+
+                is PaymentEvent.ShowError -> showSnackbar(event.message)
+                PaymentEvent.NavigateBack -> TODO()
             }
         }
     }
 
-    private fun navigateToGiftCardGenerated(transactionId: String) {
-        val currentDestination = findNavController().currentDestination?.id
-        if (currentDestination == R.id.paymentFragment) {
-            findNavController().navigate(
-                PaymentFragmentDirections.actionPaymentFragmentToGiftCardGeneratedFragment(
-                    transactionId
-                )
-            )
-        }
-    }
+//    private fun navigateToBookingSummary(bookingId: String) {
+//        val currentDestination = findNavController().currentDestination?.id
+//        if (currentDestination == R.id.paymentFragment) {
+//            findNavController().navigate(
+//                PaymentFragmentDirections.actionPaymentFragmentToBookingSummaryFragment(
+//                    bookingId
+//                )
+//            )
+//        }
+//    }
+//
+//    private fun navigateToGiftCardGenerated(transactionId: String) {
+//        val currentDestination = findNavController().currentDestination?.id
+//        if (currentDestination == R.id.paymentGiftCardFragment) {
+//            findNavController().navigate(
+//                PaymentFragmentDirections.actionPaymentGiftCardFragmentToGiftCardGeneratedFragment(
+//                    transactionId
+//                )
+//            )
+//        }
+//    }
 
 
     override fun onDestroyView() {

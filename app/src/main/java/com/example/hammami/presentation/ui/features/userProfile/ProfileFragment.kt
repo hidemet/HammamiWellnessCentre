@@ -99,7 +99,7 @@ class ProfileFragment : BaseFragment() {
             ItemProfileOption(
                 "Gift Card",
                 R.drawable.ic_gift_card,
-                navigationDestination = R.id.action_profileFragment_to_giftCardsFragment
+                navigationDestination = R.id.giftCardsFragment
             ),
             ItemProfileOption(
                 "Coupon",

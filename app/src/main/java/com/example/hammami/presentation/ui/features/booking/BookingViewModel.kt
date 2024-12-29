@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.result.Result
 import com.example.hammami.core.ui.UiText
+import com.example.hammami.core.utils.TimeSlotCalculator
 import com.example.hammami.core.utils.asUiText
+import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
 import com.example.hammami.domain.usecase.booking.CancelBookingUseCase
 import com.example.hammami.domain.usecase.booking.CreateBookingUseCase
 import com.example.hammami.domain.usecase.booking.GetAvailableTimeSlotsUseCase
+import com.example.hammami.domain.usecase.booking.GetBookingByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -22,6 +25,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -32,7 +36,8 @@ import kotlin.time.Duration.Companion.minutes
 class BookingViewModel @Inject constructor(
     private val getAvailableTimeSlotsUseCase: GetAvailableTimeSlotsUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
-    private val createBookingUseCase: CreateBookingUseCase
+    private val createBookingUseCase: CreateBookingUseCase,
+    private val getBookingUseCase: GetBookingByIdUseCase,
     //private val scheduleServiceUseCase: ScheduleServiceUseCase,
     // private val reserveTimeSlotUseCase: ReserveTimeSlotUseCase,
 ) : ViewModel() {
@@ -43,6 +48,9 @@ class BookingViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<BookingUiEvent>()
     val uiEvent: SharedFlow<BookingUiEvent> = _uiEvent.asSharedFlow()
 
+    private val _newBooking = MutableStateFlow<Booking?>(null)
+    val newBooking = _newBooking.asStateFlow()
+
     private var reservationJob: Job? = null
     private val reservationDuration = 15.minutes
 
@@ -52,16 +60,25 @@ class BookingViewModel @Inject constructor(
 //    private val _bookingResult = MutableStateFlow<Result<Unit, DataError>?>(null)
 //    val bookingResult: StateFlow<Result<Unit, DataError>?> = _bookingResult
 
+    fun loadBooking(bookingId: String) = viewModelScope.launch {
+        when (val result = getBookingUseCase(bookingId)) {
+            is Result.Success -> {
+                _newBooking.value = result.data
+                _uiState.update { it.copy(isLoading = false) }
+            }
+            is Result.Error -> _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
+        }
+    }
     fun onServiceChanged(service: Service) {
         _uiState.update { it.copy(service = service) }
     }
 
-     fun onDateSelected(dateString: String) {
+    fun onDateSelected(dateString: String) {
         _uiState.update { it.copy(selectedDate = dateString, availableTimeSlots = emptyList()) }
         viewModelScope.launch {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val date = dateFormat.parse(dateString)
-                loadAvailableTimeSlots(date)
+            loadAvailableTimeSlots(date)
         }
     }
 
@@ -69,7 +86,7 @@ class BookingViewModel @Inject constructor(
         _uiState.update { it.copy(isBookingConfirmed = false) }
     }
 
-    fun onTimeSlotSelected(timeSlot: String) = viewModelScope.launch {
+    fun onTimeSlotSelected(timeSlot: TimeSlotCalculator.AvailableSlot) = viewModelScope.launch {
         _uiState.update { it.copy(selectedTimeSlot = timeSlot) }
     }
 
@@ -82,7 +99,9 @@ class BookingViewModel @Inject constructor(
         when (val result = createBookingUseCase(
             service = service,
             selectedDate = selectedDate,
-            selectedTimeSlot = selectedTimeSlot,
+            startTime = selectedTimeSlot.startTime,
+            endTime = selectedTimeSlot.endTime,
+            operatorId = selectedTimeSlot.operatorId,
             status = BookingStatus.RESERVED
         )) {
             is Result.Success -> {
@@ -138,7 +157,9 @@ class BookingViewModel @Inject constructor(
         when (val result = createBookingUseCase(
             state.service,
             state.selectedDate,
-            state.selectedTimeSlot,
+            state.selectedTimeSlot.startTime,
+            state.selectedTimeSlot.endTime,
+            state.selectedTimeSlot.operatorId,
             BookingStatus.CONFIRMED
         )) {
             is Result.Success -> {
@@ -250,9 +271,9 @@ class BookingViewModel @Inject constructor(
     data class BookingUiState(
         val service: Service? = null,
         val currentBookingId: String? = null,
-        val availableTimeSlots: List<String> = emptyList(),
+        val availableTimeSlots: List<TimeSlotCalculator.AvailableSlot> = emptyList(),
         val selectedDate: String? = null,
-        val selectedTimeSlot: String? = null,
+        val selectedTimeSlot: TimeSlotCalculator.AvailableSlot? = null,
         val isBookingConfirmed: Boolean = false,
         val isSlotReserved: Boolean = false,
         val reservationTimerActive: Boolean = false,

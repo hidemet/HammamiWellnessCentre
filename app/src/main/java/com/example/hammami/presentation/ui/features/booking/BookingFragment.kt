@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.hammami.core.utils.TimeSlotCalculator
 import com.example.hammami.databinding.FragmentBookingBinding
 import com.example.hammami.domain.model.Service
 import com.example.hammami.domain.model.payment.PaymentItem
@@ -82,7 +83,7 @@ class BookingFragment : BaseFragment() {
             uiState.selectedTimeSlot?.let { selectedTimeSlot ->
                 for (i in 0 until childCount) {
                     val chip = getChildAt(i) as Chip
-                    if (chip.text == selectedTimeSlot) {
+                    if (chip.text == selectedTimeSlot.startTime) {
                         chip.isChecked = true
                         break
                     }
@@ -96,15 +97,16 @@ class BookingFragment : BaseFragment() {
         }
     }
 
-    private fun createTimeSlotChip(timeSlot: String): Chip {
+    private fun createTimeSlotChip(timeSlot: TimeSlotCalculator.AvailableSlot): Chip {
         return Chip(requireContext()).apply {
-            text = timeSlot
+            text = "${timeSlot.startTime} - ${timeSlot.operatorId}"
             isCheckable = true
             setOnClickListener {
                 viewModel.onTimeSlotSelected(timeSlot)
             }
         }
     }
+
 
 //    private fun navigateToPayment(event: BookingViewModel.BookingUiEvent.NavigateToPayment) {
 //        val paymentItem = PaymentItem.ServiceBookingPayment(
@@ -125,8 +127,9 @@ class BookingFragment : BaseFragment() {
             price = service.price?.toDouble() ?: 0.0,
             bookingId = viewModel.uiState.value.currentBookingId ?: "",
             date = viewModel.uiState.value.selectedDate,
-            startTime = viewModel.uiState.value.selectedTimeSlot ?: "",
-            duration = service.length?.toInt() ?: 0
+            startTime = viewModel.uiState.value.selectedTimeSlot?.startTime ?: "",
+            endTime = viewModel.uiState.value.selectedTimeSlot?.endTime ?: "",
+            operatorId = viewModel.uiState.value.selectedTimeSlot?.operatorId
         )
         findNavController().navigate(
             BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem)

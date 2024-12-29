@@ -17,8 +17,10 @@ data class Booking(
     val status: BookingStatus = BookingStatus.RESERVED,
     val creationTimestamp: Timestamp = Timestamp.now(),
     val reservationTimestamp: Timestamp = Timestamp.now(),
-    val transactionId: String? = null
-) : Parcelable
+    val transactionId: String? = null,
+    val operatorId: Int, // Aggiunto
+) : Parcelable {
+}
 
 enum class BookingStatus {
     RESERVED,
