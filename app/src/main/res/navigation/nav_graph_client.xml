@@ -187,6 +187,17 @@
                 android:name="bookingId"
                 app:argType="string" />
         </action>
+
+        <action
+            android:id="@+id/action_paymentFragment_to_giftCardGeneratedFragment"
+            app:destination="@id/giftCardGeneratedFragment"
+            app:popUpTo="@id/paymentFragment"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true">
+        <argument
+            android:name="transactionId"
+            app:argType="string" />
+        </action>
     </fragment>
 
     <fragment

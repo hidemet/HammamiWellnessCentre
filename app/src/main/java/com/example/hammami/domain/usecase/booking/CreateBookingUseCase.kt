@@ -3,58 +3,24 @@ package com.example.hammami.domain.usecase.booking
 import com.example.hammami.data.repositories.BookingRepository
 import javax.inject.Inject
 import com.example.hammami.core.result.Result
-import com.example.hammami.core.utils.TimeSlotCalculator
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
-import com.example.hammami.domain.usecase.user.GetCurrentUserIdUseCase
-import java.time.Duration
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
+import java.util.Date
 
 
 class CreateBookingUseCase @Inject constructor(
     private val bookingRepository: BookingRepository,
-    private val getCurrentUserIdUseCase: GetCurrentUserIdUseCase
 ) {
     suspend operator fun invoke(
         service: Service,
-        selectedDate: String,
+        selectedDate: Date,
         startTime: String,
         endTime: String,
         operatorId: Int,
         status: BookingStatus = BookingStatus.RESERVED
     ): Result<Booking, DataError> {
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
-       // val selectedLocalTime = LocalTime.parse(selectedTimeSlot, timeFormatter)
-
-        val serviceDuration = Duration.ofMinutes(service.length?.toLong() ?: 60)
-      //  val endTime = selectedLocalTime.plus(serviceDuration)
-
-
-
-        val bookingEndTime = endTime.format(timeFormatter)
-        //val bookingStartTime = selectedLocalTime.format(timeFormatter)
-
-        return when (val userResult = getCurrentUserIdUseCase()) {
-            is Result.Success -> {
-                val booking = Booking(
-                    serviceId = service.id,
-                    serviceName = service.name,
-                    date = selectedDate,
-                    startTime = startTime,
-                    endTime = endTime,
-                    status = status,
-                    userId = userResult.data,
-                    operatorId = operatorId
-                )
-              bookingRepository.saveBooking(booking)
-                Result.Success(booking)
-            }
-            is Result.Error -> Result.Error(userResult.error)
-        }
+        return bookingRepository.createBooking(service, selectedDate, startTime, endTime, operatorId, status)
     }
 }

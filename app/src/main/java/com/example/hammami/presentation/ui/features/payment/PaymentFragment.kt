@@ -24,7 +24,6 @@ import com.example.hammami.databinding.FragmentPaymentBinding
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.presentation.ui.features.BaseFragment
-import com.example.hammami.presentation.ui.features.payment.PaymentFragmentDirections
 import com.example.hammami.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -57,7 +56,7 @@ class PaymentFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPaymentBinding.inflate(inflater, container, false)
-        return binding.root
+    return binding.root
     }
 
 

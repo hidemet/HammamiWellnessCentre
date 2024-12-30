@@ -2,6 +2,7 @@ package com.example.hammami.domain.model
 
 import com.google.firebase.Timestamp
 import android.os.Parcelable
+import com.google.firebase.firestore.DocumentReference
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 
@@ -11,7 +12,7 @@ data class Booking(
     val serviceId: String = "",
     val userId: String = "",
     val serviceName: String = "",
-    val date: String? = null,
+    val date: Date? = null,
     val startTime: String = "", // formato: "HH:mm"
     val endTime: String = "", // formato: "HH:mm"
     val status: BookingStatus = BookingStatus.RESERVED,

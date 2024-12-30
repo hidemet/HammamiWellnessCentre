@@ -74,10 +74,11 @@ class BookingViewModel @Inject constructor(
     }
 
     fun onDateSelected(dateString: String) {
-        _uiState.update { it.copy(selectedDate = dateString, availableTimeSlots = emptyList()) }
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = dateFormat.parse(dateString)
+
+        _uiState.update { it.copy(selectedDate = date, availableTimeSlots = emptyList()) }
         viewModelScope.launch {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date = dateFormat.parse(dateString)
             loadAvailableTimeSlots(date)
         }
     }
@@ -272,7 +273,7 @@ class BookingViewModel @Inject constructor(
         val service: Service? = null,
         val currentBookingId: String? = null,
         val availableTimeSlots: List<TimeSlotCalculator.AvailableSlot> = emptyList(),
-        val selectedDate: String? = null,
+        val selectedDate: Date? = null,
         val selectedTimeSlot: TimeSlotCalculator.AvailableSlot? = null,
         val isBookingConfirmed: Boolean = false,
         val isSlotReserved: Boolean = false,

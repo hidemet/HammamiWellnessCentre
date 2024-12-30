@@ -6,6 +6,7 @@ import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
 import com.example.hammami.data.datasource.booking.FirebaseFirestoreBookingDataSource
 import com.example.hammami.domain.model.BookingStatus
+import com.example.hammami.domain.model.Service
 import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
@@ -35,16 +36,50 @@ class BookingRepository @Inject constructor(
 //    }
 //    )
 
-    suspend fun saveBooking(booking: Booking): Result<Unit, DataError> {
+    suspend fun createBooking(
+        service: Service,
+        selectedDate: Date,
+        startTime: String,
+        endTime: String,
+        operatorId: Int,
+        status: BookingStatus
+    ): Result<Booking, DataError> {
         return try {
-           val documentReference = bookingDataSource.saveBooking(booking)
-            booking.id = documentReference.id
-            Result.Success(Unit)
+            val userIdResult = authRepository.getCurrentUserId()
+            if (userIdResult is Result.Success) {
+                val userId = userIdResult.data
+                val booking = Booking(
+                    serviceId = service.id,
+                    serviceName = service.name,
+                    date = selectedDate,
+                    startTime = startTime,
+                    endTime = endTime,
+                    status = status,
+                    userId = userId,
+                    operatorId = operatorId
+                )
+                val bookingId = bookingDataSource.saveBooking(booking) // Assicurati che questo metodo ora restituisca l'ID
+                // Restituisci il booking con l'ID
+                Result.Success(booking.copy(id = bookingId))
+            } else {
+                Result.Error(DataError.Auth.NOT_AUTHENTICATED)
+            }
         } catch (e: Exception) {
-            Log.e("BookingRepository", "Errore nel salvare la prenotazione", e)
+            Log.e("BookingRepository", "Errore nel creare la prenotazione", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
+
+//    suspend fun saveBooking(booking: Booking): Result<Unit, DataError> {
+//        return try {
+//           val documentReference = bookingDataSource.saveBooking(booking)
+//            booking.id = documentReference.id
+//            Result.Success(Unit)
+//        } catch (e: Exception) {
+//            Log.e("BookingRepository", "Errore nel salvare la prenotazione", e)
+//            Result.Error(mapExceptionToDataError(e))
+//        }
+//    }
 
     fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus): Result<Unit, DataError> {
         return try {
