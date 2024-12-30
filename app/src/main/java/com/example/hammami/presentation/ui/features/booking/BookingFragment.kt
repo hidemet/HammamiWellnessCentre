@@ -1,6 +1,7 @@
 package com.example.hammami.presentation.ui.features.booking
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,6 +66,7 @@ class BookingFragment : BaseFragment() {
             is BookingViewModel.BookingUiEvent.ShowError -> showSnackbar(event.message)
             is BookingViewModel.BookingUiEvent.ShowUserMassage -> showSnackbar(event.message)
             is BookingViewModel.BookingUiEvent.BookingSuccess -> {}
+            is BookingViewModel.BookingUiEvent.NavigateToPayment -> navigateToPayment(event.paymentItem)
         }
     }
 
@@ -121,16 +123,8 @@ class BookingFragment : BaseFragment() {
 //            BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem))
 //    }
 
-    private fun navigateToPayment() {
-        val paymentItem = PaymentItem.ServiceBookingPayment(
-            serviceName = service.name,
-            price = service.price?.toDouble() ?: 0.0,
-            bookingId = viewModel.uiState.value.currentBookingId ?: "",
-            date = viewModel.uiState.value.selectedDate,
-            startTime = viewModel.uiState.value.selectedTimeSlot?.startTime ?: "",
-            endTime = viewModel.uiState.value.selectedTimeSlot?.endTime ?: "",
-            operatorId = viewModel.uiState.value.selectedTimeSlot?.operatorId
-        )
+    private fun navigateToPayment(paymentItem: PaymentItem.ServiceBookingPayment) {
+        Log.d("BookingFragment", "Navigating to PaymentFragment with bookingId: ${paymentItem.bookingId}")
         findNavController().navigate(
             BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem)
         )
@@ -153,9 +147,8 @@ class BookingFragment : BaseFragment() {
 
         binding.bookButton.setOnClickListener {
             lifecycleScope.launch {
-                viewModel.reserveSlot()
+                viewModel.onConfirmBooking()
             }
-            navigateToPayment()
         }
     }
 

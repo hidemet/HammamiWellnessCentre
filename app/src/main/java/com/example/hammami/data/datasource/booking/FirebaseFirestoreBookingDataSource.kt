@@ -1,6 +1,8 @@
 package com.example.hammami.data.datasource.booking
 
+import android.util.Log
 import com.example.hammami.domain.model.Booking
+import com.example.hammami.domain.model.BookingDto
 import com.example.hammami.domain.model.BookingStatus
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,7 +39,7 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
 //        }
 //    }
 
-    suspend fun saveBooking(booking: Booking) : DocumentReference {
+    suspend fun saveBooking(booking: Booking): DocumentReference {
         try {
             return bookingsCollection.add(booking).await()
         } catch (e: FirebaseFirestoreException) {
@@ -48,42 +50,51 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
     fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus) {
         try {
             val bookingRef = bookingsCollection.document(bookingId)
-            transaction.update(bookingRef, "status", BookingStatus.CONFIRMED)
+            transaction.update(bookingRef, "status", status)
         } catch (e: FirebaseFirestoreException) {
             throw e
         }
     }
 
     suspend fun getBookingsForDate(date: Date): List<Booking> {
-        return try {
-            bookingsCollection
+        try {
+            val querySnapshot = bookingsCollection
                 .whereEqualTo("date", date)
                 .get()
                 .await()
-                .toObjects(Booking::class.java)
+            return querySnapshot.documents.mapNotNull {
+                it.toObject(BookingDto::class.java)?.toBooking()
+            }
         } catch (e: FirebaseFirestoreException) {
+            Log.e("FirestoreBookingDataSource", "Errore nel recuperare le prenotazioni per data", e)
             throw e
         }
     }
 
     suspend fun getUserBookings(userId: String): List<Booking> {
-        return try {
-            bookingsCollection
+        try {
+            val querySnapshot = bookingsCollection
                 .whereEqualTo("userId", userId)
                 .get()
                 .await()
-                .toObjects(Booking::class.java)
+            return querySnapshot.documents.mapNotNull {
+                it.toObject(BookingDto::class.java)?.toBooking()
+            }
         } catch (e: FirebaseFirestoreException) {
+            Log.e("FirestoreBookingDataSource", "Errore nel recuperare le prenotazioni dell'utente", e)
             throw e
         }
     }
 
     suspend fun getBookingById(bookingId: String): Booking {
         return try {
-            bookingsCollection.document(bookingId)
-                .get()
-                .await()
-                .toObject(Booking::class.java)!!
+            val documentSnapshot = bookingsCollection.document(bookingId).get().await()
+            val bookingDto = documentSnapshot.toObject(BookingDto::class.java)
+                ?: throw FirebaseFirestoreException(
+                    "Booking not found",
+                    FirebaseFirestoreException.Code.NOT_FOUND
+                )
+            return bookingDto.toBooking()
         } catch (e: FirebaseFirestoreException) {
             throw e
         }

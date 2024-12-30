@@ -2,9 +2,9 @@ package com.example.hammami.domain.model
 
 import com.google.firebase.Timestamp
 import android.os.Parcelable
-import com.google.firebase.firestore.DocumentReference
 import kotlinx.parcelize.Parcelize
 import java.util.Date
+
 
 @Parcelize
 data class Booking(
@@ -20,8 +20,8 @@ data class Booking(
     val reservationTimestamp: Timestamp = Timestamp.now(),
     val transactionId: String? = null,
     val operatorId: Int, // Aggiunto
-) : Parcelable {
-}
+) : Parcelable
+
 
 enum class BookingStatus {
     RESERVED,

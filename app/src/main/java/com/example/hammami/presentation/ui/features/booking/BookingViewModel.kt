@@ -1,6 +1,7 @@
 package com.example.hammami.presentation.ui.features.booking
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.result.Result
@@ -10,6 +11,7 @@ import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
+import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.usecase.booking.CancelBookingUseCase
 import com.example.hammami.domain.usecase.booking.CreateBookingUseCase
 import com.example.hammami.domain.usecase.booking.GetAvailableTimeSlotsUseCase
@@ -66,9 +68,11 @@ class BookingViewModel @Inject constructor(
                 _newBooking.value = result.data
                 _uiState.update { it.copy(isLoading = false) }
             }
+
             is Result.Error -> _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
         }
     }
+
     fun onServiceChanged(service: Service) {
         _uiState.update { it.copy(service = service) }
     }
@@ -91,8 +95,29 @@ class BookingViewModel @Inject constructor(
         _uiState.update { it.copy(selectedTimeSlot = timeSlot) }
     }
 
+    suspend fun onConfirmBooking() {
+        reserveSlot()
 
-     suspend fun reserveSlot() {
+        val state = uiState.value
+        val service = state.service ?: return
+        val selectedDate = state.selectedDate ?: return
+        val selectedTimeSlot = state.selectedTimeSlot ?: return
+        val currentBookingId = state.currentBookingId
+
+        val paymentItem = PaymentItem.ServiceBookingPayment(
+            serviceName = service.name,
+            price = service.price?.toDouble() ?: 0.0,
+            bookingId = currentBookingId ?: "",
+            date = selectedDate,
+            startTime = selectedTimeSlot.startTime,
+            endTime = selectedTimeSlot.endTime,
+            operatorId = selectedTimeSlot.operatorId
+        )
+        _uiEvent.emit(BookingUiEvent.NavigateToPayment(paymentItem))
+    }
+
+
+    private suspend fun reserveSlot() {
         val service = uiState.value.service ?: return
         val selectedDate = uiState.value.selectedDate ?: return
         val selectedTimeSlot = uiState.value.selectedTimeSlot ?: return
@@ -106,7 +131,16 @@ class BookingViewModel @Inject constructor(
             status = BookingStatus.RESERVED
         )) {
             is Result.Success -> {
-                _uiState.update { it.copy(currentBookingId = result.data.id) }
+                Log.d("BookingViewModel", "currentBookingId: ${result.data.id}")
+                _uiState.update {
+                    it.copy(
+                        currentBookingId = result.data.id,
+                        isSlotReserved = true,
+                        reservationTimerActive = true,
+                        availableTimeSlots = emptyList()
+                    )
+                }
+                _newBooking.value = result.data
                 startReservationTimer()
             }
 
@@ -120,6 +154,7 @@ class BookingViewModel @Inject constructor(
     private fun startReservationTimer() {
         reservationJob?.cancel() // cancello il job precedente se esiste
         reservationJob = viewModelScope.launch {
+            _uiState.update { it.copy(isSlotReserved = true, reservationTimerActive = true) }
             delay(reservationDuration)
             releaseTimeSlot() // rilascio lo slot riservato dopo il ritardo
             _uiEvent.emit(BookingUiEvent.ShowError(UiText.DynamicString("Tempo scaduto. Rieffettua la prenotazione")))
@@ -195,8 +230,7 @@ class BookingViewModel @Inject constructor(
             is Result.Success -> {
                 _uiState.update {
                     it.copy(
-                        isLoading = false,
-                        availableTimeSlots = result.data
+                        isLoading = false, availableTimeSlots = result.data
                     )
                 }
             }
@@ -204,8 +238,7 @@ class BookingViewModel @Inject constructor(
             is Result.Error -> {
                 _uiState.update {
                     it.copy(
-                        isLoading = false,
-                        availableTimeSlots = emptyList()
+                        isLoading = false, availableTimeSlots = emptyList()
                     )
                 }
                 _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
@@ -284,6 +317,9 @@ class BookingViewModel @Inject constructor(
     sealed interface BookingUiEvent {
         data class ShowUserMassage(val message: UiText) : BookingUiEvent
         data class ShowError(val message: UiText) : BookingUiEvent
+        data class NavigateToPayment(val paymentItem: PaymentItem.ServiceBookingPayment) :
+            BookingUiEvent
+
         object BookingSuccess : BookingUiEvent
     }
 }

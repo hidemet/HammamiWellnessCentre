@@ -44,7 +44,6 @@ class PaymentViewModel @AssistedInject constructor(
     private val karmaPointsCalculator: KarmaPointsCalculator,
 ) : ViewModel() {
 
-
     private val _state = MutableStateFlow(
         PaymentUiState(
             paymentItem = paymentItem,
@@ -63,6 +62,7 @@ class PaymentViewModel @AssistedInject constructor(
     val event = _event.asSharedFlow()
 
     init {
+        Log.e("PaymentViewModel", "paymentItem.id: $paymentItem.id")
         loadUserPoints()
     }
 
@@ -232,6 +232,7 @@ class PaymentViewModel @AssistedInject constructor(
                   emitEvent(PaymentEvent.NavigateToBookingSummary(paymentItem.bookingId))
               }
         }
+        updateState { copy(isLoading = false) }
     }
 
     private fun updateState(update: PaymentUiState.() -> PaymentUiState) {

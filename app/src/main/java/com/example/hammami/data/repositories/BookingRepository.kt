@@ -8,6 +8,7 @@ import com.example.hammami.data.datasource.booking.FirebaseFirestoreBookingDataS
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
 import com.google.firebase.FirebaseException
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
 import java.util.Date
@@ -45,24 +46,29 @@ class BookingRepository @Inject constructor(
         status: BookingStatus
     ): Result<Booking, DataError> {
         return try {
-            val userIdResult = authRepository.getCurrentUserId()
-            if (userIdResult is Result.Success) {
-                val userId = userIdResult.data
-                val booking = Booking(
-                    serviceId = service.id,
-                    serviceName = service.name,
-                    date = selectedDate,
-                    startTime = startTime,
-                    endTime = endTime,
-                    status = status,
-                    userId = userId,
-                    operatorId = operatorId
-                )
-                val bookingId = bookingDataSource.saveBooking(booking) // Assicurati che questo metodo ora restituisca l'ID
-                // Restituisci il booking con l'ID
-                Result.Success(booking.copy(id = bookingId))
-            } else {
-                Result.Error(DataError.Auth.NOT_AUTHENTICATED)
+            authRepository.getCurrentUserId().let { userIdResult ->
+                when (userIdResult) {
+                    is Result.Success -> {
+                        val userId = userIdResult.data
+                        val booking = Booking(
+                            serviceId = service.id,
+                            serviceName = service.name,
+                            date = selectedDate,
+                            startTime = startTime,
+                            endTime = endTime,
+                            status = status,
+                            userId = userId,
+                            operatorId = operatorId
+                        )
+                        val bookingDocument = bookingDataSource.saveBooking(booking)
+                        Log.d("BookingRepository", "Prenotazione creata con successo bookingDocument.id: ${bookingDocument.id}")
+                        Result.Success(booking.copy(id = bookingDocument.id))
+                    }
+
+                    is Result.Error -> {
+                        Result.Error(DataError.Auth.NOT_AUTHENTICATED)
+                    }
+                }
             }
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel creare la prenotazione", e)
@@ -81,9 +87,16 @@ class BookingRepository @Inject constructor(
 //        }
 //    }
 
-    fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus): Result<Unit, DataError> {
+    fun updateBooking(
+        transaction: Transaction,
+        bookingId: String,
+        status: BookingStatus
+    ): Result<Unit, DataError> {
         return try {
-            bookingDataSource.updateBooking(transaction,bookingId, status)
+            if(bookingId.isBlank()) {
+                return Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
+            }
+            bookingDataSource.updateBooking(transaction, bookingId, status)
             Result.Success(Unit)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nell'aggiornare la prenotazione", e)
@@ -116,7 +129,7 @@ class BookingRepository @Inject constructor(
             val booking = bookingDataSource.getBookingById(bookingId)
             Result.Success(booking)
         } catch (e: Exception) {
-            Log.e("BookingRepository", "Errore nel recuperare la prenotazione", e)
+        Log.e("BookingRepository", "Errore nel recuperare la prenotazione", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
@@ -135,9 +148,10 @@ class BookingRepository @Inject constructor(
         return when (e) {
             is FirebaseFirestoreException -> when (e.code) {
                 FirebaseFirestoreException.Code.NOT_FOUND -> DataError.Booking.BOOKING_NOT_FOUND
-               FirebaseFirestoreException.Code.ALREADY_EXISTS -> DataError.Booking.BOOKING_ALREADY_EXISTS
+                FirebaseFirestoreException.Code.ALREADY_EXISTS -> DataError.Booking.BOOKING_ALREADY_EXISTS
                 else -> DataError.Network.SERVER_ERROR
             }
+
             is FirebaseException -> DataError.Network.UNKNOWN
             else -> DataError.Network.UNKNOWN
         }

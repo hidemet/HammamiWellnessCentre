@@ -283,13 +283,15 @@ class PaymentFragment : BaseFragment() {
                 }
 
                 is PaymentEvent.NavigateToBookingSummary -> {
-                    if (args.paymentItem is PaymentItem.ServiceBookingPayment) {
-                        findNavController().navigate(
-                            PaymentFragmentDirections.actionPaymentFragmentToBookingSummaryFragment(
-                                event.bookingId
-                            )
-                        )
-                    }
+                    navigateToBookingSummary(event.bookingId)
+
+                //                    if (args.paymentItem is PaymentItem.ServiceBookingPayment) {
+//                        findNavController().navigate(
+//                            PaymentFragmentDirections.actionPaymentFragmentToBookingSummaryFragment(
+//                                event.bookingId
+//                            )
+//                        )
+//                    }
                 }
 
                 is PaymentEvent.ShowError -> showSnackbar(event.message)
@@ -298,17 +300,17 @@ class PaymentFragment : BaseFragment() {
         }
     }
 
-//    private fun navigateToBookingSummary(bookingId: String) {
-//        val currentDestination = findNavController().currentDestination?.id
-//        if (currentDestination == R.id.paymentFragment) {
-//            findNavController().navigate(
-//                PaymentFragmentDirections.actionPaymentFragmentToBookingSummaryFragment(
-//                    bookingId
-//                )
-//            )
-//        }
-//    }
-//
+    private fun navigateToBookingSummary(bookingId: String) {
+        val currentDestination = findNavController().currentDestination?.id
+        if (currentDestination == R.id.paymentFragment) {
+            findNavController().navigate(
+                PaymentFragmentDirections.actionPaymentFragmentToBookingSummaryFragment(
+                    bookingId
+                )
+            )
+        }
+    }
+
 //    private fun navigateToGiftCardGenerated(transactionId: String) {
 //        val currentDestination = findNavController().currentDestination?.id
 //        if (currentDestination == R.id.paymentGiftCardFragment) {
