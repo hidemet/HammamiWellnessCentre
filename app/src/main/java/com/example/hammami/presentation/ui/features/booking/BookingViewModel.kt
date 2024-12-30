@@ -98,11 +98,10 @@ class BookingViewModel @Inject constructor(
     suspend fun onConfirmBooking() {
         reserveSlot()
 
-        val state = uiState.value
-        val service = state.service ?: return
-        val selectedDate = state.selectedDate ?: return
-        val selectedTimeSlot = state.selectedTimeSlot ?: return
-        val currentBookingId = state.currentBookingId
+        val service = uiState.value.service ?: return
+        val selectedDate = uiState.value.selectedDate ?: return
+        val selectedTimeSlot = uiState.value.selectedTimeSlot ?: return
+        val currentBookingId = uiState.value.currentBookingId
 
         val paymentItem = PaymentItem.ServiceBookingPayment(
             serviceName = service.name,
@@ -137,7 +136,7 @@ class BookingViewModel @Inject constructor(
                         currentBookingId = result.data.id,
                         isSlotReserved = true,
                         reservationTimerActive = true,
-                        availableTimeSlots = emptyList()
+                        availableTimeSlots = emptyList(),
                     )
                 }
                 _newBooking.value = result.data

@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentHomeBinding
-import com.example.hammami.presentation.ui.activities.UserProfileActivity
 import com.example.hammami.presentation.ui.adapters.HomeViewpagerAdapter
 import com.example.hammami.presentation.ui.features.categories.MainCategoryFragment
 import com.example.hammami.presentation.viewmodel.HomeViewModel
@@ -70,7 +69,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun handleProfileNavigation() {
         if (viewModel.isUserAuthenticated()) {
-            UserProfileActivity.start(requireContext())
+            findNavController().navigate(R.id.action_global_profileFragment)
         } else {
             Snackbar.make(
                 binding.root,

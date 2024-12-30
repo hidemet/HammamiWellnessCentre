@@ -10,6 +10,5 @@ import kotlinx.parcelize.Parcelize
 data class ItemProfileOption(
     val title: String,
     @DrawableRes val leadingIconResId: Int,
-    @DrawableRes val trailingIconResId: Int = R.drawable.ic_chevron_right,
-    @IdRes val navigationDestination: Int
+    val action: () -> Unit
 ) : Parcelable

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -19,7 +20,6 @@ import com.example.hammami.domain.model.ItemProfileOption
 import com.example.hammami.domain.model.User
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel
 import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
-import com.example.hammami.presentation.ui.userProfile.ProfileOptionAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -42,7 +42,6 @@ class ProfileFragment : BaseFragment() {
 
     override fun setupUI() {
         with(binding) {
-            setupOptionsList()
             topAppBar.setNavigationOnClickListener { onBackClick() }
             editProfileButton.setOnClickListener {
                 findNavController().navigate(R.id.action_profileFragment_to_editUserProfileFragment)
@@ -54,9 +53,9 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
-    override fun onBackClick() {
-        requireActivity().finish()
-    }
+//    override fun onBackClick() {
+//        requireActivity().finish()
+//    }
 
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -77,7 +76,7 @@ class ProfileFragment : BaseFragment() {
     private suspend fun observeUiEvents() {
         viewModel.uiEvents.collect { event ->
             when (event) {
-                is UiEvent.UserMessage -> showSnackbar(event.message)
+                is UserProfileViewModel.UiEvent.UserMessage -> showSnackbar(event.message)
                 else -> Unit
             }
         }
@@ -93,18 +92,34 @@ class ProfileFragment : BaseFragment() {
             .into(profileImage)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupUI()
+        observeFlows()
+        setupOptionsList()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Ora è sicuro chiamare findNavController()
+        setupOptionsList()
+    }
 
     private fun setupOptionsList() {
         val options = listOf(
             ItemProfileOption(
                 "Gift Card",
                 R.drawable.ic_gift_card,
-                navigationDestination = R.id.giftCardsFragment
+                action = {
+                    findNavController().navigate(R.id.giftCardsFragment)
+                }
             ),
             ItemProfileOption(
                 "Coupon",
                 R.drawable.ic_coupon,
-                navigationDestination = R.id.action_profileFragment_to_couponFragment
+                action = {
+                    findNavController().navigate(R.id.action_profileFragment_to_couponFragment)
+                }
             )
         )
 
@@ -112,6 +127,10 @@ class ProfileFragment : BaseFragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = ProfileOptionAdapter(options)
         }
+    }
+
+    override fun showLoading(isLoading: Boolean) {
+        binding.linearProgressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {
