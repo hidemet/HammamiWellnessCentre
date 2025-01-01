@@ -15,10 +15,9 @@ data class BookingDto(
     var creationTimestamp: Timestamp? = null,
     var reservationTimestamp: Timestamp? = null,
     var transactionId: String? = null,
-    var operatorId: Int? = null
 ) {
     // Costruttore senza argomenti per Firebase
-    constructor() : this(null, null, null, null, null, null, null, null, null, null, null, null)
+    constructor() : this(null, null, null, null, null, null, null, null, null, null, null)
 
     // Metodo di mappatura a Booking
     fun toBooking(): Booking {
@@ -34,7 +33,6 @@ data class BookingDto(
             creationTimestamp = creationTimestamp ?: Timestamp.now(),
             reservationTimestamp = reservationTimestamp ?: Timestamp.now(),
             transactionId = transactionId,
-            operatorId = operatorId ?: 0
         )
     }
 }

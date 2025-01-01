@@ -1,6 +1,5 @@
 package com.example.hammami.presentation.ui.features.booking
 
-
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +15,7 @@ import com.example.hammami.domain.usecase.booking.CancelBookingUseCase
 import com.example.hammami.domain.usecase.booking.CreateBookingUseCase
 import com.example.hammami.domain.usecase.booking.GetAvailableTimeSlotsUseCase
 import com.example.hammami.domain.usecase.booking.GetBookingByIdUseCase
+import com.example.hammami.domain.usecase.booking.IsTimeSlotAvailableUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -40,8 +39,7 @@ class BookingViewModel @Inject constructor(
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
     private val getBookingUseCase: GetBookingByIdUseCase,
-    //private val scheduleServiceUseCase: ScheduleServiceUseCase,
-    // private val reserveTimeSlotUseCase: ReserveTimeSlotUseCase,
+    private val isTimeSlotAvailableUseCase: IsTimeSlotAvailableUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BookingUiState())
@@ -54,13 +52,10 @@ class BookingViewModel @Inject constructor(
     val newBooking = _newBooking.asStateFlow()
 
     private var reservationJob: Job? = null
-    private val reservationDuration = 15.minutes
+    private val reservationDuration = 5.minutes
 
-//    private val _availableTimeSlots = MutableStateFlow<Result<List<String>, DataError>>(Result.Success(emptyList()))
-//    val availableTimeSlots: StateFlow<Result<List<String>, DataError>> = _availableTimeSlots
-//
-//    private val _bookingResult = MutableStateFlow<Result<Unit, DataError>?>(null)
-//    val bookingResult: StateFlow<Result<Unit, DataError>?> = _bookingResult
+    private var releaseSlotTimerJob: Job? = null
+    private val slotReservationTimeout = 5.minutes // Imposta la durata del timer (es. 5 minuti)
 
     fun loadBooking(bookingId: String) = viewModelScope.launch {
         when (val result = getBookingUseCase(bookingId)) {
@@ -83,7 +78,9 @@ class BookingViewModel @Inject constructor(
 
         _uiState.update { it.copy(selectedDate = date, availableTimeSlots = emptyList()) }
         viewModelScope.launch {
-            loadAvailableTimeSlots(date)
+            if (date != null) {
+                loadAvailableTimeSlots(date)
+            }
         }
     }
 
@@ -91,42 +88,60 @@ class BookingViewModel @Inject constructor(
         _uiState.update { it.copy(isBookingConfirmed = false) }
     }
 
-    fun onTimeSlotSelected(timeSlot: TimeSlotCalculator.AvailableSlot) = viewModelScope.launch {
+    fun onTimeSlotSelected(timeSlot: TimeSlotCalculator.AvailableSlot?) = viewModelScope.launch {
         _uiState.update { it.copy(selectedTimeSlot = timeSlot) }
     }
 
     suspend fun onConfirmBooking() {
-        reserveSlot()
+        val state = uiState.value
+        val selectedDate = state.selectedDate ?: return
+        val selectedTimeSlot = state.selectedTimeSlot ?: return
 
-        val service = uiState.value.service ?: return
-        val selectedDate = uiState.value.selectedDate ?: return
-        val selectedTimeSlot = uiState.value.selectedTimeSlot ?: return
-        val currentBookingId = uiState.value.currentBookingId
+        when (val availabilityResult = isTimeSlotAvailableUseCase(selectedDate, selectedTimeSlot)) {
+            is Result.Success -> {
+                if (availabilityResult.data) {
+                    // Lo slot è disponibile, procedi con la prenotazione
+                    reserveSlot()
+                    val service = uiState.value.service ?: return
+                    val currentBookingId = uiState.value.currentBookingId
 
-        val paymentItem = PaymentItem.ServiceBookingPayment(
-            serviceName = service.name,
-            price = service.price?.toDouble() ?: 0.0,
-            bookingId = currentBookingId ?: "",
-            date = selectedDate,
-            startTime = selectedTimeSlot.startTime,
-            endTime = selectedTimeSlot.endTime,
-            operatorId = selectedTimeSlot.operatorId
-        )
-        _uiEvent.emit(BookingUiEvent.NavigateToPayment(paymentItem))
+                    val paymentItem = PaymentItem.ServiceBookingPayment(
+                        serviceName = service.name,
+                        price = service.price?.toDouble() ?: 0.0,
+                        bookingId = currentBookingId ?: "",
+                        date = selectedDate,
+                        startTime = selectedTimeSlot.startTime,
+                        endTime = selectedTimeSlot.endTime
+                    )
+                    _uiEvent.emit(BookingUiEvent.NavigateToPayment(paymentItem))
+                } else {
+                    // Lo slot non è più disponibile
+                    _uiEvent.emit(
+                        BookingUiEvent.ShowError(
+                            UiText.DynamicString("L'orario selezionato non è più disponibile. Si prega di selezionarne un altro.")
+                        )
+                    )
+                }
+            }
+            is Result.Error -> {
+                // Gestisci l'errore nel recupero della disponibilità
+                _uiEvent.emit(BookingUiEvent.ShowError(availabilityResult.error.asUiText()))
+            }
+        }
     }
-
 
     private suspend fun reserveSlot() {
         val service = uiState.value.service ?: return
         val selectedDate = uiState.value.selectedDate ?: return
         val selectedTimeSlot = uiState.value.selectedTimeSlot ?: return
 
+        releaseSlotTimerJob?.cancel() // Annulla il timer precedente, se presente
+
         when (val result = createBookingUseCase(
             service = service,
             selectedDate = selectedDate,
             startTime = selectedTimeSlot.startTime,
             endTime = selectedTimeSlot.endTime,
-            operatorId = selectedTimeSlot.operatorId,
             status = BookingStatus.RESERVED
         )) {
             is Result.Success -> {
@@ -141,6 +156,12 @@ class BookingViewModel @Inject constructor(
                 }
                 _newBooking.value = result.data
                 startReservationTimer()
+                //Avvia il timer di rilascio
+                releaseSlotTimerJob = viewModelScope.launch {
+                    delay(slotReservationTimeout)
+                    releaseReservedSlot()
+                    _uiEvent.emit(BookingUiEvent.ShowError(UiText.DynamicString("Tempo scaduto. Rieffettua la prenotazione")))
+                }
             }
 
             is Result.Error -> {
@@ -155,12 +176,12 @@ class BookingViewModel @Inject constructor(
         reservationJob = viewModelScope.launch {
             _uiState.update { it.copy(isSlotReserved = true, reservationTimerActive = true) }
             delay(reservationDuration)
-            releaseTimeSlot() // rilascio lo slot riservato dopo il ritardo
+            releaseReservedSlot() // rilascio lo slot riservato dopo il ritardo
             _uiEvent.emit(BookingUiEvent.ShowError(UiText.DynamicString("Tempo scaduto. Rieffettua la prenotazione")))
         }
     }
 
-    private suspend fun releaseTimeSlot() {
+    private suspend fun releaseReservedSlot() {
         val currentBookingId = uiState.value.currentBookingId ?: return
         _uiState.update { it.copy(isSlotReserved = false, reservationTimerActive = false) }
         when (val result = cancelBookingUseCase(currentBookingId)) {
@@ -174,55 +195,11 @@ class BookingViewModel @Inject constructor(
         }
     }
 
-    fun scheduleBooking() = viewModelScope.launch {
-        val state = uiState.value
-        if (state.service == null || state.selectedDate == null || state.selectedTimeSlot == null || !uiState.value.isSlotReserved) {
-            _uiEvent.emit(BookingUiEvent.ShowError(UiText.DynamicString("Please reserve a time slot before booking.")))
-            return@launch
-        }
-
-        if (!state.isSlotReserved) {
-            _uiEvent.emit(BookingUiEvent.ShowError(UiText.DynamicString("Si prega di riservare uno slot orario prima di prenotare.")))
-            return@launch
-        }
-
-        _uiState.update { it.copy(isLoading = true) }
-        reservationJob?.cancel() // Cancel the reservation timer
-
-        when (val result = createBookingUseCase(
-            state.service,
-            state.selectedDate,
-            state.selectedTimeSlot.startTime,
-            state.selectedTimeSlot.endTime,
-            state.selectedTimeSlot.operatorId,
-            BookingStatus.CONFIRMED
-        )) {
-            is Result.Success -> {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        isBookingConfirmed = true,
-                        isSlotReserved = false,
-                        reservationTimerActive = false
-                    )
-                }
-                _uiEvent.emit(BookingUiEvent.BookingSuccess)
-            }
-
-            is Result.Error -> {
-                _uiState.update { it.copy(isLoading = false) }
-                _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
-            }
-        }
-    }
-
-
     private suspend fun loadAvailableTimeSlots(date: Date) {
         val service = uiState.value.service ?: return
         _uiState.update { it.copy(isLoading = true) }
 
         when (val result = getAvailableTimeSlotsUseCase(
-            serviceId = service.id,
             date = date,
             serviceDurationMinutes = service.length?.toInt() ?: 60
         )) {
@@ -245,61 +222,6 @@ class BookingViewModel @Inject constructor(
         }
 
     }
-
-//    private suspend fun createBooking(
-//        service: Service,
-//        selectedDate: Date,
-//        selectedTimeSlot: String,
-//        status: BookingStatus
-//    ): Booking {
-//        val calendar = Calendar.getInstance()
-//        calendar.time = selectedDate
-//
-//        val hour = selectedTimeSlot.split(":")[0].toInt()
-//        val minute = selectedTimeSlot.split(":")[1].toInt()
-//        calendar.set(Calendar.HOUR_OF_DAY, hour)
-//        calendar.set(Calendar.MINUTE, minute)
-//
-//        val endTimeCalendar = calendar.clone() as Calendar
-//        endTimeCalendar.add(Calendar.MINUTE, service.length?.toInt() ?: 60)
-//
-//        val bookingEndTime = String.format(
-//            "%02d:%02d",
-//            endTimeCalendar.get(Calendar.HOUR_OF_DAY),
-//            endTimeCalendar.get(Calendar.MINUTE)
-//        )
-//
-//        when (val resultBooking = createBookingUseCase(
-//            serviceId = service.id,
-//            serviceName = service.name,
-//            date = calendar.time,
-//            startTime = selectedTimeSlot,
-//            endTime = bookingEndTime,
-//            status = BookingStatus.CONFIRMED
-//        )) {
-//            is Result.Success -> resultBooking.data
-//            is Result.Error -> _uiEvent.emit(BookingUiEvent.ShowError(resultBooking.error.asUiText()))
-//        }
-////    }
-
-
-//    fun onConfirmDateTime(service: Service, selectedDate: Date, selectedTimeSlot: String) {
-//        _uiState.update { it.copy(isLoading = true) } // Mostra il caricamento mentre si naviga
-//
-//        // Emetti un evento per navigare verso il pagamento
-//        viewModelScope.launch {
-//            _uiEvent.emit(
-//                BookingUiEvent.NavigateToPayment(
-//                    service = service,
-//                    selectedDate = selectedDate,
-//                    selectedTimeSlot = selectedTimeSlot
-//                )
-//            )
-//            _uiState.update { it.copy(isLoading = false) }
-//        }
-//
-//    }
-
 
     data class BookingUiState(
         val service: Service? = null,

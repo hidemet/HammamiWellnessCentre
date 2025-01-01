@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 private const val OPEN_HOUR = 10
 private const val CLOSE_HOUR = 19
-private const val SLOT_INTERVAL_MINUTES = 30
+
 
 class TimeSlotCalculator @Inject constructor() {
 
@@ -24,13 +24,11 @@ class TimeSlotCalculator @Inject constructor() {
         date: Date,
         serviceDurationMinutes: Int,
         bookedAppointments: List<BookedTimeSlot>,
-        numberOfOperators: Int
     ): List<AvailableSlot> {
         val availableSlots = mutableListOf<AvailableSlot>()
         val startTime = LocalTime.of(OPEN_HOUR, 0)
         val endTime = LocalTime.of(CLOSE_HOUR, 0)
         val serviceDuration = Duration.ofMinutes(serviceDurationMinutes.toLong())
-        // val slotInterval = Duration.ofMinutes(SLOT_INTERVAL_MINUTES.toLong())
 
         var currentSlotStart = startTime
         while (currentSlotStart.isBefore(endTime)) {
@@ -41,49 +39,27 @@ class TimeSlotCalculator @Inject constructor() {
                 val formattedSlotStart = currentSlotStart.format(timeFormatter)
                 val formattedSlotEnd = currentSlotEnd.format(timeFormatter)
 
-                // Creo una mappa per tenere traccia degli operatori disponibili per questo slot
-                val availableOperatorsForSlot = mutableMapOf<Int, Boolean>()
-                for (operatorId in 1..numberOfOperators) {
-                    availableOperatorsForSlot[operatorId] = true
+                // Verifica se lo slot è già prenotato
+                val isBooked = bookedAppointments.any { bookedSlot ->
+                    isTimeSlotOverlapping(
+                        formattedSlotStart,
+                        formattedSlotEnd,
+                        bookedSlot.startTime,
+                        bookedSlot.endTime
+                    )
                 }
 
-                // Controllo le disponibilità degli operatori in base alle prenotazioni esistenti
-                for (bookedSlot in bookedAppointments) {
-                    if (isTimeSlotOverlapping(
-                            formattedSlotStart,
-                            formattedSlotEnd,
-                            bookedSlot.startTime,
-                            bookedSlot.endTime
-                        )
-                    ) {
-                        // Se lo slot è occupato, segno l'operatore come non disponibile
-                        availableOperatorsForSlot[bookedSlot.operatorId] = false
-                    }
-                }
-                // Aggiungo lo slot (con operatori disponibili) alla lista
-                for (operatorId in 1..numberOfOperators) {
-                    if (availableOperatorsForSlot[operatorId] == true) {
-                        availableSlots.add(
-                            AvailableSlot(
-                                formattedSlotStart,
-                                formattedSlotEnd,
-                                operatorId
-                            )
-                        )
-                    }
+                if (!isBooked) {
+                    availableSlots.add(AvailableSlot(formattedSlotStart, formattedSlotEnd))
                 }
             }
-            currentSlotStart = if (currentSlotStart.minute == 0) {
-                currentSlotStart.plusMinutes(30)
-            } else {
-                currentSlotStart.plusHours(1).withMinute(0)
-            }
+            currentSlotStart = currentSlotEnd // Il prossimo slot inizia alla fine di quello attuale
         }
 
-        return availableSlots.distinct().sortedBy { it.startTime }
+        return availableSlots.sortedBy { it.startTime }
     }
 
-    private fun isTimeSlotOverlapping(
+     fun isTimeSlotOverlapping(
         slotStart: String,
         slotEnd: String,
         bookedStart: String,
@@ -97,7 +73,7 @@ class TimeSlotCalculator @Inject constructor() {
         return bookedStartTime.isBefore(slotEndTime) && slotStartTime.isBefore(bookedEndTime)
     }
 
-    data class BookedTimeSlot(val startTime: String, val endTime: String, val operatorId: Int)
-    data class AvailableSlot(val startTime: String, val endTime: String, val operatorId: Int)
+    data class BookedTimeSlot(val startTime: String, val endTime: String)
+    data class AvailableSlot(val startTime: String, val endTime: String)
 
 }

@@ -18,9 +18,8 @@ class CreateBookingUseCase @Inject constructor(
         selectedDate: Date,
         startTime: String,
         endTime: String,
-        operatorId: Int,
         status: BookingStatus = BookingStatus.RESERVED
     ): Result<Booking, DataError> {
-        return bookingRepository.createBooking(service, selectedDate, startTime, endTime, operatorId, status)
+        return bookingRepository.createBooking(service, selectedDate, startTime, endTime, status)
     }
 }

@@ -32,7 +32,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         binding.bottomNavigation.setupWithNavController(navController)
 
@@ -45,10 +46,14 @@ class MainActivity : AppCompatActivity() {
                 R.id.giftCardGeneratedFragment,
                 R.id.editContactInfoFragment,
                 R.id.editPersonalInfoFragment,
-                R.id.paymentFragment
+                R.id.paymentFragment,
+                R.id.servizioDetailFragment,
+                R.id.bookingFragment,
+                R.id.bookingSummaryFragment,
                 -> {
                     binding.bottomNavigation.visibility = View.GONE
                 }
+
                 else -> {
                     binding.bottomNavigation.visibility = View.VISIBLE
                 }
