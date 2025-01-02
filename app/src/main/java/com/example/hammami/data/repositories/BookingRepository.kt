@@ -11,6 +11,7 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,25 +22,9 @@ class BookingRepository @Inject constructor(
     private val authRepository: AuthRepository
 ) {
 
-//    suspend fun reserveTimeSlot(
-//        serviceId: String,
-//        date: Date,
-//        timeSlot: String,
-//        userId: String
-//    ): Result<Unit, DataError> {
-//        return try {
-//           bookingDataSource.reserveTimeSlot(serviceId, date, timeSlot, userId)
-//            Result.Success(Unit)
-//        } catch (e: Exception) {
-//            Log.e("BookingRepository", "Errore nel prenotare lo slot", e)
-//            Result.Error(mapExceptionToDataError(e))
-//        }
-//    }
-//    )
-
     suspend fun createBooking(
         service: Service,
-        selectedDate: Date,
+        selectedDate: LocalDate,
         startTime: String,
         endTime: String,
         status: BookingStatus
@@ -52,7 +37,7 @@ class BookingRepository @Inject constructor(
                         val booking = Booking(
                             serviceId = service.id,
                             serviceName = service.name,
-                            date = selectedDate,
+                            date = selectedDate.toEpochDay()*(24*60*60*1000),
                             startTime = startTime,
                             endTime = endTime,
                             status = status,
@@ -91,7 +76,7 @@ class BookingRepository @Inject constructor(
         }
     }
 
-    suspend fun getBookingsForDate(date: Date): Result<List<Booking>, DataError> {
+    suspend fun getBookingsForDate(date: LocalDate): Result<List<Booking>, DataError> {
         return try {
             val bookings = bookingDataSource.getBookingsForDate(date)
             Result.Success(bookings)

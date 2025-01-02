@@ -28,6 +28,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -73,8 +77,8 @@ class BookingViewModel @Inject constructor(
     }
 
     fun onDateSelected(dateString: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val date = dateFormat.parse(dateString)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
+        val date = LocalDate.parse(dateString, dateFormatter)
 
         _uiState.update { it.copy(selectedDate = date, availableTimeSlots = emptyList()) }
         viewModelScope.launch {
@@ -105,9 +109,8 @@ class BookingViewModel @Inject constructor(
                     val service = uiState.value.service ?: return
                     val currentBookingId = uiState.value.currentBookingId
 
-                    val paymentItem = PaymentItem.ServiceBookingPayment(
-                        serviceName = service.name,
-                        price = service.price?.toDouble() ?: 0.0,
+                    val paymentItem = PaymentItem.ServiceBookingPayment.from(
+                        service = state.service!!,
                         bookingId = currentBookingId ?: "",
                         date = selectedDate,
                         startTime = selectedTimeSlot.startTime,
@@ -129,7 +132,6 @@ class BookingViewModel @Inject constructor(
             }
         }
     }
-
     private suspend fun reserveSlot() {
         val service = uiState.value.service ?: return
         val selectedDate = uiState.value.selectedDate ?: return
@@ -195,7 +197,7 @@ class BookingViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadAvailableTimeSlots(date: Date) {
+    private suspend fun loadAvailableTimeSlots(date: LocalDate) {
         val service = uiState.value.service ?: return
         _uiState.update { it.copy(isLoading = true) }
 
@@ -227,7 +229,7 @@ class BookingViewModel @Inject constructor(
         val service: Service? = null,
         val currentBookingId: String? = null,
         val availableTimeSlots: List<TimeSlotCalculator.AvailableSlot> = emptyList(),
-        val selectedDate: Date? = null,
+        val selectedDate: LocalDate? = null,
         val selectedTimeSlot: TimeSlotCalculator.AvailableSlot? = null,
         val isBookingConfirmed: Boolean = false,
         val isSlotReserved: Boolean = false,

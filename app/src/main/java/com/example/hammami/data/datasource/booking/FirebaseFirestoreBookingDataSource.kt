@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,7 +38,7 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         }
     }
 
-    suspend fun getBookingsForDate(date: Date): List<Booking> {
+    suspend fun getBookingsForDate(date: LocalDate): List<Booking> {
         try {
             val querySnapshot = bookingsCollection
                 .whereEqualTo("date", date)

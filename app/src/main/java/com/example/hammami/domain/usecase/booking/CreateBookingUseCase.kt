@@ -7,6 +7,7 @@ import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
+import java.time.LocalDate
 import java.util.Date
 
 
@@ -15,7 +16,7 @@ class CreateBookingUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         service: Service,
-        selectedDate: Date,
+        selectedDate: LocalDate,
         startTime: String,
         endTime: String,
         status: BookingStatus = BookingStatus.RESERVED

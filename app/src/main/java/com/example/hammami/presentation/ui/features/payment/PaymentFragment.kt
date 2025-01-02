@@ -28,6 +28,7 @@ import com.example.hammami.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 
@@ -87,8 +88,7 @@ class PaymentFragment : BaseFragment() {
                 serviceBookingDetails.isVisible = true
                 giftCardDetails.isVisible = false
                 bookingCard.serviceName.text = item.serviceName
-                bookingCard.bookingDate.text =
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(item.date)
+                bookingCard.bookingDate.text = item.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                 bookingCard.bookingTime.text = "${item.startTime} - ${item.endTime}"
                 // TODO("Convertire la durata startTime-endTime in minuti oppure cambiare il formato del layout")
             }

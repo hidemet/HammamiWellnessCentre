@@ -15,7 +15,7 @@ class GetAvailableTimeSlotsUseCase @Inject constructor(
     private val timeSlotCalculator: TimeSlotCalculator
 ) {
     suspend operator fun invoke(
-        date: Date,
+        date: LocalDate,
         serviceDurationMinutes: Int
     ): Result<List<TimeSlotCalculator.AvailableSlot>, DataError> {
         return when (val existingBookingsResult = bookingRepository.getBookingsForDate(date)) {
@@ -27,7 +27,6 @@ class GetAvailableTimeSlotsUseCase @Inject constructor(
                     )
                 }
                 val availableSlots = timeSlotCalculator.generateAvailableTimeSlots(
-                    date = date,
                     serviceDurationMinutes = serviceDurationMinutes,
                     bookedAppointments = bookedTimeSlots,
                 )
@@ -41,9 +40,9 @@ class GetAvailableTimeSlotsUseCase @Inject constructor(
         }
     }
 
-    private fun filterSlotsForToday(slots: List<TimeSlotCalculator.AvailableSlot>, date: Date): List<TimeSlotCalculator.AvailableSlot> {
+    private fun filterSlotsForToday(slots: List<TimeSlotCalculator.AvailableSlot>, date: LocalDate): List<TimeSlotCalculator.AvailableSlot> {
         val today = LocalDate.now()
-        val isToday = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isEqual(today)
+        val isToday = date.isEqual(today)
         val now = LocalTime.now()
 
         return if (isToday) {

@@ -137,6 +137,7 @@ class BookingFragment : BaseFragment() {
             calendar.set(year, month, dayOfMonth)
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val formattedDate = dateFormat.format(calendar.time)
+            Log.d("BookingFragment", "Data selezionata: $formattedDate")
             viewModel.onDateSelected(formattedDate)
         }
 

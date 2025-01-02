@@ -1,6 +1,7 @@
 package com.example.hammami.domain.model
 
 import com.google.firebase.Timestamp
+import java.time.LocalDate
 import java.util.Date
 
 data class BookingDto(
@@ -8,7 +9,7 @@ data class BookingDto(
     var serviceId: String? = null,
     var userId: String? = null,
     var serviceName: String? = null,
-    var date: Date? = null,
+    var date: Long? = null,
     var startTime: String? = null,
     var endTime: String? = null,
     var status: String? = null,

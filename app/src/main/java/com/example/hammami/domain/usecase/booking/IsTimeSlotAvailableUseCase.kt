@@ -4,7 +4,7 @@ import com.example.hammami.core.result.Result
 import com.example.hammami.data.repositories.BookingRepository
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.utils.TimeSlotCalculator
-import java.util.Date
+import java.time.LocalDate
 import javax.inject.Inject
 
 class IsTimeSlotAvailableUseCase @Inject constructor(
@@ -12,7 +12,7 @@ class IsTimeSlotAvailableUseCase @Inject constructor(
     private val timeSlotCalculator: TimeSlotCalculator // Inietta TimeSlotCalculator
 ) {
     suspend operator fun invoke(
-        date: Date,
+        date: LocalDate,
         slot: TimeSlotCalculator.AvailableSlot
     ): Result<Boolean, DataError> {
         return when (val existingBookingsResult = bookingRepository.getBookingsForDate(date)) {

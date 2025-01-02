@@ -19,6 +19,7 @@ import com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @AndroidEntryPoint
@@ -67,8 +68,7 @@ class BookingSummaryFragment : BaseFragment() {
     private fun updateBookingUi(booking: Booking) {
 
         binding.bookingCard.serviceName.text = booking.serviceName
-        binding.bookingCard.bookingDate.text =
-            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(booking.date)
+        binding.bookingCard.bookingDate.text = booking.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
         binding.bookingCard.bookingTime.text = "${booking.startTime} - ${booking.endTime}"
 
 

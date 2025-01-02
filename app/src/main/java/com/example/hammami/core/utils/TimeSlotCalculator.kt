@@ -1,12 +1,9 @@
 package com.example.hammami.core.utils
 
-import kotlinx.datetime.format
-import java.text.SimpleDateFormat
+
 import java.time.Duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -21,7 +18,6 @@ class TimeSlotCalculator @Inject constructor() {
         DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
 
     fun generateAvailableTimeSlots(
-        date: Date,
         serviceDurationMinutes: Int,
         bookedAppointments: List<BookedTimeSlot>,
     ): List<AvailableSlot> {
