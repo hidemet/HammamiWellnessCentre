@@ -1,10 +1,11 @@
-package com.example.hammami.presentation.ui.userProfile
+package com.example.hammami.presentation.ui.features.userProfile
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.R
@@ -30,9 +31,9 @@ class ProfileOptionAdapter(private val options: List<ItemProfileOption>) :
         val option = options[position]
         holder.leadingIcon.setImageResource(option.leadingIconResId)
         holder.title.text = option.title
-        holder.trailingIcon.setImageResource(option.trailingIconResId)
+        holder.trailingIcon.setImageResource(R.drawable.ic_chevron_right)
         holder.itemView.setOnClickListener {
-            it.findNavController().navigate(option.navigationDestination)
+            option.action.invoke()
         }
     }
 

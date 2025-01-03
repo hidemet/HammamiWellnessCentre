@@ -1,19 +1,16 @@
 package com.example.hammami.core.utils
 
-import kotlinx.datetime.format
-import java.text.SimpleDateFormat
+
 import java.time.Duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
 
 private const val OPEN_HOUR = 10
 private const val CLOSE_HOUR = 19
-private const val SLOT_INTERVAL_MINUTES = 30
+
 
 class TimeSlotCalculator @Inject constructor() {
 
@@ -21,16 +18,13 @@ class TimeSlotCalculator @Inject constructor() {
         DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
 
     fun generateAvailableTimeSlots(
-        date: Date,
         serviceDurationMinutes: Int,
         bookedAppointments: List<BookedTimeSlot>,
-        numberOfOperators: Int
-    ): List<String> {
-        val availableSlots = mutableListOf<String>()
+    ): List<AvailableSlot> {
+        val availableSlots = mutableListOf<AvailableSlot>()
         val startTime = LocalTime.of(OPEN_HOUR, 0)
         val endTime = LocalTime.of(CLOSE_HOUR, 0)
         val serviceDuration = Duration.ofMinutes(serviceDurationMinutes.toLong())
-        val slotInterval = Duration.ofMinutes(SLOT_INTERVAL_MINUTES.toLong())
 
         var currentSlotStart = startTime
         while (currentSlotStart.isBefore(endTime)) {
@@ -41,7 +35,8 @@ class TimeSlotCalculator @Inject constructor() {
                 val formattedSlotStart = currentSlotStart.format(timeFormatter)
                 val formattedSlotEnd = currentSlotEnd.format(timeFormatter)
 
-                val bookedOperators = bookedAppointments.count { bookedSlot ->
+                // Verifica se lo slot è già prenotato
+                val isBooked = bookedAppointments.any { bookedSlot ->
                     isTimeSlotOverlapping(
                         formattedSlotStart,
                         formattedSlotEnd,
@@ -50,17 +45,17 @@ class TimeSlotCalculator @Inject constructor() {
                     )
                 }
 
-                if (bookedOperators < numberOfOperators) {
-                    availableSlots.add(formattedSlotStart)
+                if (!isBooked) {
+                    availableSlots.add(AvailableSlot(formattedSlotStart, formattedSlotEnd))
                 }
             }
-            currentSlotStart = currentSlotStart.plus(slotInterval)
+            currentSlotStart = currentSlotEnd // Il prossimo slot inizia alla fine di quello attuale
         }
 
-        return availableSlots.distinct().sorted()
+        return availableSlots.sortedBy { it.startTime }
     }
 
-    private fun isTimeSlotOverlapping(
+     fun isTimeSlotOverlapping(
         slotStart: String,
         slotEnd: String,
         bookedStart: String,
@@ -75,4 +70,6 @@ class TimeSlotCalculator @Inject constructor() {
     }
 
     data class BookedTimeSlot(val startTime: String, val endTime: String)
+    data class AvailableSlot(val startTime: String, val endTime: String)
+
 }
