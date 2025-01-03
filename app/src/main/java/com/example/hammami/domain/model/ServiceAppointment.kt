@@ -3,10 +3,9 @@ package com.example.hammami.domain.model
 import android.os.Parcelable
 import com.google.firebase.firestore.PropertyName
 import kotlinx.parcelize.Parcelize
-import java.security.Timestamp
 
 @Parcelize
-data class ServiceAppointment(
+data class BookingOld(
     @get:PropertyName("NomeServizio") @set:PropertyName("NomeServizio")   var name: String,
     @get:PropertyName("Prezzo") @set:PropertyName("Prezzo") var price: Float?,
     //@get:PropertyName("Data") @set:PropertyName("Data") var date: Timestamp,

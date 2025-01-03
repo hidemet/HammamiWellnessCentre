@@ -3,19 +3,17 @@ package com.example.hammami.presentation.ui.features.payment
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hammami.core.util.KarmaPointsCalculator
-import com.example.hammami.core.util.asUiText
+import com.example.hammami.core.utils.KarmaPointsCalculator
+import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.model.payment.CreditCard
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.core.result.Result
-import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.domain.model.payment.CreditCardPayment
 import com.example.hammami.domain.model.payment.GooglePayPayment
 import com.example.hammami.domain.model.payment.PayPalPayment
 import com.example.hammami.domain.model.payment.PaymentSystem
 import com.example.hammami.domain.usecase.payment.ProcessPaymentUseCase
-import com.example.hammami.domain.usecase.voucher.CreateVoucherUseCase
 import com.example.hammami.domain.usecase.voucher.GetVoucherByCodeUseCase
 import com.example.hammami.domain.usecase.voucher.ValidateVoucherUseCase
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
@@ -23,7 +21,6 @@ import com.example.hammami.domain.usecase.validation.creditCard.ValidateCreditCa
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -229,10 +226,11 @@ class PaymentViewModel @AssistedInject constructor(
 
     private suspend fun handlePaymentSuccess(transactionId: String, paymentItem: PaymentItem) {
         Log.d("PaymentViewModel", "Payment successful with transaction ID: $transactionId")
-        if (paymentItem is PaymentItem.GiftCardPayment) {
-            emitEvent(PaymentEvent.NavigateToGiftCardGenerated(transactionId))
-        } else {
-            TODO()
+       when (paymentItem ) {
+           is PaymentItem.GiftCardPayment ->   emitEvent(PaymentEvent.NavigateToGiftCardGenerated(transactionId))
+              is PaymentItem.ServiceBookingPayment -> {
+                  emitEvent(PaymentEvent.NavigateToBookingSummary(paymentItem.bookingId))
+              }
         }
     }
 

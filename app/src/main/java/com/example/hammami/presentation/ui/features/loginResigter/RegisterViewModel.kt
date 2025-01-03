@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.result.Result
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.core.util.asUiText
+import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.model.User
-import com.example.hammami.domain.usecase.*
 import com.example.hammami.domain.usecase.auth.SignUpUseCase
 import com.example.hammami.domain.usecase.validation.account.ValidateConfirmedPasswordUseCase
 import com.example.hammami.domain.usecase.validation.account.ValidateEmailUseCase

@@ -1,13 +1,14 @@
-package com.example.hammami.core.util
+package com.example.hammami.core.utils
 
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.domain.error.DataError
-import com.example.hammami.domain.error.DataError.Service
+import com.example.hammami.domain.error.DataError.*
 import com.example.hammami.domain.error.Error
 import com.example.hammami.domain.error.ValidationError.*
 import com.example.hammami.domain.error.ValidationError.User.*
 import com.example.hammami.domain.error.ValidationError.Card.*
+import com.example.hammami.domain.error.ValidationError.Payment
 import com.example.hammami.domain.error.ValidationError.VoucherError.*
 
 fun FirstNameError.asUiText(): UiText {
@@ -71,31 +72,31 @@ fun PasswordError.asUiText(): UiText {
 
 fun DataError.asUiText(): UiText {
     return when (this) {
-        is DataError.Network -> when (this) {
-            DataError.Network.NO_INTERNET -> UiText.StringResource(R.string.error_no_internet)
-            DataError.Network.UNKNOWN -> UiText.StringResource(R.string.error_unknown_network)
-            DataError.Network.SERVER_ERROR -> UiText.StringResource(R.string.error_server_error)
-            DataError.Network.OPERATION_CANCELLED -> UiText.StringResource(R.string.error_operation_cancelled)
-            DataError.Network.SERVICE_UNAVAILABLE -> UiText.StringResource(R.string.error_service_unavailable)
+        is Network -> when (this) {
+            Network.NO_INTERNET -> UiText.StringResource(R.string.error_no_internet)
+            Network.UNKNOWN -> UiText.StringResource(R.string.error_unknown_network)
+            Network.SERVER_ERROR -> UiText.StringResource(R.string.error_server_error)
+            Network.OPERATION_CANCELLED -> UiText.StringResource(R.string.error_operation_cancelled)
+            Network.SERVICE_UNAVAILABLE -> UiText.StringResource(R.string.error_service_unavailable)
         }
 
-        is DataError.Firestore -> when (this) {
-            DataError.Firestore.UNKNOWN -> UiText.StringResource(R.string.error_unknown_firestore)
+        is Firestore -> when (this) {
+            Firestore.UNKNOWN -> UiText.StringResource(R.string.error_unknown_firestore)
         }
 
-        is DataError.Unknown -> when (this) {
-            DataError.Unknown.UNKNOWN -> UiText.StringResource(R.string.error_unknown)
+        is Unknown -> when (this) {
+            Unknown.UNKNOWN -> UiText.StringResource(R.string.error_unknown)
         }
 
-        is DataError.Auth -> when (this) {
-            DataError.Auth.USER_NOT_FOUND -> UiText.StringResource(R.string.error_user_not_found)
-            DataError.Auth.INVALID_CREDENTIALS -> UiText.StringResource(R.string.error_invalid_credentials)
-            DataError.Auth.EMAIL_ALREADY_IN_USE -> UiText.StringResource(R.string.error_email_already_in_use)
-            DataError.Auth.WEAK_PASSWORD -> UiText.StringResource(R.string.error_weak_password)
-            DataError.Auth.NOT_AUTHENTICATED -> UiText.StringResource(R.string.error_not_authenticated)
-            DataError.Auth.UNKNOWN -> UiText.StringResource(R.string.error_unknown_auth)
-            DataError.Auth.TOKEN_REFRESH_FAILED -> UiText.StringResource(R.string.error_token_refresh_failed)
-            DataError.Auth.REQUIRED_PASSWORD -> UiText.StringResource(R.string.error_required_password)
+        is Auth -> when (this) {
+            Auth.USER_NOT_FOUND -> UiText.StringResource(R.string.error_user_not_found)
+            Auth.INVALID_CREDENTIALS -> UiText.StringResource(R.string.error_invalid_credentials)
+            Auth.EMAIL_ALREADY_IN_USE -> UiText.StringResource(R.string.error_email_already_in_use)
+            Auth.WEAK_PASSWORD -> UiText.StringResource(R.string.error_weak_password)
+            Auth.NOT_AUTHENTICATED -> UiText.StringResource(R.string.error_not_authenticated)
+            Auth.UNKNOWN -> UiText.StringResource(R.string.error_unknown_auth)
+            Auth.TOKEN_REFRESH_FAILED -> UiText.StringResource(R.string.error_token_refresh_failed)
+            Auth.REQUIRED_PASSWORD -> UiText.StringResource(R.string.error_required_password)
         }
 
         is DataError.User -> when (this) {
@@ -114,19 +115,19 @@ fun DataError.asUiText(): UiText {
             DataError.User.UNKNOWN -> UiText.StringResource(R.string.error_unknown_user)
         }
 
-        is DataError.Storage -> when (this) {
-            DataError.Storage.BUCKET_NOT_FOUND -> UiText.StringResource(R.string.error_bucket_not_found)
-            DataError.Storage.QUOTA_EXCEEDED -> UiText.StringResource(R.string.error_quota_exceeded)
-            DataError.Storage.UPLOAD_FAILED -> UiText.StringResource(R.string.error_upload_failed)
+        is Storage -> when (this) {
+            Storage.BUCKET_NOT_FOUND -> UiText.StringResource(R.string.error_bucket_not_found)
+            Storage.QUOTA_EXCEEDED -> UiText.StringResource(R.string.error_quota_exceeded)
+            Storage.UPLOAD_FAILED -> UiText.StringResource(R.string.error_upload_failed)
         }
 
-        is DataError.Voucher -> when (this) {
-            DataError.Voucher.NOT_FOUND -> UiText.StringResource(R.string.error_voucher_not_found)
-            DataError.Voucher.ALREADY_EXISTS -> UiText.StringResource(R.string.error_voucher_already_exists)
-            DataError.Voucher.VALUE_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_voucher_exceeds_amount)
-            DataError.Voucher.PERMISSION_DENIED -> UiText.StringResource(R.string.error_voucher_permission_denied)
-            DataError.Voucher.INSUFFICIENT_POINTS -> UiText.StringResource(R.string.error_insufficient_points)
-            DataError.Voucher.EXPIRED -> UiText.StringResource(R.string.error_voucher_expired)
+        is Voucher -> when (this) {
+            Voucher.NOT_FOUND -> UiText.StringResource(R.string.error_voucher_not_found)
+            Voucher.ALREADY_EXISTS -> UiText.StringResource(R.string.error_voucher_already_exists)
+            Voucher.VALUE_EXCEEDS_AMOUNT -> UiText.StringResource(R.string.error_voucher_exceeds_amount)
+            Voucher.PERMISSION_DENIED -> UiText.StringResource(R.string.error_voucher_permission_denied)
+            Voucher.INSUFFICIENT_POINTS -> UiText.StringResource(R.string.error_insufficient_points)
+            Voucher.EXPIRED -> UiText.StringResource(R.string.error_voucher_expired)
         }
 
         is DataError.Payment -> when (this) {
@@ -137,7 +138,18 @@ fun DataError.asUiText(): UiText {
             DataError.Payment.INVALID_PAYMENT_INFO -> UiText.StringResource(R.string.error_invalid_payment_info)
         }
 
-        Service.SERVICE_NOT_FOUND -> UiText.StringResource(R.string.error_service_not_found)
+        is DataError.Service -> when(this) {
+            DataError.Service.SERVICE_NOT_FOUND -> UiText.StringResource(R.string.error_service_not_found)
+        }
+        is DataError.Booking -> when(this) {
+            DataError.Booking.INVALID_TIME -> UiText.StringResource(R.string.error_invalid_time)
+            DataError.Booking.INVALID_DATE -> UiText.StringResource(R.string.error_invalid_date)
+            DataError.Booking.NO_OPERATORS_AVAILABLE -> UiText.StringResource(R.string.error_no_operators_available)
+            DataError.Booking.SLOT_NOT_AVAILABLE -> UiText.StringResource(R.string.error_slot_not_available)
+            DataError.Booking.BOOKING_NOT_FOUND -> UiText.StringResource(R.string.error_booking_not_found)
+            DataError.Booking.BOOKING_ALREADY_EXISTS -> UiText.StringResource(R.string.error_booking_already_exists)
+        }
+
     }
 }
 
@@ -168,14 +180,14 @@ fun CvvError.asUiText(): UiText {
 
 fun Error.asUiText(): UiText {
     return when (this) {
-        is DataError.Network -> this.asUiText()
-        is DataError.Auth -> this.asUiText()
+        is Network -> this.asUiText()
+        is Auth -> this.asUiText()
         is DataError.User -> this.asUiText()
-        is DataError.Storage -> this.asUiText()
+        is Storage -> this.asUiText()
         is DataError.Payment -> this.asUiText()
-        is DataError.Firestore -> this.asUiText()
-        is DataError.Unknown -> this.asUiText()
-        is DataError.Voucher -> this.asUiText()
+        is Firestore -> this.asUiText()
+        is Unknown -> this.asUiText()
+        is Voucher -> this.asUiText()
         is FirstNameError -> this.asUiText()
         is LastNameError -> this.asUiText()
         is BirthDateError -> this.asUiText()
@@ -190,5 +202,6 @@ fun Error.asUiText(): UiText {
         is VoucherError -> this.asUiText()
         is Payment -> this.asUiText()
         is Service -> this.asUiText()
+        is Booking -> this.asUiText()
     }
 }

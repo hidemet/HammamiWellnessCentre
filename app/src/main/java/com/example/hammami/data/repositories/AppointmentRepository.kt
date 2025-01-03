@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.hammami.core.result.Result
 import com.example.hammami.data.datasource.appointment.FirebaseAppointmentDataSource
 import com.example.hammami.domain.error.DataError
-import com.example.hammami.domain.model.ServiceAppointment
+import com.example.hammami.domain.model.Booking
 import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException
@@ -14,7 +14,7 @@ class AppointmentRepository @Inject constructor(
     private val firestoreDataSource: FirebaseAppointmentDataSource
 ) {
 
-    suspend fun getNewAppointmentData(clientEmail: String): Result<List<ServiceAppointment>, DataError> {
+    suspend fun getNewAppointmentData(clientEmail: String): Result<List<Booking>, DataError> {
         return try {
             val appointment = firestoreDataSource.fetchNewAppointmentData(clientEmail)
             if (appointment.isNotEmpty()) {
@@ -28,7 +28,7 @@ class AppointmentRepository @Inject constructor(
         }
     }
 
-    suspend fun getPastAppointmentData(clientEmail: String): Result<List<ServiceAppointment>, DataError> {
+    suspend fun getPastAppointmentData(clientEmail: String): Result<List<Booking>, DataError> {
         return try {
             val appointment = firestoreDataSource.fetchPastAppointmentData(clientEmail)
             if (appointment.isNotEmpty()) {

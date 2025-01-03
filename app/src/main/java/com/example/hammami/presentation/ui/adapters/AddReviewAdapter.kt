@@ -1,16 +1,5 @@
 package com.example.hammami.presentation.ui.adapters
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import com.example.hammami.databinding.FragmentAddReviewBinding
-import com.example.hammami.databinding.ItemAppuntamentoPassatoBinding
-import com.example.hammami.domain.model.ServiceAppointment
-import com.example.hammami.presentation.ui.features.client.AppointmentsFragmentDirections
-
 class AddReviewAdapter{}
 
     /*

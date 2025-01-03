@@ -78,5 +78,7 @@ sealed interface DataError : Error {
         INVALID_DATE,
         NO_OPERATORS_AVAILABLE,
         SLOT_NOT_AVAILABLE,
+        BOOKING_NOT_FOUND,
+        BOOKING_ALREADY_EXISTS
     }
 }

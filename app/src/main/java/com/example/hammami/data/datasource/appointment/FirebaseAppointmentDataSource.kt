@@ -1,6 +1,6 @@
 package com.example.hammami.data.datasource.appointment
 
-import com.example.hammami.domain.model.ServiceAppointment
+import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -20,15 +20,15 @@ class FirebaseAppointmentDataSource @Inject constructor(
         }
     }
 
-    suspend fun fetchNewAppointmentData(clientEmail: String) : List<ServiceAppointment> {
-        val allNewAppointments = mutableListOf<ServiceAppointment>()
+    suspend fun fetchNewAppointmentData(clientEmail: String) : List<Booking> {
+        val allNewAppointments = mutableListOf<Booking>()
         try {
                 val querySnapshot = appointmentsCollection
                     .whereEqualTo("Cliente", clientEmail)
                     .whereEqualTo("isExpired", false)
                     .get()
                     .await()
-                allNewAppointments.addAll(querySnapshot.toObjects(ServiceAppointment::class.java))
+                allNewAppointments.addAll(querySnapshot.toObjects(Booking::class.java))
             //allAppointments.addAll(appointmentsCollection.get().await().toObjects(ServiceAppointment::class.java))
             return allNewAppointments
         } catch (e: FirebaseFirestoreException) {
@@ -36,15 +36,15 @@ class FirebaseAppointmentDataSource @Inject constructor(
         }
     }
 
-    suspend fun fetchPastAppointmentData(clientEmail: String) : List<ServiceAppointment> {
-        val allPastAppointments = mutableListOf<ServiceAppointment>()
+    suspend fun fetchPastAppointmentData(clientEmail: String) : List<Booking> {
+        val allPastAppointments = mutableListOf<Booking>()
         try {
             val querySnapshot = appointmentsCollection
                 .whereEqualTo("Cliente", clientEmail)
                 .whereEqualTo("isExpired", true)
                 .get()
                 .await()
-            allPastAppointments.addAll(querySnapshot.toObjects(ServiceAppointment::class.java))
+            allPastAppointments.addAll(querySnapshot.toObjects(Booking::class.java))
             //allAppointments.addAll(appointmentsCollection.get().await().toObjects(ServiceAppointment::class.java))
             return allPastAppointments
         } catch (e: FirebaseFirestoreException) {

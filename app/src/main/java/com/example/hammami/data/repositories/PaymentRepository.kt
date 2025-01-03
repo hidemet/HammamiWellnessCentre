@@ -5,8 +5,9 @@ import com.example.hammami.data.datasource.payment.GooglePayDataSource
 import com.example.hammami.data.datasource.payment.PayPalDataSource
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
-import com.example.hammami.core.util.KarmaPointsCalculator
+import com.example.hammami.core.utils.KarmaPointsCalculator
 import com.example.hammami.domain.factory.VoucherFactory
+import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.VoucherType
 import com.example.hammami.domain.model.payment.CreditCardPayment
@@ -74,6 +75,7 @@ class PaymentRepository @Inject constructor(
                 transaction.update(userDocRef, "points", user.points + earnedPoints)
 
 
+
                 // 3. Creo il documento appropriato in base al tipo di acquisto
                 when (paymentItem) {
                     is PaymentItem.GiftCardPayment -> {
@@ -91,7 +93,9 @@ class PaymentRepository @Inject constructor(
                     }
 
                     is PaymentItem.ServiceBookingPayment -> {
-                        TODO()
+                        val bookingId = paymentItem.bookingId
+                        val bookingRef = firestore.collection("bookings").document(bookingId)
+                        transaction.update(bookingRef, "status", BookingStatus.CONFIRMED)
                     }
                 }
                 // 3. Restituisco l'ID transazione

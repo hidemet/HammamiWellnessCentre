@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.core.util.asUiText
+import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.error.Error
 import com.example.hammami.domain.usecase.auth.ResetPasswordUseCase
 import com.example.hammami.domain.usecase.auth.SignInUseCase

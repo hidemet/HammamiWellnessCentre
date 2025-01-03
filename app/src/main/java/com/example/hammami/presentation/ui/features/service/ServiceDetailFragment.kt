@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.hammami.R
 import com.example.hammami.databinding.ServizioDettaglioBinding
+import com.example.hammami.domain.model.Service
 import com.example.hammami.domain.usecase.GetReviewsUseCase
 import com.example.hammami.presentation.ui.adapters.BeneficiAdapter
 import com.example.hammami.presentation.ui.adapters.Beneficio
@@ -35,6 +36,7 @@ class ServiceDetailFragment : BaseFragment() {
     //private lateinit var serviceDetailAdapter: ServiceDetailAdapter
 
     private lateinit var beneficiAdapter: BeneficiAdapter
+    private lateinit var service : Service
 
     //private val viewModel: ServiceDetailViewModel by viewModels()
     //private val viewModelReviews: ReviewsViewModel by viewModels()
@@ -57,7 +59,7 @@ class ServiceDetailFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val service = args.service
+        service = args.service
         //val viewModelFactory = ServiceDetailViewModelFactory(getReviewsUseCase, service)
         //val viewModel: ServiceDetailViewModel by viewModels { viewModelFactory }
         //viewModel.loadData(service)
@@ -108,10 +110,7 @@ class ServiceDetailFragment : BaseFragment() {
             val serviceDuration = args.service.length
             val serviceName = args.service.name
             val servicePrice = args.service.price
-            val action = ServiceDetailFragmentDirections.actionServiceDetailFragmentToBookingFragment(serviceId,
-                serviceDuration!!.toFloat(), serviceName,
-                servicePrice!!
-            )
+            val action = ServiceDetailFragmentDirections.actionServiceDetailFragmentToBookingFragment(service)
             findNavController().navigate(action)
         }
 
