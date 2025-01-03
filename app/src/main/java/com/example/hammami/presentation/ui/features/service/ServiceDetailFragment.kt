@@ -121,9 +121,7 @@ class ServiceDetailFragment : BaseFragment() {
             val serviceName = args.service.name
             val servicePrice = args.service.price ?: 0.0f
             val action =
-                ServiceDetailFragmentDirections.actionServiceDetailFragmentToBookingFragment(
-                    serviceId, serviceDuration, serviceName, servicePrice
-                )
+                ServiceDetailFragmentDirections.actionServiceDetailFragmentToBookingFragment(service)
             findNavController().navigate(action)
         }
     }
@@ -240,7 +238,7 @@ class ServiceDetailFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
-        Log.d("BenessereFragment", "onPause")
+        Log.d("ServiceDetailFragment", "onPause")
     }
 
     override fun onDestroyView() {

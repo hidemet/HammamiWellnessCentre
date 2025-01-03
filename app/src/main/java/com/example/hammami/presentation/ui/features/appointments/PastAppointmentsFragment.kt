@@ -51,7 +51,7 @@ class PastAppointmentsFragment : BaseFragment(){
     }
 
     override fun setupUI() {
-        setupAppBar()
+        //setupAppBar()
         setupRecyclerView()
     }
 
@@ -59,14 +59,14 @@ class PastAppointmentsFragment : BaseFragment(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { observeAppointments() }
-                launch { observeEvents() }
+                //launch { observeEvents() }
             }
         }
     }
 
     private suspend fun observeAppointments() {
         viewModel.pastAppointments.collectLatest { state ->
-            updateUI(state)
+            //updateUI(state)
             appointmentAdapter.submitList(state)
         }
     }

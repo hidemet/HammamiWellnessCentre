@@ -9,9 +9,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.example.hammami.databinding.FragmentAppointmentDetailBinding
+import com.example.hammami.domain.model.localDate
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class AppointmentDetailFragment : BaseFragment() {
@@ -31,7 +33,7 @@ class AppointmentDetailFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
-        setupRecyclerView()
+        //setupRecyclerView()
     }
 
     override fun setupUI() {
@@ -44,6 +46,7 @@ class AppointmentDetailFragment : BaseFragment() {
     }
 
     private fun setupInfo() {
+        /*
         binding.tvTitle.text = args.appointment.name
 
         if(args.appointment.day < 10){
@@ -70,6 +73,14 @@ class AppointmentDetailFragment : BaseFragment() {
             binding.tvMinuto.text = args.appointment.minute.toString()
         }
         binding.tvPrice.text = args.appointment.price.toString() + " €"
+
+         */
+        binding.tvTitle.text = args.appointment.serviceName
+        binding.tvGiorno.text = args.appointment.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
+        binding.tvOra.text = "${args.appointment.startTime} - ${args.appointment.endTime}"
+
+        binding.tvPrice.text = "DA METTERE"
+
     }
 
     override fun observeFlows() {

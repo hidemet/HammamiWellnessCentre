@@ -124,7 +124,7 @@ class AddReviewFragment : BaseFragment() {
 
     private suspend fun observeEvents() {
         binding.btnInvia.setOnClickListener {
-            val nomeServizio = args.appointment.name
+            //val nomeServizio = args.appointment.name          <------------------------------------ PRIMA NON ERA COMMENTATO DAVA ERRORE, VERIFICARE QUANDO TUTTO FUNZIONA
             val textReview = binding.editTextReview.text.toString()
             val rating = binding.ratingBar.rating
             val reviewToAdd = viewModel.uiState.value.user?.let { it1 -> Review(textReview, it1.firstName, rating) }
