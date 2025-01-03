@@ -5,22 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hammami.R
-import com.example.hammami.databinding.FragmentBenessereBinding
 import com.example.hammami.databinding.FragmentNewAppointmentsBinding
-import com.example.hammami.databinding.FragmentPastAppointmentsBinding
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel
-import com.example.hammami.presentation.ui.adapters.AppointmentAdapter
-import com.example.hammami.presentation.ui.adapters.BenessereAdapter
+import com.example.hammami.presentation.ui.adapters.FutureAppointmentAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
-import com.example.hammami.presentation.ui.features.service.BenessereFragment
-import com.example.hammami.presentation.ui.features.service.BenessereViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,7 +20,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class NewAppointmentsFragment : BaseFragment(){
 
-    private lateinit var appointmentAdapter: AppointmentAdapter
+    private lateinit var appointmentAdapter: FutureAppointmentAdapter
 
     private var _binding: FragmentNewAppointmentsBinding? = null
     private val binding get() = _binding!!
@@ -82,7 +74,7 @@ class NewAppointmentsFragment : BaseFragment(){
     }
 
     private fun setupRecyclerView() {
-        appointmentAdapter = AppointmentAdapter()
+        appointmentAdapter = FutureAppointmentAdapter()
         binding.rvNewAppointments.apply{
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
