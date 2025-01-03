@@ -16,6 +16,9 @@ import com.example.hammami.domain.usecase.booking.CreateBookingUseCase
 import com.example.hammami.domain.usecase.booking.GetAvailableTimeSlotsUseCase
 import com.example.hammami.domain.usecase.booking.GetBookingByIdUseCase
 import com.example.hammami.domain.usecase.booking.IsTimeSlotAvailableUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -37,8 +40,13 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
-@HiltViewModel
-class BookingViewModel @Inject constructor(
+ @AssistedFactory
+interface BookingViewModelFactory {
+    fun create(service: Service): BookingViewModel
+}
+
+class BookingViewModel @AssistedInject constructor(
+    @Assisted private val service: Service,
     private val getAvailableTimeSlotsUseCase: GetAvailableTimeSlotsUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
@@ -46,7 +54,7 @@ class BookingViewModel @Inject constructor(
     private val isTimeSlotAvailableUseCase: IsTimeSlotAvailableUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(BookingUiState())
+    private val _uiState = MutableStateFlow(BookingUiState(service = service))
     val uiState: StateFlow<BookingUiState> = _uiState.asStateFlow()
 
     private val _uiEvent = MutableSharedFlow<BookingUiEvent>()
@@ -242,7 +250,5 @@ class BookingViewModel @Inject constructor(
         data class ShowError(val message: UiText) : BookingUiEvent
         data class NavigateToPayment(val paymentItem: PaymentItem.ServiceBookingPayment) :
             BookingUiEvent
-
-        object BookingSuccess : BookingUiEvent
     }
 }

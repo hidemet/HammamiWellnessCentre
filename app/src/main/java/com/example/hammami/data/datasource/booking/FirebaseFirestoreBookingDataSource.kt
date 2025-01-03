@@ -21,9 +21,14 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
     private val bookingsCollection = firestore.collection("Bookings")
 
 
-    suspend fun saveBooking(booking: Booking): DocumentReference {
+    fun generateBookingId(): String {
+        return bookingsCollection.document().id
+    }
+
+
+    suspend fun saveBooking(booking: Booking) {
         try {
-            return bookingsCollection.add(booking).await()
+            bookingsCollection.document(booking.id).set(booking).await()
         } catch (e: FirebaseFirestoreException) {
             throw e
         }
@@ -38,10 +43,10 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         }
     }
 
-    suspend fun getBookingsForDate(date: LocalDate): List<Booking> {
+    suspend fun getBookingsForDate(dateMillis: Long): List<Booking> {
         try {
             val querySnapshot = bookingsCollection
-                .whereEqualTo("date", date)
+                .whereEqualTo("date", dateMillis)
                 .get()
                 .await()
             return querySnapshot.documents.mapNotNull {

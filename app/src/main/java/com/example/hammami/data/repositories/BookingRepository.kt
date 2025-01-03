@@ -4,15 +4,14 @@ import android.util.Log
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
+import com.example.hammami.core.utils.DateTimeUtils.toMillis
 import com.example.hammami.data.datasource.booking.FirebaseFirestoreBookingDataSource
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
 import com.google.firebase.FirebaseException
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
 import java.time.LocalDate
-import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,18 +33,19 @@ class BookingRepository @Inject constructor(
                 when (userIdResult) {
                     is Result.Success -> {
                         val userId = userIdResult.data
+                        val bookingId = bookingDataSource.generateBookingId()
                         val booking = Booking(
+                            id = bookingId,
                             serviceId = service.id,
                             serviceName = service.name,
-                            date = selectedDate.toEpochDay()*(24*60*60*1000),
+                            dateMillis = selectedDate.toMillis(),
                             startTime = startTime,
                             endTime = endTime,
                             status = status,
                             userId = userId,
                         )
-                        val bookingDocument = bookingDataSource.saveBooking(booking)
-                        Log.d("BookingRepository", "Prenotazione creata con successo bookingDocument.id: ${bookingDocument.id}")
-                        Result.Success(booking.copy(id = bookingDocument.id))
+                        bookingDataSource.saveBooking(booking)
+                        Result.Success(booking)
                     }
 
                     is Result.Error -> {
@@ -78,7 +78,8 @@ class BookingRepository @Inject constructor(
 
     suspend fun getBookingsForDate(date: LocalDate): Result<List<Booking>, DataError> {
         return try {
-            val bookings = bookingDataSource.getBookingsForDate(date)
+            val dateMillis = date.toMillis()
+            val bookings = bookingDataSource.getBookingsForDate(dateMillis)
             Result.Success(bookings)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel recuperare le prenotazioni per data", e)

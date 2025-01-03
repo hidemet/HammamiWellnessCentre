@@ -1,15 +1,14 @@
 package com.example.hammami.domain.model
 
 import com.google.firebase.Timestamp
-import java.time.LocalDate
-import java.util.Date
+
 
 data class BookingDto(
     var id: String? = null,
     var serviceId: String? = null,
     var userId: String? = null,
     var serviceName: String? = null,
-    var date: Long? = null,
+    var dateMillis: Long? = null,
     var startTime: String? = null,
     var endTime: String? = null,
     var status: String? = null,
@@ -23,11 +22,11 @@ data class BookingDto(
     // Metodo di mappatura a Booking
     fun toBooking(): Booking {
         return Booking(
-            id = id,
+            id = id ?: throw IllegalArgumentException("L'id non puà essere nulla"),
             serviceId = serviceId ?: "",
             userId = userId ?: "",
             serviceName = serviceName ?: "",
-            date = date,
+            dateMillis = dateMillis ?: throw IllegalArgumentException("La data non puà essere nulla"),
             startTime = startTime ?: "",
             endTime = endTime ?: "",
             status = BookingStatus.valueOf(status ?: BookingStatus.RESERVED.name),

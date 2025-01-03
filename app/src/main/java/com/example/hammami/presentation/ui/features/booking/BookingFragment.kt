@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -16,12 +19,14 @@ import com.example.hammami.databinding.FragmentBookingBinding
 import com.example.hammami.domain.model.Service
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.presentation.ui.features.BaseFragment
+import com.example.hammami.presentation.ui.features.payment.PaymentViewModel
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BookingFragment : BaseFragment() {
@@ -29,12 +34,22 @@ class BookingFragment : BaseFragment() {
     private var _binding: FragmentBookingBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: BookingViewModel by activityViewModels()
     private val args: BookingFragmentArgs by navArgs()
-
-    private val service: Service by lazy { args.service }
+   private val service: Service by lazy { args.service }
     //  private var selectedDate: Date? = null
     // private var selectedTimeSlot: String? = null
+
+    @Inject
+    lateinit var bookingViewModelFactory: BookingViewModelFactory
+
+    private val viewModel: BookingViewModel by activityViewModels {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return bookingViewModelFactory.create(service) as T
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +60,6 @@ class BookingFragment : BaseFragment() {
     }
 
     override fun setupUI() {
-        viewModel.onServiceChanged(service)
         setupTopAppBar()
         setupListeners()
         binding.serviceNameTextView.text = service.name
@@ -64,7 +78,6 @@ class BookingFragment : BaseFragment() {
         when (event) {
             is BookingViewModel.BookingUiEvent.ShowError -> showSnackbar(event.message)
             is BookingViewModel.BookingUiEvent.ShowUserMassage -> showSnackbar(event.message)
-            is BookingViewModel.BookingUiEvent.BookingSuccess -> {}
             is BookingViewModel.BookingUiEvent.NavigateToPayment -> navigateToPayment(event.paymentItem)
         }
     }

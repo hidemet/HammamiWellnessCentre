@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -14,13 +13,11 @@ import androidx.navigation.fragment.navArgs
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentBookingSummaryBinding
 import com.example.hammami.domain.model.Booking
+import com.example.hammami.domain.model.localDate
 import com.example.hammami.presentation.ui.features.BaseFragment
-import com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @AndroidEntryPoint
 class BookingSummaryFragment : BaseFragment() {
@@ -68,7 +65,7 @@ class BookingSummaryFragment : BaseFragment() {
     private fun updateBookingUi(booking: Booking) {
 
         binding.bookingCard.serviceName.text = booking.serviceName
-        binding.bookingCard.bookingDate.text = booking.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        binding.bookingCard.bookingDate.text = booking.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
         binding.bookingCard.bookingTime.text = "${booking.startTime} - ${booking.endTime}"
 
 
