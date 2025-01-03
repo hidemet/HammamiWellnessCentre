@@ -12,9 +12,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hammami.databinding.FragmentAvailableGiftCardsBinding
 import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.payment.PaymentItem
+import com.example.hammami.databinding.FragmentAvailableGiftCardsBinding
 import com.example.hammami.presentation.ui.adapters.AvailableGiftCardAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AvailableGiftCardsFragment : BaseFragment() {
-    private var _binding: FragmentAvailableGiftCardsBinding? = null
+    private var _binding: com.example.hammami.databinding.FragmentAvailableGiftCardsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: GiftCardViewModel by activityViewModels()
     private lateinit var giftCardAdapter: AvailableGiftCardAdapter
@@ -67,7 +67,6 @@ class AvailableGiftCardsFragment : BaseFragment() {
             .actionAvailableGiftCardsFragmentToPaymentFragment(paymentItem)
         navController.navigate(direction)
     }
-
 
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {

@@ -17,7 +17,7 @@
 
         <action
             android:id="@+id/action_profileFragment_to_giftCardsFragment"
-            app:destination="@id/nav_graph_gift_cards"
+            app:destination="@id/giftCardsFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -45,9 +45,10 @@
             app:destination="@id/editContactInfoFragment" />
     </fragment>
 
-    <include app:graph="@navigation/nav_graph_gift_cards" />
 
     <include app:graph="@navigation/nav_graph_coupons" />
+
+
     <fragment
         android:id="@+id/editPersonalInfoFragment"
         android:name="com.example.hammami.presentation.ui.features.userProfile.editUser.EditPersonalInfoFragment"

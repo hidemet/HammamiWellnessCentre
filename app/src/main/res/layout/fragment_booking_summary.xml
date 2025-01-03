@@ -1,105 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".presentation.ui.features.booking.BookingSummaryFragment">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
+            style="@style/Widget.Material3.Toolbar.Surface"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="@string/booking_summary" />
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="@string/booking_summary"
+            app:titleCentered="true" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
-        android:id="@+id/bookingSummaryTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/booking_summary_title"
-        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBar" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <TextView
-        android:id="@+id/serviceNameLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/service_name_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bookingSummaryTitle" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-    <TextView
-        android:id="@+id/serviceName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/serviceNameLabel"
-        app:layout_constraintTop_toTopOf="@id/serviceNameLabel"
-        tools:text="Nome del Servizio" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/headerIcon"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginBottom="16dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.LargeComponent"
+                android:src="@drawable/ic_check_circle"
+                app:tint="?attr/colorTertiary"/>
 
-    <TextView
-        android:id="@+id/bookingDateLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/booking_date_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/serviceName" />
+            <TextView
+                android:id="@+id/titleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="@string/booking_confirmed"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
-    <TextView
-        android:id="@+id/bookingDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/bookingDateLabel"
-        app:layout_constraintTop_toTopOf="@id/bookingDateLabel"
-        tools:text="Data della Prenotazione" />
+            <include
+                android:id="@+id/bookingCard"
+                layout="@layout/item_booking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/bookingTimeLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/booking_time_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bookingDate" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/bookingTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/bookingTimeLabel"
-        app:layout_constraintTop_toTopOf="@id/bookingTimeLabel"
-        tools:text="Orario della Prenotazione" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonViewBookings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/view_bookings" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/goToHomeButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="@string/go_to_home"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonGoToHome"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/go_to_home" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

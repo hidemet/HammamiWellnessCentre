@@ -27,6 +27,9 @@ import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -54,7 +57,7 @@ class PaymentFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPaymentBinding.inflate(inflater, container, false)
-        return binding.root
+    return binding.root
     }
 
 
@@ -84,9 +87,9 @@ class PaymentFragment : BaseFragment() {
             is PaymentItem.ServiceBookingPayment -> {
                 serviceBookingDetails.isVisible = true
                 giftCardDetails.isVisible = false
-                serviceName.text = item.serviceName
-                serviceDateTime.text = item.date.toString()
-                serviceDuration.text = getString(R.string.service_duration_format, 60)
+                bookingCard.serviceName.text = item.serviceName
+                bookingCard.bookingDate.text = item.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                bookingCard.bookingTime.text = "${item.startTime} - ${item.endTime}"
                 // TODO("Convertire la durata startTime-endTime in minuti oppure cambiare il formato del layout")
             }
 
@@ -267,19 +270,28 @@ class PaymentFragment : BaseFragment() {
     }
 
     private suspend fun observeEvents() {
-        var isNavigating = false
         viewModel.event.collect { event ->
-            if (!isNavigating) {
-                when (event) {
-                    is PaymentEvent.NavigateToGiftCardGenerated -> {
-                        isNavigating = true
-                        navigateToGiftCardGenerated(event.transactionId)
-                    }
-
-                    is PaymentEvent.ShowError -> showSnackbar(event.message)
-                    else -> Unit
+            when (event) {
+                is PaymentEvent.NavigateToGiftCardGenerated -> {
+                    navigateToGiftCardGenerated(event.transactionId)
                 }
+
+                is PaymentEvent.NavigateToBookingSummary -> {
+                    navigateToBookingSummary(event.bookingId)
+                }
+
+                is PaymentEvent.ShowError -> showSnackbar(event.message)
+                PaymentEvent.NavigateBack -> TODO()
             }
+        }
+    }
+
+    private fun navigateToBookingSummary(bookingId: String) {
+        val currentDestination = findNavController().currentDestination?.id
+        if (currentDestination == R.id.paymentFragment) {
+            findNavController().navigate(
+                    PaymentFragmentDirections.actionPaymentFragmentToBookingSummaryFragment(bookingId)
+            )
         }
     }
 
