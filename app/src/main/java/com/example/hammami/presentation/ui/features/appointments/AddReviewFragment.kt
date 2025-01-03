@@ -22,7 +22,7 @@ import com.example.hammami.domain.usecase.GetCurrentUserDataUseCase
 import com.example.hammami.domain.usecase.GetReviewsUseCase
 import com.example.hammami.domain.usecase.SetReviewUseCase
 import com.example.hammami.presentation.ui.adapters.AddReviewAdapter
-import com.example.hammami.presentation.ui.adapters.AppointmentAdapter
+//import com.example.hammami.presentation.ui.adapters.AppointmentAdapter
 import com.example.hammami.presentation.ui.adapters.BeneficiAdapter
 import com.example.hammami.presentation.ui.adapters.Beneficio
 import com.example.hammami.presentation.ui.adapters.ReviewsAdapter
@@ -117,10 +117,6 @@ class AddReviewFragment : BaseFragment() {
         }
     }
      */
-
-
-
-
 
     private suspend fun observeEvents() {
         binding.btnInvia.setOnClickListener {
