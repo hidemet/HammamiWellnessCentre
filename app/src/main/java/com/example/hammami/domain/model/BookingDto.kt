@@ -16,10 +16,9 @@ data class BookingDto(
     var reservationTimestamp: Timestamp? = null,
     var transactionId: String? = null,
 ) {
-    // Costruttore senza argomenti per Firebase
     constructor() : this(null, null, null, null, null, null, null, null, null, null, null)
 
-    // Metodo di mappatura a Booking
+    // Metodo per mappare il Booking
     fun toBooking(): Booking {
         return Booking(
             id = id ?: throw IllegalArgumentException("L'id non puà essere nulla"),
