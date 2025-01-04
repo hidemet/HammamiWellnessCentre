@@ -71,7 +71,9 @@
                         android:textColor="?attr/colorOnSurface"
                         app:layout_constraintBottom_toBottomOf="@id/ShapeableImageView"
                         app:layout_constraintStart_toEndOf="@id/ShapeableImageView"
-                        app:layout_constraintTop_toTopOf="@id/ShapeableImageView" />
+                        app:layout_constraintTop_toTopOf="@id/ShapeableImageView"
+                        tools:text="1000"
+                        />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/couponPoints"
@@ -158,7 +160,7 @@
                         android:nestedScrollingEnabled="false"
                         android:paddingHorizontal="16dp"
                         android:paddingBottom="16dp"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@id/activeCouponsTitle"
                         tools:itemCount="4"
                         tools:listitem="@layout/item_active_voucher" />

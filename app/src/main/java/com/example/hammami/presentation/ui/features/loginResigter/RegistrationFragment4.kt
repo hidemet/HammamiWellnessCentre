@@ -8,20 +8,20 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.databinding.FragmentRegister4Binding
+import com.example.hammami.databinding.FragmentRegistration4Binding
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RegisterFragment4 : BaseFragment() {
+class RegistrationFragment4 : BaseFragment() {
     private val viewModel: RegisterViewModel by activityViewModels()
-    private var _binding: FragmentRegister4Binding? = null
+    private var _binding: FragmentRegistration4Binding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRegister4Binding.inflate(inflater, container, false)
+        _binding = FragmentRegistration4Binding.inflate(inflater, container, false)
         return binding.root
     }
 

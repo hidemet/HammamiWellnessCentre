@@ -17,27 +17,27 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment1"
-        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegisterFragment1"
+        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegistrationFragment1"
         android:label="RegisterFragment1"
-        tools:layout="@layout/fragment_register_1">
+        tools:layout="@layout/fragment_registration_1">
         <action
             android:id="@+id/action_registerFragment1_to_registerFragment2"
             app:destination="@id/registerFragment2" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment2"
-        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegisterFragment2"
+        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegistrationFragment2"
         android:label="RegisterFragment2"
-        tools:layout="@layout/fragment_register_2">
+        tools:layout="@layout/fragment_registration_2">
         <action
             android:id="@+id/action_registerFragment2_to_registerFragment3"
             app:destination="@id/registerFragment3" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment3"
-        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegisterFragment3"
+        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegistrationFragment3"
         android:label="RegisterFragment3"
-        tools:layout="@layout/fragment_register_3">
+        tools:layout="@layout/fragment_registration_3">
         <action
             android:id="@+id/action_registerFragment3_to_registerFragment2"
             app:destination="@id/registerFragment2" />
@@ -48,9 +48,9 @@
 
     <fragment
         android:id="@+id/registerFragment4"
-        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegisterFragment4"
+        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegistrationFragment4"
         android:label="RegisterFragment4"
-        tools:layout="@layout/fragment_register_4">
+        tools:layout="@layout/fragment_registration_4">
         <action
             android:id="@+id/action_registerFragment4_to_registerFragment5"
             app:destination="@id/registerFragment5" />
@@ -61,9 +61,9 @@
 
     <fragment
         android:id="@+id/registerFragment5"
-        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegisterFragment5"
+        android:name="com.example.hammami.presentation.ui.features.loginResigter.RegistrationFragment5"
         android:label="RegisterFragment4"
-        tools:layout="@layout/fragment_register_5">
+        tools:layout="@layout/fragment_registration_5">
 
         <action
             android:id="@+id/action_registerFragment5_to_loginFragment"

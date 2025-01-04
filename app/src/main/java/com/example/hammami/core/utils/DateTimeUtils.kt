@@ -9,4 +9,5 @@ object DateTimeUtils { // Utilizziamo un object per creare un singleton
     fun LocalDate.toMillis(): Long {
         return this.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
+
 }

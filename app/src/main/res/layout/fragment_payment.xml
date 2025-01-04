@@ -60,7 +60,8 @@
                         layout="@layout/item_booking"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        />
+                        android:visibility="visible" />
+                </LinearLayout>
                     <!-- Service Booking Details
                      <LinearLayout
                         android:id="@+id/serviceBookingDetails"
@@ -100,8 +101,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
+                        android:padding="16dp"
                         android:orientation="horizontal"
-                        >
+                        tools:visibility="gone">
 
                         <TextView
                             android:id="@+id/giftCardTitle"
@@ -123,7 +125,6 @@
                             android:textColor="?attr/colorOnSurface" />
 
                     </LinearLayout>
-                </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 

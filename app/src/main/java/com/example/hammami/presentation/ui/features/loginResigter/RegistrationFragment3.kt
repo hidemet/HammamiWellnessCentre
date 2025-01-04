@@ -8,14 +8,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.databinding.FragmentRegister1Binding
+import com.example.hammami.databinding.FragmentRegistration3Binding
 import com.example.hammami.presentation.ui.features.BaseFragment
+import com.example.hammami.presentation.ui.features.loginResigter.RegisterViewModel.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RegisterFragment1 : BaseFragment() {
+class RegistrationFragment3 : BaseFragment() {
     private val viewModel: RegisterViewModel by activityViewModels()
-    private var _binding: FragmentRegister1Binding? = null
+    private var _binding: FragmentRegistration3Binding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -23,47 +24,46 @@ class RegisterFragment1 : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRegister1Binding.inflate(inflater, container, false)
+        _binding = FragmentRegistration3Binding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun setupUI() {
         with(binding) {
-            topAppBar.setNavigationOnClickListener { findNavController().navigateUp() }
+            topAppBar.setNavigationOnClickListener { onBackClick() }
             buttonNext.setOnClickListener { validateAndProceed() }
         }
     }
 
 
-
     override fun observeFlows() {
         viewModel.state.collectLatestLifecycleFlow { state ->
-            binding.textFieldFirstName.editText?.setText(state.firstName)
-            binding.textFieldLastName.editText?.setText(state.lastName)
-            updateFieldValidationUI(binding.textFieldFirstName, state.firstNameError)
-            updateFieldValidationUI(binding.textFieldLastName, state.lastNameError)
+            binding.textFieldPhoneNumber.editText?.setText(state.phoneNumber)
+            binding.textFieldEmail.editText?.setText(state.email)
+            updateFieldValidationUI(binding.textFieldPhoneNumber, state.phoneNumberError)
+            updateFieldValidationUI(binding.textFieldEmail, state.emailError)
         }
     }
 
     private fun validateAndProceed() {
-        val firstName = binding.textFieldFirstName.editText?.text.toString()
-        val lastName = binding.textFieldLastName.editText?.text.toString()
+        val phoneNumber = binding.textFieldPhoneNumber.editText?.text.toString()
+        val email = binding.textFieldEmail.editText?.text.toString()
 
         showLoading(true)
         viewModel.validateAndUpdateStep(
-            RegistrationStep.PERSONAL_INFO,
-            mapOf("firstName" to firstName, "lastName" to lastName)
+            RegistrationStep.CONTACT_INFO,
+            mapOf("phoneNumber" to phoneNumber, "email" to email)
         ).collectLatestLifecycleFlow { result ->
             showLoading(false)
             when (result) {
-                is RegisterViewModel.ValidationResult.Success -> {
-                    findNavController().navigate(R.id.action_registerFragment1_to_registerFragment2)
+                is ValidationResult.Success -> {
+                    findNavController().navigate(R.id.action_registerFragment3_to_registerFragment4)
                 }
-                is RegisterViewModel.ValidationResult.Error -> {
+                is ValidationResult.Error -> {
                     result.errors.forEach { (field, error) ->
                         when (field) {
-                            "firstName" -> updateFieldValidationUI(binding.textFieldFirstName, error)
-                            "lastName" -> updateFieldValidationUI(binding.textFieldLastName, error)
+                            "phoneNumber" -> updateFieldValidationUI(binding.textFieldPhoneNumber, error)
+                            "email" -> updateFieldValidationUI(binding.textFieldEmail, error)
                         }
                     }
                     showSnackbar(UiText.StringResource(R.string.please_correct_errors))

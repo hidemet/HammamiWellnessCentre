@@ -8,7 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.databinding.FragmentRegister2Binding
+import com.example.hammami.databinding.FragmentRegistration2Binding
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.loginResigter.RegisterViewModel.*
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -17,9 +17,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @AndroidEntryPoint
-class RegisterFragment2 : BaseFragment() {
+class RegistrationFragment2 : BaseFragment() {
     private val viewModel: RegisterViewModel by activityViewModels()
-    private var _binding: FragmentRegister2Binding? = null
+    private var _binding: FragmentRegistration2Binding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -27,7 +27,7 @@ class RegisterFragment2 : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRegister2Binding.inflate(inflater, container, false)
+        _binding = FragmentRegistration2Binding.inflate(inflater, container, false)
         return binding.root
     }
 

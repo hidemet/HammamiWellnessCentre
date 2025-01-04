@@ -8,14 +8,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.databinding.FragmentRegister5Binding
+import com.example.hammami.databinding.FragmentRegistration5Binding
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RegisterFragment5 : BaseFragment() {
+class RegistrationFragment5 : BaseFragment() {
     private val viewModel: RegisterViewModel by activityViewModels()
-    private var _binding: FragmentRegister5Binding? = null
+    private var _binding: FragmentRegistration5Binding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -23,7 +23,7 @@ class RegisterFragment5 : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRegister5Binding.inflate(inflater, container, false)
+        _binding = FragmentRegistration5Binding.inflate(inflater, container, false)
         return binding.root
     }
 

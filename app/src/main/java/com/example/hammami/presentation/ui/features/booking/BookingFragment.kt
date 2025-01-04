@@ -14,6 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.hammami.R
+import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.utils.TimeSlotCalculator
 import com.example.hammami.databinding.FragmentBookingBinding
 import com.example.hammami.domain.model.Service
@@ -63,6 +65,11 @@ class BookingFragment : BaseFragment() {
         setupTopAppBar()
         setupListeners()
         binding.serviceNameTextView.text = service.name
+
+        // Imposta la data corrente sul CalendarView
+        binding.calendarView.date = Calendar.getInstance().timeInMillis
+        updateAvailableTimeSlots(Calendar.getInstance())
+
     }
 
     override fun observeFlows() {
@@ -144,14 +151,21 @@ class BookingFragment : BaseFragment() {
     }
 
     private fun setupListeners() {
-        binding.calendarView.minDate = Calendar.getInstance().timeInMillis
         binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val calendar = Calendar.getInstance()
             calendar.set(year, month, dayOfMonth)
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val formattedDate = dateFormat.format(calendar.time)
-            Log.d("BookingFragment", "Data selezionata: $formattedDate")
-            viewModel.onDateSelected(formattedDate)
+
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+            if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.MONDAY) {
+                // Pulisci gli slot e mostra il messaggio
+                binding.timeSlotsChipGroup.removeAllViews()
+                showSnackbar(UiText.StringResource(R.string.giorni_chiusura))
+            } else {
+                updateAvailableTimeSlots(calendar)
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val formattedDate = dateFormat.format(calendar.time)
+                viewModel.onDateSelected(formattedDate)
+            }
         }
 
         binding.bookButton.setOnClickListener {
@@ -160,6 +174,13 @@ class BookingFragment : BaseFragment() {
             }
         }
     }
+
+    private fun updateAvailableTimeSlots(calendar: Calendar) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val formattedDate = dateFormat.format(calendar.time)
+        viewModel.onDateSelected(formattedDate)
+    }
+
 
 
     override fun onDestroyView() {

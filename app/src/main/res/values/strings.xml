@@ -527,6 +527,7 @@
     <string name="contact_info">Contatti</string>
     <string name="confirm_password_message">Inserisci la password associata alla tua email attuale (%1$s) per confermare la modifica.</string>
     <string name="error_required_password">Inserisci la password</string>
+    <string name="giorni_chiusura">Il negozio è chiuso la domenica e il lunedì.</string>
 
 
 </resources>
