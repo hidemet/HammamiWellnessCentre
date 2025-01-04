@@ -36,9 +36,10 @@ class NewAppointmentsFragment : BaseFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadNewAppointmentsData(viewModel.userEmail!!)
-        Log.e("NewAppointmentsFragment", "email: ${viewModel.userEmail}")
-        Log.e("NewAppointmentsFragment", "emailUiState: ${viewModel.uiState.value.user?.email}")
+        //viewModel.loadNewAppointmentsData(viewModel.userId!!)
+        viewModel.loadUserBookingsSeparated(viewModel.userId!!)
+        //Log.e("NewAppointmentsFragment", "email: ${viewModel.userEmail}")
+        //Log.e("NewAppointmentsFragment", "emailUiState: ${viewModel.uiState.value.user?.email}")
         setupUI()
         observeFlows()
     }

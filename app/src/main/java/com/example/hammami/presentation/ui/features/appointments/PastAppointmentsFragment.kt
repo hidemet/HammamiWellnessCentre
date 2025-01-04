@@ -5,23 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hammami.R
-import com.example.hammami.databinding.FragmentBenessereBinding
-import com.example.hammami.databinding.FragmentNewAppointmentsBinding
 import com.example.hammami.databinding.FragmentPastAppointmentsBinding
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel
-import com.example.hammami.presentation.ui.adapters.AppointmentAdapter
-import com.example.hammami.presentation.ui.adapters.BenessereAdapter
-import com.example.hammami.presentation.ui.adapters.OldAppointmentsAdapter
+import com.example.hammami.presentation.ui.adapters.PastAppointmentAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
-import com.example.hammami.presentation.ui.features.service.BenessereFragment
-import com.example.hammami.presentation.ui.features.service.BenessereViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -29,7 +20,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class PastAppointmentsFragment : BaseFragment(){
 
-    private lateinit var appointmentAdapter: OldAppointmentsAdapter
+    private lateinit var appointmentAdapter: PastAppointmentAdapter
 
     private var _binding: FragmentPastAppointmentsBinding? = null
     private val binding get() = _binding!!
@@ -43,9 +34,20 @@ class PastAppointmentsFragment : BaseFragment(){
         return binding.root
     }
 
+    /*
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.loadPastAppointmentsData(viewModel.userEmail!!)
+        setupUI()
+        observeFlows()
+    }
+     */
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.e("PastAppointmentsFragment", "userid: ${viewModel.userId}")
+        //viewModel.loadPastAppointmentsData(viewModel.userId!!)
+        viewModel.loadUserBookingsSeparated(viewModel.userId!!)
         setupUI()
         observeFlows()
     }
@@ -81,7 +83,7 @@ class PastAppointmentsFragment : BaseFragment(){
     }
 
     private fun setupRecyclerView() {
-        appointmentAdapter = OldAppointmentsAdapter()
+        appointmentAdapter = PastAppointmentAdapter()
         binding.rvPastAppointments.apply{
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

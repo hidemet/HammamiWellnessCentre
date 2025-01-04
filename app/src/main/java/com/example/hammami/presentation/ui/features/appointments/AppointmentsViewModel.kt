@@ -10,6 +10,8 @@ import com.example.hammami.domain.model.User
 import com.example.hammami.domain.usecase.GetCurrentUserDataUseCase
 import com.example.hammami.domain.usecase.appointment.GetNewAppointmentUseCase
 import com.example.hammami.domain.usecase.appointment.GetPastAppointmentUseCase
+import com.example.hammami.domain.usecase.booking.GetUserBookingsUseCase
+import com.example.hammami.domain.usecase.user.GetUserBookingSeparatedUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,9 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppointmentsViewModel @Inject constructor(
-    private val getNewAppointmentUseCase: GetNewAppointmentUseCase,
-    private val getPastAppointmentUseCase: GetPastAppointmentUseCase,
-    private val getCurrentUserDataUseCase: GetCurrentUserDataUseCase
+    private val getNewAppointmentUseCase: GetUserBookingsUseCase,
+    private val getPastAppointmentUseCase: GetUserBookingsUseCase,
+    private val getCurrentUserDataUseCase: GetCurrentUserDataUseCase,
+    private val getUserBookingsSeparatedUseCase: GetUserBookingSeparatedUseCase
 ): ViewModel() {
 
     private val _newAppointments = MutableStateFlow<List<Booking>>(emptyList())
@@ -42,6 +45,8 @@ class AppointmentsViewModel @Inject constructor(
 
     val userEmail = FirebaseAuth.getInstance().currentUser?.email
 
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
     init {
         loadUserData()
     }
@@ -54,6 +59,7 @@ class AppointmentsViewModel @Inject constructor(
     }
      */
 
+    /*
     fun loadNewAppointmentsData(clientEmail: String){
         viewModelScope.launch {
             when (val result = getNewAppointmentUseCase(clientEmail)) {
@@ -68,7 +74,9 @@ class AppointmentsViewModel @Inject constructor(
             }
         }
     }
+     */
 
+    /*
     fun loadPastAppointmentsData(clientEmail: String){
         viewModelScope.launch {
             when (val result = getPastAppointmentUseCase(clientEmail)) {
@@ -80,6 +88,55 @@ class AppointmentsViewModel @Inject constructor(
                 }
 
                 else -> {}
+            }
+        }
+    }
+     */
+
+    /*
+    fun loadPastAppointmentsData(clientId: String){
+        viewModelScope.launch {
+            when (val result = getPastAppointmentUseCase(clientId)) {
+                is Result.Success -> {
+                    _pastAppointments.update { result.data }
+                }
+                is Result.Error -> {
+                    emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    fun loadNewAppointmentsData(clientId: String){
+        viewModelScope.launch {
+            when (val result = getNewAppointmentUseCase(clientId)) {
+                is Result.Success -> {
+                    _newAppointments.update { result.data }
+                }
+                is Result.Error -> {
+                    emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+     */
+
+    fun loadUserBookingsSeparated(userId: String) {
+        viewModelScope.launch {
+            when (val result = getUserBookingsSeparatedUseCase(userId)) {
+                is Result.Success -> {
+                    val (pastBookings, futureBookings) = result.data
+                    _pastAppointments.update { pastBookings }
+                    _newAppointments.update { futureBookings }
+                }
+                is Result.Error -> {
+                    emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
+                }
             }
         }
     }

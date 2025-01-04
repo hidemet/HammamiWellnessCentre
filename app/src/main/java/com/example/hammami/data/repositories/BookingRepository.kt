@@ -97,6 +97,21 @@ class BookingRepository @Inject constructor(
         }
     }
 
+    suspend fun getUserBookingsSeparated(userId: String): Result<Pair<List<Booking>, List<Booking>>, DataError> {
+        return try {
+            val bookings = bookingDataSource.getUserBookings(userId)
+            val currentDate = LocalDate.now().toMillis()
+
+            val pastBookings = bookings.filter { it.dateMillis < currentDate }
+            val futureBookings = bookings.filter { it.dateMillis >= currentDate }
+
+            Result.Success(Pair(pastBookings, futureBookings))
+        } catch (e: Exception) {
+            Log.e("BookingRepository", "Errore nel recuperare le prenotazioni dell'utente", e)
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
     suspend fun getBookingById(bookingId: String): Result<Booking, DataError> {
         return try {
             val booking = bookingDataSource.getBookingById(bookingId)

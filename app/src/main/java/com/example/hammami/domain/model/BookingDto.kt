@@ -21,11 +21,11 @@ data class BookingDto(
     // Metodo per mappare il Booking
     fun toBooking(): Booking {
         return Booking(
-            id = id ?: throw IllegalArgumentException("L'id non puà essere nulla"),
+            id = id ?: throw IllegalArgumentException("L'id non può essere nullo"),
             serviceId = serviceId ?: "",
             userId = userId ?: "",
             serviceName = serviceName ?: "",
-            dateMillis = dateMillis ?: throw IllegalArgumentException("La data non puà essere nulla"),
+            dateMillis = dateMillis ?: throw IllegalArgumentException("La data non può essere nulla"),
             startTime = startTime ?: "",
             endTime = endTime ?: "",
             status = BookingStatus.valueOf(status ?: BookingStatus.RESERVED.name),
