@@ -41,7 +41,7 @@ class PastAppointmentAdapter : ListAdapter<Booking, PastAppointmentAdapter.ViewH
         private fun ItemAppuntamentoPassatoBinding.setupClickListener(appointment: Booking) {
             root.setOnClickListener {
                 val action =
-                    AppointmentsFragmentDirections.actionAppointmentsFragmentToAppointmentDetailFragment(
+                    AppointmentsFragmentDirections.actionAppointmentsFragmentToAddReviewFragment(
                         appointment
                     )
                 it.findNavController().navigate(action)

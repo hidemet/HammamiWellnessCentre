@@ -142,13 +142,14 @@ class AddReviewFragment : BaseFragment() {
                     when (val result = setReviewUseCase(reviewToAdd)) {
                         is Result.Success -> {
                             val reviewId = result.data.first
-                            when(val result2 = getIdFromNameUseCase("Stone massage")) {
+                            when(val result2 = getIdFromNameUseCase(args.appointment.serviceName)) {
                                 is Result.Success -> {
                                     val serviceId = result2.data.toString()
                                     //Log.e("AddReview", "Nome servizio: $nomeServizio")
                                     //Log.e("AddReview", "serviceId: $serviceId")
                                     addReviewToServiceUseCase(serviceId, reviewId)
                                     //Log.e("AddReview", "Recensione aggiunta al servizio")
+                                    onBackClick()
                                     }
                                 is Result.Error -> {
                                     // Gestisci l'errore
@@ -163,8 +164,6 @@ class AddReviewFragment : BaseFragment() {
             }
         }
             // AGGIUNGERE FEEDBACK ALL'UTENTE DELL'AVVENUTO INVIO DELLA RECENSIONE E POI FARLO TORNARE ALLA PAGINA PRECEDENTE
-
-            // onBackClick()
     }
 
     private suspend fun setRatingBar() {
