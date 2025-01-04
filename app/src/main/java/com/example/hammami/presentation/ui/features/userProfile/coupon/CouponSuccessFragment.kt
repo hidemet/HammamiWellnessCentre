@@ -45,6 +45,7 @@ class CouponSuccessFragment : BaseFragment() {
     private fun setupCouponDetails() {
         viewModel.uiState.value.generatedCoupon?.let { coupon ->
             with(binding.couponCard) {
+                icon.setImageResource(R.drawable.ic_coupon)
                 titleText.text = getString(
                     R.string.coupon,
                 )

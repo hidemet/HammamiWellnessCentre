@@ -50,6 +50,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.servizioDetailFragment,
                 R.id.bookingFragment,
                 R.id.bookingSummaryFragment,
+                R.id.couponFragment,
+                R.id.couponSelectionFragment,
+                R.id.couponSuccessFragment
                 -> {
                     binding.bottomNavigation.visibility = View.GONE
                 }
