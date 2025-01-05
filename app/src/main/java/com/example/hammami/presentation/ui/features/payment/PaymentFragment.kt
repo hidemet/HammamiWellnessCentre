@@ -1,10 +1,12 @@
 package com.example.hammami.presentation.ui.features.payment
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
@@ -23,7 +25,9 @@ import com.example.hammami.core.formatter.setupExpiryDateFormatting
 import com.example.hammami.databinding.FragmentPaymentBinding
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.domain.model.payment.PaymentMethod
+import com.example.hammami.domain.usecase.booking.GetBookingByIdUseCase
 import com.example.hammami.presentation.ui.features.BaseFragment
+import com.example.hammami.presentation.ui.features.NotificationReceiverFragment.Companion.REQUEST_CODE_POST_NOTIFICATIONS
 import com.example.hammami.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -31,6 +35,17 @@ import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
+import com.example.hammami.core.result.Result
+import android.Manifest
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import com.example.hammami.presentation.ui.features.NotificationReceiverFragment
+import java.util.Calendar
+import java.util.TimeZone
 
 
 @AndroidEntryPoint
@@ -38,6 +53,9 @@ class PaymentFragment : BaseFragment() {
     private var _binding: FragmentPaymentBinding? = null
     private val binding get() = _binding!!
     private val args: PaymentFragmentArgs by navArgs()
+
+    @Inject
+    lateinit var getBookingByIdUseCase: GetBookingByIdUseCase
 
     @Inject
     lateinit var paymentViewModelFactory: PaymentViewModelFactory
@@ -277,6 +295,7 @@ class PaymentFragment : BaseFragment() {
                 }
 
                 is PaymentEvent.NavigateToBookingSummary -> {
+                    notifiche(event.bookingId)
                     navigateToBookingSummary(event.bookingId)
                 }
 
@@ -284,6 +303,80 @@ class PaymentFragment : BaseFragment() {
                 PaymentEvent.NavigateBack -> TODO()
             }
         }
+    }
+
+    private suspend fun notifiche(bookingId: String) {
+        when (val result = getBookingByIdUseCase(bookingId)) {
+            is Result.Error -> {
+                // Gestisci l'errore
+            }
+
+            is Result.Success -> {
+                val bookingDateMillis = result.data.dateMillis
+                val notificationTime = bookingDateMillis - 24 * 60 * 60 * 1000 // 24 hours before the booking time
+
+                if (ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        REQUEST_CODE_POST_NOTIFICATIONS
+                    )
+                    return
+                }
+                scheduleNotification(requireContext(), notificationTime, bookingId)
+            }
+
+        }
+    }
+
+    fun getTimestampFromDateAndTime(day: Int, month: Int, year: Int, hour: Int, minute: Int): Long {
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))  //    <-------------------------------    CONTROLLA TIMEZONE
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month - 1)
+        calendar.set(Calendar.DAY_OF_MONTH, day)
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
+        return calendar.timeInMillis
+    }
+
+    fun scheduleNotification(context: Context, notificationTimeIng: Long, appointmentId: String) {
+        //val appointmentTimestamp = getTimestampFromDateAndTime(day, month, year, hour, minute)
+        val notificationTime = System.currentTimeMillis() + 5000    //per testare il funzionamento senza dover aspettare 24 ore prima usare questo: val notificationTime = System.currentTimeMillis() + 5000
+
+        Log.d("NotificationTest", "Scheduling notification for appointmentId: $appointmentId at time: $notificationTime ( ${java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(java.util.Date(notificationTime))} )")
+
+        val intent = Intent(context, NotificationReceiverFragment::class.java).apply {
+            putExtra("appointmentId", appointmentId)
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            appointmentId.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()) {
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                context.startActivity(intent)
+                return
+            }
+        }
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            notificationTime,
+            pendingIntent
+        )
     }
 
     private fun navigateToBookingSummary(bookingId: String) {

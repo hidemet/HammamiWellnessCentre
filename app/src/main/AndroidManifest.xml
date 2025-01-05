@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
 
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
         android:name=".HammamiApplication"
         android:allowBackup="true"
