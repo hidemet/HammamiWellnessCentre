@@ -202,6 +202,35 @@
         <argument
             android:name="appointment"
             app:argType="com.example.hammami.domain.model.Booking" />
+        <action
+            android:id="@+id/action_AddReviewFragment_to_reviewSummaryFragment"
+            app:destination="@id/reviewSummaryFragment">
+            <argument
+                android:name="serviceName"
+                app:argType="string" />
+            <argument
+                android:name="review"
+                app:argType="com.example.hammami.domain.model.Review" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/reviewSummaryFragment"
+        android:name="com.example.hammami.presentation.ui.features.appointments.ReviewSummaryFragment"
+        android:label="Riepilogo recensione"
+        tools:layout="@layout/fragment_confirm_review">
+        <argument
+            android:name="serviceName"
+            app:argType="string" />
+        <argument
+            android:name="review"
+            app:argType="com.example.hammami.domain.model.Review" />
+
+        <action
+            android:id="@+id/action_reviewSummaryFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/client_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

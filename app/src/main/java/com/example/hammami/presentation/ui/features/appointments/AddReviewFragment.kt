@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -38,6 +39,7 @@ import com.example.hammami.core.result.Result
 import com.example.hammami.domain.usecase.AddReviewToServiceUseCase
 import com.example.hammami.domain.usecase.GetCollectionFromServiceIdUseCase
 import com.example.hammami.domain.usecase.GetIdFromNameUseCase
+import com.example.hammami.presentation.ui.features.service.BenessereFragmentDirections
 
 @AndroidEntryPoint
 class AddReviewFragment : BaseFragment() {
@@ -149,7 +151,13 @@ class AddReviewFragment : BaseFragment() {
                                     //Log.e("AddReview", "serviceId: $serviceId")
                                     addReviewToServiceUseCase(serviceId, reviewId)
                                     //Log.e("AddReview", "Recensione aggiunta al servizio")
-                                    onBackClick()
+                                    //onBackClick()
+                                    val action =
+                                        AddReviewFragmentDirections.actionAddReviewFragmentToReviewSummaryFragment(
+                                            args.appointment.serviceName,
+                                            reviewToAdd
+                                        )
+                                    it.findNavController().navigate(action)
                                     }
                                 is Result.Error -> {
                                     // Gestisci l'errore
@@ -163,7 +171,7 @@ class AddReviewFragment : BaseFragment() {
                 }
             }
         }
-            // AGGIUNGERE FEEDBACK ALL'UTENTE DELL'AVVENUTO INVIO DELLA RECENSIONE E POI FARLO TORNARE ALLA PAGINA PRECEDENTE
+
     }
 
     private suspend fun setRatingBar() {
