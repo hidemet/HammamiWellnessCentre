@@ -1,4 +1,4 @@
-package com.example.hammami.util
+package com.example.hammami.core.utils
 
 import android.content.ClipData
 import android.content.ClipboardManager

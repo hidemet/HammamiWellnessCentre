@@ -2,15 +2,12 @@ package com.example.hammami.data.datasource.booking
 
 import android.util.Log
 import com.example.hammami.domain.model.Booking
-import com.example.hammami.domain.model.BookingDto
+import com.example.hammami.data.entity.BookingDto
 import com.example.hammami.domain.model.BookingStatus
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
 import kotlinx.coroutines.tasks.await
-import java.time.LocalDate
-import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,9 +31,10 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         }
     }
 
-    fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus) {
+    fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus, amount: Double) {
         try {
             val bookingRef = bookingsCollection.document(bookingId)
+            transaction.update(bookingRef,"price", amount)
             transaction.update(bookingRef, "status", status)
         } catch (e: FirebaseFirestoreException) {
             throw e

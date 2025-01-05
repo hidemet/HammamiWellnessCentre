@@ -63,10 +63,13 @@ class BookingSummaryFragment : BaseFragment() {
     }
 
     private fun updateBookingUi(booking: Booking) {
+        with(binding) {
+            bookingCard.serviceName.text = booking.serviceName
+            bookingCard.bookingDate.text = booking.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
+            bookingCard.bookingTime.text = "${booking.startTime} - ${booking.endTime}"
+            bookingPrice.text = getString(R.string.booking_price_format, booking.price)
+        }
 
-        binding.bookingCard.serviceName.text = booking.serviceName
-        binding.bookingCard.bookingDate.text = booking.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
-        binding.bookingCard.bookingTime.text = "${booking.startTime} - ${booking.endTime}"
 
 
         // Gestione click sulla card

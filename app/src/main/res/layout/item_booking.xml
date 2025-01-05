@@ -85,6 +85,30 @@
                 tools:text="10:00 - 11:00" />
 
         </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:id="@+id/bookingPriceLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:gravity="center_vertical">-->
+
+<!--        <ImageView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/ic_euro"-->
+<!--            android:contentDescription="icona soldi"-->
+<!--            app:tint="?attr/colorPrimary" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/bookingPrice"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"-->
+<!--            tools:text="150 €" />-->
+
+<!--    </LinearLayout>-->
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

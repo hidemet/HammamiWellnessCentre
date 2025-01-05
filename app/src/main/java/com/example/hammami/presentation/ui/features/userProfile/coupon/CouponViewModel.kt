@@ -13,7 +13,7 @@ import com.example.hammami.domain.usecase.voucher.GetUserVouchersByType
 import com.example.hammami.domain.usecase.coupon.GetAvailableCouponsUseCase
 import com.example.hammami.domain.usecase.coupon.RedeemCouponUseCase
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
-import com.example.hammami.util.ClipboardManager
+import com.example.hammami.core.utils.ClipboardManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

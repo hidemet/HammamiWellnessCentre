@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.result.Result
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.core.utils.TimeSlotCalculator
+import com.example.hammami.core.time.TimeSlotCalculator
 import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.BookingStatus
@@ -118,11 +118,12 @@ class BookingViewModel @AssistedInject constructor(
                     val currentBookingId = uiState.value.currentBookingId
 
                     val paymentItem = PaymentItem.ServiceBookingPayment.from(
-                        service = state.service!!,
+                        service = state.service,
                         bookingId = currentBookingId ?: "",
                         date = selectedDate,
                         startTime = selectedTimeSlot.startTime,
-                        endTime = selectedTimeSlot.endTime
+                        endTime = selectedTimeSlot.endTime,
+                        price = service.price!!.toDouble()
                     )
                     _uiEvent.emit(BookingUiEvent.NavigateToPayment(paymentItem))
                 } else {
@@ -144,6 +145,7 @@ class BookingViewModel @AssistedInject constructor(
         val service = uiState.value.service ?: return
         val selectedDate = uiState.value.selectedDate ?: return
         val selectedTimeSlot = uiState.value.selectedTimeSlot ?: return
+        val price = service.price?.toDouble() ?: 0.0
 
         releaseSlotTimerJob?.cancel() // Annulla il timer precedente, se presente
 
@@ -152,7 +154,8 @@ class BookingViewModel @AssistedInject constructor(
             selectedDate = selectedDate,
             startTime = selectedTimeSlot.startTime,
             endTime = selectedTimeSlot.endTime,
-            status = BookingStatus.RESERVED
+            status = BookingStatus.RESERVED,
+            price = price
         )) {
             is Result.Success -> {
                 Log.d("BookingViewModel", "currentBookingId: ${result.data.id}")
@@ -234,7 +237,7 @@ class BookingViewModel @AssistedInject constructor(
     }
 
     data class BookingUiState(
-        val service: Service? = null,
+        val service: Service,
         val currentBookingId: String? = null,
         val availableTimeSlots: List<TimeSlotCalculator.AvailableSlot> = emptyList(),
         val selectedDate: LocalDate? = null,

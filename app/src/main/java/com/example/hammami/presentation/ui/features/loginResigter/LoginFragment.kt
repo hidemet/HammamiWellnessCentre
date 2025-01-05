@@ -19,7 +19,7 @@ import com.example.hammami.databinding.FragmentLoginBinding
 import com.example.hammami.presentation.ui.activities.MainActivity
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.loginResigter.LoginViewModel.*
-import com.example.hammami.util.hideKeyboardOnOutsideTouch
+import com.example.hammami.core.utils.hideKeyboardOnOutsideTouch
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

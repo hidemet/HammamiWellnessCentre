@@ -26,9 +26,10 @@ sealed class PaymentItem : Parcelable {
                 bookingId: String,
                 date: LocalDate,
                 startTime: String,
-                endTime: String
+                endTime: String,
+                price: Double
             ): ServiceBookingPayment = ServiceBookingPayment(
-                price = service.price!!.toDouble(),
+                price = price,
                 serviceName = service.name,
                 bookingId = bookingId,
                 date = date,

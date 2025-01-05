@@ -1,8 +1,7 @@
-package com.example.hammami.core.utils
+package com.example.hammami.core.time
 
 import java.time.LocalDate
 import java.time.ZoneId
-
 
 object DateTimeUtils { // Utilizziamo un object per creare un singleton
 

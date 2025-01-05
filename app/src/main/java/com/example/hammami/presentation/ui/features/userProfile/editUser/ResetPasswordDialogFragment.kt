@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.hammami.R
 import com.example.hammami.databinding.DialogResetPasswordBinding
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel
+import com.example.hammami.presentation.ui.features.userProfile.UserProfileViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

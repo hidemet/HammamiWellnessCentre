@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -18,8 +17,6 @@ import com.example.hammami.databinding.FragmentUserProfileBinding
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.domain.model.ItemProfileOption
 import com.example.hammami.domain.model.User
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

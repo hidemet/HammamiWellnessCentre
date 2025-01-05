@@ -3,7 +3,7 @@ package com.example.hammami.domain.usecase.booking
 import com.example.hammami.core.result.Result
 import com.example.hammami.data.repositories.BookingRepository
 import com.example.hammami.domain.error.DataError
-import com.example.hammami.core.utils.TimeSlotCalculator
+import com.example.hammami.core.time.TimeSlotCalculator
 import java.time.LocalDate
 import javax.inject.Inject
 

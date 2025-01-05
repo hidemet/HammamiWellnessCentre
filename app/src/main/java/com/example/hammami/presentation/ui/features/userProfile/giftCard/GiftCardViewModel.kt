@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.utils.asUiText
-import com.example.hammami.util.ClipboardManager
+import com.example.hammami.core.utils.ClipboardManager
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.Voucher

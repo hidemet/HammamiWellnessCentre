@@ -1,4 +1,4 @@
-package com.example.hammami.presentation.ui.activities
+package com.example.hammami.presentation.ui.features.userProfile
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel

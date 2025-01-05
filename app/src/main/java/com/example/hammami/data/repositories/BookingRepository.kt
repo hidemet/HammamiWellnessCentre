@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
-import com.example.hammami.core.utils.DateTimeUtils.toMillis
+import com.example.hammami.core.time.DateTimeUtils.toMillis
 import com.example.hammami.data.datasource.booking.FirebaseFirestoreBookingDataSource
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
@@ -26,7 +26,8 @@ class BookingRepository @Inject constructor(
         selectedDate: LocalDate,
         startTime: String,
         endTime: String,
-        status: BookingStatus
+        status: BookingStatus,
+        price: Double
     ): Result<Booking, DataError> {
         return try {
             authRepository.getCurrentUserId().let { userIdResult ->
@@ -43,6 +44,7 @@ class BookingRepository @Inject constructor(
                             endTime = endTime,
                             status = status,
                             userId = userId,
+                            price = price
                         )
                         bookingDataSource.saveBooking(booking)
                         Result.Success(booking)
@@ -62,13 +64,14 @@ class BookingRepository @Inject constructor(
     fun updateBooking(
         transaction: Transaction,
         bookingId: String,
-        status: BookingStatus
+        status: BookingStatus,
+        amount: Double
     ): Result<Unit, DataError> {
         return try {
             if(bookingId.isBlank()) {
                 return Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
             }
-            bookingDataSource.updateBooking(transaction, bookingId, status)
+            bookingDataSource.updateBooking(transaction, bookingId, status, amount)
             Result.Success(Unit)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nell'aggiornare la prenotazione", e)

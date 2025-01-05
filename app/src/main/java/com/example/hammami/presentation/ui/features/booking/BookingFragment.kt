@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,12 +15,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.core.utils.TimeSlotCalculator
+import com.example.hammami.core.time.TimeSlotCalculator
 import com.example.hammami.databinding.FragmentBookingBinding
 import com.example.hammami.domain.model.Service
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.presentation.ui.features.BaseFragment
-import com.example.hammami.presentation.ui.features.payment.PaymentViewModel
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

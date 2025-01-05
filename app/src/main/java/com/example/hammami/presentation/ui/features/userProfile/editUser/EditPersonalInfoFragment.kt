@@ -12,11 +12,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentEditPersonalInfoBinding // Nuovo binding
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel.UiEvent
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel.UiState
+import com.example.hammami.presentation.ui.features.userProfile.UserProfileViewModel
+import com.example.hammami.presentation.ui.features.userProfile.UserProfileViewModel.UiEvent
+import com.example.hammami.presentation.ui.features.userProfile.UserProfileViewModel.UiState
 import com.example.hammami.presentation.ui.features.BaseFragment
-import com.example.hammami.util.hideKeyboard
+import com.example.hammami.core.utils.hideKeyboard
 import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

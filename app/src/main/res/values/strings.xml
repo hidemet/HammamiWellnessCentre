@@ -1,5 +1,5 @@
 <resources>
-
+    <string name="booking_price_format">Prezzo: €%.2f</string>
     <string name="booking_summary">Riepilogo prenotazione</string>
     <string name="booking_confirmed">Prenotazione effettuata con successo!</string>
     <string name="view_bookings">Visualizza prenotazioni</string>

@@ -1,5 +1,7 @@
-package com.example.hammami.domain.model
+package com.example.hammami.data.entity
 
+import com.example.hammami.domain.model.Booking
+import com.example.hammami.domain.model.BookingStatus
 import com.google.firebase.Timestamp
 
 
@@ -15,7 +17,8 @@ data class BookingDto(
     var creationTimestamp: Timestamp? = null,
     var reservationTimestamp: Timestamp? = null,
     var transactionId: String? = null,
-) {
+    val price: Double? = null,
+    ) {
     constructor() : this(null, null, null, null, null, null, null, null, null, null, null)
 
     // Metodo per mappare il Booking
@@ -32,6 +35,7 @@ data class BookingDto(
             creationTimestamp = creationTimestamp ?: Timestamp.now(),
             reservationTimestamp = reservationTimestamp ?: Timestamp.now(),
             transactionId = transactionId,
+            price = price ?: 0.0
         )
     }
 }

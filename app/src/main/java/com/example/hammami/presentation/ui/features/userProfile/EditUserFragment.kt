@@ -15,8 +15,7 @@ import com.bumptech.glide.Glide
 import com.example.hammami.R
 import com.example.hammami.databinding.FragmentEditUserProfileBinding
 import com.example.hammami.domain.model.User
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel
-import com.example.hammami.presentation.ui.activities.UserProfileViewModel.*
+import com.example.hammami.presentation.ui.features.userProfile.UserProfileViewModel.*
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.userProfile.editUser.ResetPasswordDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

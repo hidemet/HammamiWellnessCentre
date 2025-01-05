@@ -15,7 +15,7 @@ package com.example.hammami.presentation.ui.features.appointments
 //import com.example.hammami.databinding.FragmentBenessereBinding
 //import com.example.hammami.databinding.FragmentNewAppointmentsBinding
 //import com.example.hammami.databinding.FragmentPastAppointmentsBinding
-//import com.example.hammami.presentation.ui.activities.UserProfileViewModel
+//import com.example.hammami.presentation.ui.features.userProfile.UserProfileViewModel
 //import com.example.hammami.presentation.ui.adapters.AppointmentAdapter
 //import com.example.hammami.presentation.ui.adapters.BenessereAdapter
 //import com.example.hammami.presentation.ui.adapters.OldAppointmentsAdapter
