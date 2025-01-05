@@ -230,6 +230,7 @@ class PaymentViewModel @AssistedInject constructor(
            is PaymentItem.GiftCardPayment ->   emitEvent(PaymentEvent.NavigateToGiftCardGenerated(transactionId))
               is PaymentItem.ServiceBookingPayment -> {
                   emitEvent(PaymentEvent.NavigateToBookingSummary(paymentItem.bookingId))
+                  //TODO AGGIUNGI NOTIFICA
               }
         }
         updateState { copy(isLoading = false) }

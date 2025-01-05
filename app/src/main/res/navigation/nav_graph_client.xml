@@ -78,7 +78,21 @@
         android:id="@+id/homeFragment"
         android:name="com.example.hammami.presentation.ui.features.client.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+    <action
+        android:id="@+id/action_homeFragment_to_serviceDetailFragment"
+        app:destination="@id/servizioDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mainCategoryFragment"
+        android:name="com.example.hammami.presentation.ui.features.service.MainCategoryFragment"
+        android:label="MainCategoryFragment"
+        tools:layout="@layout/fragment_main_category">
+        <action
+            android:id="@+id/action_mainCategoryFragment_to_serviceDetailFragment"
+            app:destination="@id/servizioDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/searchFragment"
