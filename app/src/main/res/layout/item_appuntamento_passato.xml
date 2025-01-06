@@ -70,22 +70,13 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tvGiorno"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="03/01/25"
                     android:drawableStart="@drawable/event_calendar"
                     android:drawablePadding="6dp"
-                    android:text="20/"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tvMese"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="02"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    app:layout_constraintStart_toEndOf="@id/tvGiorno"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.Guideline
@@ -109,21 +100,11 @@
                     android:id="@+id/tvOra"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:text="10:00 - 11:00"
                     android:drawableStart="@drawable/schedule_clock"
                     android:drawablePadding="6dp"
-                    android:text="00:"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/tvOra"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tvMinuto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="30"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    app:layout_constraintStart_toEndOf="@id/tvOra"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.example.hammami.presentation.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -9,8 +10,10 @@ import com.bumptech.glide.Glide
 import com.example.hammami.R
 import com.example.hammami.domain.model.Service
 import com.example.hammami.databinding.ItemHomepageBinding
+import com.example.hammami.presentation.ui.features.service.MainCategoryFragmentDirections
+import com.example.hammami.presentation.ui.features.client.HomeFragmentDirections
 
-class MainCategoryAdapter : ListAdapter<Service, MainCategoryAdapter.ViewHolder>(MainCategoryDiffCallback()) {
+class MainCategoryAdapter() : ListAdapter<Service, MainCategoryAdapter.ViewHolder>(MainCategoryDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemHomepageBinding.inflate(
@@ -32,7 +35,7 @@ class MainCategoryAdapter : ListAdapter<Service, MainCategoryAdapter.ViewHolder>
         fun bind(service: Service) {
             with(binding) {
                 setupServiceInfo(service)
-                //setupClickListener(coupon)
+                setupClickListener(service)
             }
         }
 
@@ -48,18 +51,15 @@ class MainCategoryAdapter : ListAdapter<Service, MainCategoryAdapter.ViewHolder>
             tvNewItemRvPrice.text = "${service.price} €"
         }
 
-        /*
-        private fun ItemMassaggiBenessereBinding.setupClickListener(service: Service) {
+        private fun ItemHomepageBinding.setupClickListener(service: Service) {
             root.setOnClickListener {
-                if (coupon.isEnabled) {
-                    onCouponSelected(coupon)
-                }
+                val action = HomeFragmentDirections.actionHomeFragmentToServiceDetailFragment(service)
+                it.findNavController().navigate(action)
             }
         }
     }
-    */
 
-    }
+}
 
     private class MainCategoryDiffCallback : DiffUtil.ItemCallback<Service>() {
         override fun areItemsTheSame(oldItem: Service, newItem: Service): Boolean =
@@ -68,8 +68,6 @@ class MainCategoryAdapter : ListAdapter<Service, MainCategoryAdapter.ViewHolder>
         override fun areContentsTheSame(oldItem: Service, newItem: Service): Boolean =
             oldItem == newItem
     }
-
-}
 
 /*
 
