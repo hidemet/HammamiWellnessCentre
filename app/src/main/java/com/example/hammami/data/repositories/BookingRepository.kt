@@ -65,13 +65,14 @@ class BookingRepository @Inject constructor(
         transaction: Transaction,
         bookingId: String,
         status: BookingStatus,
-        amount: Double
+        amount: Double,
+        transactionId: String
     ): Result<Unit, DataError> {
         return try {
             if(bookingId.isBlank()) {
                 return Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
             }
-            bookingDataSource.updateBooking(transaction, bookingId, status, amount)
+            bookingDataSource.updateBooking(transaction, bookingId, status, amount,transactionId)
             Result.Success(Unit)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nell'aggiornare la prenotazione", e)

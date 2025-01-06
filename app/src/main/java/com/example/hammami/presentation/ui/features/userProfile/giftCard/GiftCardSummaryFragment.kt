@@ -11,7 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.hammami.R
-import com.example.hammami.databinding.FragmentGiftCardGeneratedBinding
+import com.example.hammami.databinding.FragmentGiftCardSummaryBinding
 import com.example.hammami.domain.model.Voucher
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardViewModel.*
@@ -21,17 +21,16 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @AndroidEntryPoint
-class GiftCardGeneratedFragment : BaseFragment() {
-    private var _binding: FragmentGiftCardGeneratedBinding? = null
+class GiftCardSummaryFragment : BaseFragment() {
+    private var _binding: FragmentGiftCardSummaryBinding? = null
     private val binding get() = _binding!!
     private val viewModel: GiftCardViewModel by activityViewModels()
-    private val args: GiftCardGeneratedFragmentArgs by navArgs()
+    private val args: GiftCardSummaryFragmentArgs by navArgs()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Recupera l'ID della transazione dagli argomenti
-        viewModel.loadGiftCard(args.transactionId)
+        viewModel.loadGiftCard(args.giftCardId)
     }
 
     override fun onCreateView(
@@ -39,7 +38,7 @@ class GiftCardGeneratedFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentGiftCardGeneratedBinding.inflate(inflater, container, false)
+        _binding = FragmentGiftCardSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -113,7 +112,8 @@ class GiftCardGeneratedFragment : BaseFragment() {
     }
 
     private suspend fun observeState() {
-        viewModel.generatedGiftCard.collect { giftCard ->
+        viewModel.uiState.collect { state ->
+            val giftCard = state.generatedGiftCard
             giftCard?.let { updateGiftCardUI(it) }
         }
     }
@@ -121,7 +121,7 @@ class GiftCardGeneratedFragment : BaseFragment() {
     companion object {
         private const val ARG_TRANSACTION_ID = "transaction_id"
 
-        fun newInstance(transactionId: String) = GiftCardGeneratedFragment().apply {
+        fun newInstance(transactionId: String) = GiftCardSummaryFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_TRANSACTION_ID, transactionId)
             }

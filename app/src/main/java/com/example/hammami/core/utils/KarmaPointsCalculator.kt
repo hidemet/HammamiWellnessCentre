@@ -11,7 +11,6 @@ class KarmaPointsCalculator @Inject constructor() {
 
     fun calculatePoints(
         amount: Double,
-        item: PaymentItem
     ): Int {
 
         return (amount * POINTS_PER_EURO).toInt()

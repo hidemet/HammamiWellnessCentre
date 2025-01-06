@@ -31,11 +31,18 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         }
     }
 
-    fun updateBooking(transaction: Transaction, bookingId: String, status: BookingStatus, amount: Double) {
+    fun updateBooking(
+        transaction: Transaction,
+        bookingId: String,
+        status: BookingStatus,
+        amount: Double,
+        transactionId: String
+    ) {
         try {
             val bookingRef = bookingsCollection.document(bookingId)
-            transaction.update(bookingRef,"price", amount)
+            transaction.update(bookingRef, "price", amount)
             transaction.update(bookingRef, "status", status)
+            transaction.update(bookingRef, "transactionId", transactionId)
         } catch (e: FirebaseFirestoreException) {
             throw e
         }
@@ -66,7 +73,11 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
                 it.toObject(BookingDto::class.java)?.toBooking()
             }
         } catch (e: FirebaseFirestoreException) {
-            Log.e("FirestoreBookingDataSource", "Errore nel recuperare le prenotazioni dell'utente", e)
+            Log.e(
+                "FirestoreBookingDataSource",
+                "Errore nel recuperare le prenotazioni dell'utente",
+                e
+            )
             throw e
         }
     }
@@ -79,7 +90,7 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
                     "Booking not found",
                     FirebaseFirestoreException.Code.NOT_FOUND
                 )
-            return bookingDto.toBooking()
+            bookingDto.toBooking()
         } catch (e: FirebaseFirestoreException) {
             throw e
         }

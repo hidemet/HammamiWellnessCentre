@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.editUserProfileFragment,
                 R.id.giftCardsFragment,
                 R.id.availableGiftCardsFragment,
-                R.id.giftCardGeneratedFragment,
+                R.id.giftCardSummaryFragment,
                 R.id.editContactInfoFragment,
                 R.id.editPersonalInfoFragment,
                 R.id.paymentFragment,

@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- App Bar Layout with Material Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -19,7 +18,6 @@
             app:titleCentered="true" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView2"
         android:layout_width="match_parent"
@@ -34,7 +32,6 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Success Icon with Material Shape and Tint -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="100dp"
                 android:layout_height="100dp"
@@ -43,9 +40,7 @@
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.LargeComponent"
                 app:tint="?attr/colorTertiary" />
 
-            <!-- Success Message Text -->
 
-            <!-- Gift Card Details in a Material Card -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -61,7 +56,6 @@
                 android:layout_height="wrap_content" />
 
 
-            <!-- Action Buttons with Updated Material Design Styles -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -271,7 +271,7 @@ class PaymentFragment : BaseFragment() {
         viewModel.event.collect { event ->
             when (event) {
                 is PaymentEvent.NavigateToGiftCardGenerated -> {
-                    navigateToGiftCardGenerated(event.transactionId)
+                    navigateToGiftCardGenerated(event.giftCardId)
                 }
 
                 is PaymentEvent.NavigateToBookingSummary -> {
@@ -293,12 +293,12 @@ class PaymentFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToGiftCardGenerated(transactionId: String) {
+    private fun navigateToGiftCardGenerated(giftCardId: String) {
         val currentDestination = findNavController().currentDestination?.id
         if (currentDestination == R.id.paymentFragment) {
             findNavController().navigate(
-                PaymentFragmentDirections.actionPaymentFragmentToGiftCardGeneratedFragment(
-                    transactionId
+                PaymentFragmentDirections.actionPaymentFragmentToGiftCardSummaryFragment(
+                    giftCardId
                 )
             )
         }

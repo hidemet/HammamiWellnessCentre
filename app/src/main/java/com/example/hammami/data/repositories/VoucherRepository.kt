@@ -25,13 +25,19 @@ class VoucherRepository @Inject constructor(
 ) {
 
 
-    suspend fun redeemVoucher(userId: String, requiredPoints: Int, value: Double, type: VoucherType): Result<Voucher, DataError> {
+    suspend fun redeemVoucher(
+        userId: String,
+        requiredPoints: Int,
+        value: Double,
+        type: VoucherType
+    ): Result<Voucher, DataError> {
         return try {
-            val newVoucher = voucherFactory.createVoucher(userId, value,type)
+            val newVoucher = voucherFactory.createVoucher(userId, value, type)
 
             firestore.runTransaction { transaction ->
                 // 1. Decrementa i punti dell'utente
-                val deductPointsResult = userRepository.deductPoints(transaction, userId, requiredPoints)
+                val deductPointsResult =
+                    userRepository.deductPoints(transaction, userId, requiredPoints)
                 if (deductPointsResult is Result.Error) {
                     throw Exception("Deduct points failed: ${deductPointsResult.error}")
                 }
@@ -60,15 +66,17 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-    fun createVoucherDocument(transaction: Transaction, voucher: Voucher): Result<Unit, DataError> {
+    fun createVoucherDocument(
+        transaction: Transaction,
+        voucher: Voucher
+    ): Result<String, DataError> {
         return try {
-            dataSource.createVoucherDocument(transaction, voucher)
-            Result.Success(Unit)
+            val voucherId = dataSource.createVoucherDocument(transaction, voucher)
+            Result.Success(voucherId)
         } catch (e: Exception) {
             Result.Error(mapExceptionToDataError(e))
         }
     }
-
 
 
     suspend fun saveVoucher(
@@ -142,5 +150,15 @@ class VoucherRepository @Inject constructor(
 
         is FirebaseNetworkException -> DataError.Network.NO_INTERNET
         else -> DataError.Unknown.UNKNOWN
+    }
+
+
+    suspend fun getVoucherById(id: String): Result<Voucher, DataError> {
+        return try {
+            val voucher = dataSource.getVoucherById(id) ?: return Result.Error(DataError.Voucher.NOT_FOUND)
+            Result.Success(voucher)
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
     }
 }

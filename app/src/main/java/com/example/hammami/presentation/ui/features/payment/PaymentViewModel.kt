@@ -51,9 +51,7 @@ class PaymentViewModel @AssistedInject constructor(
             finalAmount = paymentItem.price,
             currentKarmaPoints = 0,
             earnedKarmaPoints = karmaPointsCalculator.calculatePoints(
-                paymentItem.price,
-                paymentItem
-            )
+                paymentItem.price)
         )
     )
     val state = _state.asStateFlow()
@@ -93,9 +91,7 @@ class PaymentViewModel @AssistedInject constructor(
                                 discountValue = voucher.value,
                                 finalAmount = newAmount,
                                 earnedKarmaPoints = karmaPointsCalculator.calculatePoints(
-                                    newAmount,
-                                    paymentItem
-                                ),
+                                    newAmount),
                                 discountCode = "",
                                 discountError = null,
                                 isLoading = false
@@ -134,7 +130,7 @@ class PaymentViewModel @AssistedInject constructor(
                 appliedVoucher = null,
                 discountValue = null,
                 finalAmount = itemPrice,
-                earnedKarmaPoints = karmaPointsCalculator.calculatePoints(itemPrice, paymentItem),
+                earnedKarmaPoints = karmaPointsCalculator.calculatePoints(itemPrice),
                 discountCode = "",
                 discountError = null
             )
@@ -212,25 +208,30 @@ class PaymentViewModel @AssistedInject constructor(
 
 
     private suspend fun processPayment(paymentSystem: PaymentSystem, currentState: PaymentUiState) {
-
+        updateState { copy(isLoading = true) }
         when (val paymentResult = processPaymentUseCase(
             paymentSystem,
             currentState.paymentItem,
             currentState.finalAmount,
             currentState.appliedVoucher
         )) {
-            is Result.Success -> handlePaymentSuccess(paymentResult.data, currentState.paymentItem)
+            is Result.Success -> handlePaymentSuccess(paymentResult.data)
             is Result.Error -> emitEvent(PaymentEvent.ShowError(paymentResult.error.asUiText()))
         }
     }
 
-    private suspend fun handlePaymentSuccess(transactionId: String, paymentItem: PaymentItem) {
-        Log.d("PaymentViewModel", "Payment successful with transaction ID: $transactionId")
-       when (paymentItem ) {
-           is PaymentItem.GiftCardPayment ->   emitEvent(PaymentEvent.NavigateToGiftCardGenerated(transactionId))
-              is PaymentItem.ServiceBookingPayment -> {
-                  emitEvent(PaymentEvent.NavigateToBookingSummary(paymentItem.bookingId))
-              }
+    private suspend fun handlePaymentSuccess(itemId: String) {
+        Log.d("PaymentViewModel", "Payment successful with transaction ID: $itemId")
+        when (paymentItem) {
+            is PaymentItem.GiftCardPayment -> emitEvent(
+                PaymentEvent.NavigateToGiftCardGenerated(
+                    itemId
+                )
+            )
+
+            is PaymentItem.ServiceBookingPayment -> {
+                emitEvent(PaymentEvent.NavigateToBookingSummary(itemId))
+            }
         }
         updateState { copy(isLoading = false) }
     }

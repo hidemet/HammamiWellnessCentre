@@ -58,7 +58,7 @@ class GiftCardsFragment : BaseFragment() {
     }
 
     private suspend fun observeState() {
-        viewModel.state.collect { state ->
+        viewModel.uiState.collect { state ->
             Log.d("GiftCardsFragment", "State updated: ${state.userGiftCards.size} gift cards")
             binding.progressIndicator.isVisible = state.isLoading
             updateGiftCardsList(state)

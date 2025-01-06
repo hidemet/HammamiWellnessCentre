@@ -231,13 +231,13 @@
         </action>
 
         <action
-            android:id="@+id/action_paymentFragment_to_giftCardGeneratedFragment"
-            app:destination="@id/giftCardGeneratedFragment"
+            android:id="@+id/action_paymentFragment_to_giftCardSummaryFragment"
+            app:destination="@id/giftCardSummaryFragment"
             app:launchSingleTop="true"
             app:popUpTo="@id/paymentFragment"
             app:popUpToInclusive="true">
             <argument
-                android:name="transactionId"
+                android:name="giftCardId"
                 app:argType="string" />
         </action>
     </fragment>
@@ -283,11 +283,11 @@
     </fragment>
 
     <fragment
-        android:id="@+id/giftCardGeneratedFragment"
-        android:name="com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardGeneratedFragment"
-        tools:layout="@layout/fragment_gift_card_generated">
+        android:id="@+id/giftCardSummaryFragment"
+        android:name="com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardSummaryFragment"
+        tools:layout="@layout/fragment_gift_card_summary">
         <argument
-            android:name="transactionId"
+            android:name="giftCardId"
             app:argType="string" />
 
         <action

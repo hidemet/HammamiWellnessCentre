@@ -1,7 +1,6 @@
 package com.example.hammami.data.datasource.voucher
 
 import android.util.Log
-import com.example.hammami.domain.model.User
 import com.example.hammami.domain.model.Voucher
 import com.example.hammami.domain.model.VoucherType
 import com.google.firebase.FirebaseNetworkException
@@ -24,10 +23,11 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
 
 
 
-     fun createVoucherDocument(transaction: Transaction, voucher: Voucher) {
-        try {
-            val voucherDocument = firestore.collection("vouchers").document()
-            transaction.set(voucherDocument, voucher)
+     fun createVoucherDocument(transaction: Transaction, voucher: Voucher) : String {
+        return try {
+            val documentReference = vouchersCollection.document()
+            transaction.set(documentReference, voucher)
+             documentReference.id
         } catch (e: Exception) {
             throw mapFirebaseException(e)
         }
@@ -42,30 +42,6 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
         }
     }
 
-//    suspend fun executeVoucherRedemption(
-//        userId: String,
-//        requiredPoints: Int,
-//        voucher: Voucher
-//    ) {
-//        firestore.runTransaction { transaction ->
-//            val userDoc = usersCollection.document(userId)
-//            val userData = transaction.get(userDoc).toObject(User::class.java)
-//                ?: throw FirebaseFirestoreException("User not found", FirebaseFirestoreException.Code.NOT_FOUND)
-//
-//            if (userData.points < requiredPoints) {
-//                throw FirebaseFirestoreException(
-//                    "Insufficient points",
-//                    FirebaseFirestoreException.Code.FAILED_PRECONDITION
-//                )
-//            }
-//
-//            transaction.update(userDoc, "points", userData.points - requiredPoints)
-//
-//            val voucherDoc = vouchersCollection.document()
-//            transaction.set(voucherDoc, voucher)
-//        }.await()
-//    }
-
     suspend fun getVoucherByCode(code: String): Voucher? {
         return try {
             vouchersCollection
@@ -76,6 +52,18 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
                 .documents
                 .firstOrNull()
                 ?.toObject(Voucher::class.java)
+        } catch (e: Exception) {
+            throw mapFirebaseException(e)
+        }
+    }
+
+    suspend fun getVoucherById(id:String): Voucher? {
+        return try {
+            vouchersCollection
+                .document(id)
+                .get()
+                .await()
+                .toObject(Voucher::class.java)
         } catch (e: Exception) {
             throw mapFirebaseException(e)
         }

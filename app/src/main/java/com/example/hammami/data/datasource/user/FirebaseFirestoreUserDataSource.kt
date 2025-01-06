@@ -78,11 +78,13 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         }
     }
 
-    suspend fun deductPoints(uid: String, points: Int) {
-        try {
-            usersCollection.document(uid).update("points", getUserPoints(uid) - points).await()
-        } catch (e: FirebaseFirestoreException) {
-            throw e
-        }
+
+    fun addUserPoints(transaction: Transaction, uid: String, pointsToAdd: Int) {
+        val userDocument = usersCollection.document(uid)
+        val userSnapshot = transaction.get(userDocument)
+        val currentPoints = userSnapshot.getLong("points")?.toInt() ?: 0
+        transaction.update(userDocument, "points", currentPoints + pointsToAdd)
     }
+
+
 }

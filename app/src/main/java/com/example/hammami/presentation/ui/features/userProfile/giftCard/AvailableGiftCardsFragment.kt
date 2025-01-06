@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AvailableGiftCardsFragment : BaseFragment() {
-    private var _binding: com.example.hammami.databinding.FragmentAvailableGiftCardsBinding? = null
+    private var _binding: FragmentAvailableGiftCardsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: GiftCardViewModel by activityViewModels()
     private lateinit var giftCardAdapter: AvailableGiftCardAdapter
@@ -40,7 +40,6 @@ class AvailableGiftCardsFragment : BaseFragment() {
     override fun setupUI() {
         setupTopAppBar()
         setupRecyclerView()
-        // viewModel.loadData()
     }
 
     private fun setupTopAppBar() {
@@ -78,7 +77,7 @@ class AvailableGiftCardsFragment : BaseFragment() {
     }
 
     private suspend fun observeState() {
-        viewModel.state.collect { state ->
+        viewModel.uiState.collect { state ->
             binding.linearProgressIndicator.isVisible = state.isLoading
             giftCardAdapter.submitList(state.availableGiftCards)
         }
