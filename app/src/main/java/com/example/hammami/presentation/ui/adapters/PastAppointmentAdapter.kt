@@ -1,5 +1,6 @@
 package com.example.hammami.presentation.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -37,6 +38,10 @@ class PastAppointmentAdapter : ListAdapter<Booking, PastAppointmentAdapter.ViewH
             tvTitle.text = appointment.serviceName
             binding.tvGiorno.text = appointment.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
             binding.tvOra.text = "${appointment.startTime} - ${appointment.endTime}"
+            Log.e("PastAppointmentAdapter", "hasReview: ${appointment.hasReview}")
+            if(appointment.hasReview){
+                binding.ivAddReview.visibility = android.view.View.GONE
+            }
         }
         private fun ItemAppuntamentoPassatoBinding.setupClickListener(appointment: Booking) {
             root.setOnClickListener {

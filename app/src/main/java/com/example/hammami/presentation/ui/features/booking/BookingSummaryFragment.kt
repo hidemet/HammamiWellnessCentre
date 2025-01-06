@@ -57,8 +57,7 @@ class BookingSummaryFragment : BaseFragment() {
             findNavController().popBackStack(R.id.homeFragment, false)
         }
         buttonViewBookings.setOnClickListener {
-         //   findNavController().popBackStack(R.id.bookingListFragment, false)
-            // TODO: implementare la navigazione alla lista delle prenotazioni
+            findNavController().popBackStack(R.id.appointmentsFragment, false)
         }
     }
 
