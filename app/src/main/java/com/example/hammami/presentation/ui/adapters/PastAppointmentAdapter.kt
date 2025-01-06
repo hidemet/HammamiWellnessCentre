@@ -7,10 +7,13 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hammami.R
+import com.example.hammami.core.ui.UiText
 import com.example.hammami.databinding.ItemAppuntamentoPassatoBinding
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.localDate
 import com.example.hammami.presentation.ui.features.client.AppointmentsFragmentDirections
+import com.google.android.material.snackbar.Snackbar
 import java.time.format.DateTimeFormatter
 
 class PastAppointmentAdapter : ListAdapter<Booking, PastAppointmentAdapter.ViewHolder>(PastAppointmentDiffCallback())  {
@@ -47,6 +50,7 @@ class PastAppointmentAdapter : ListAdapter<Booking, PastAppointmentAdapter.ViewH
             root.setOnClickListener {
                 if(appointment.hasReview){
                     Log.e("PastAppointmentAdapter", "L'utente ha già recensito questo appuntamento")
+                    showSnackbar(UiText.StringResource(R.string.review_already_added))
                 } else {
                     val action =
                         AppointmentsFragmentDirections.actionAppointmentsFragmentToAddReviewFragment(
@@ -55,6 +59,10 @@ class PastAppointmentAdapter : ListAdapter<Booking, PastAppointmentAdapter.ViewH
                     it.findNavController().navigate(action)
                 }
             }
+        }
+
+        private fun showSnackbar(message: UiText) {
+            Snackbar.make(binding.root, message.asString(binding.root.context), Snackbar.LENGTH_LONG).show()
         }
     }
 }

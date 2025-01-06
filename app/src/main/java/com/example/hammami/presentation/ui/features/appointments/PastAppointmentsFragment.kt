@@ -61,7 +61,7 @@ class PastAppointmentsFragment : BaseFragment(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { observeAppointments() }
-                //launch { observeEvents() }
+                launch { viewModel.uiEvent.collectLatest { event -> handleEvent(event) } }
             }
         }
     }

@@ -508,6 +508,7 @@
     <string name="error_empty_code">Inserisci il codice di un voucher per ricercere uno sconto</string>
     <string name="error_voucher_expired">Il voucher risulta scaduto!</string>
     <string name="content_description_voucher_icon">icona voucher</string>
+    <string name="review_already_added">Hai già inserito una recensione per questo servizio</string>
 
     <string name="indicazioni_stradali">Autostrada\nUscita BRESCIA CENTRO girare a sinistra, indicazione: tangenziale SUD VERONA; terza uscita SANT’EUFEMIA sempre dritto fino alla statale.\nDalla statale 100mt a sinistra siete arrivati in via G.Puletti.\n\nAutobus\nLINEA 3 ARANCIO Fermata SANT’EUFEMIA (Birreria)</string>
     <string name="indirizzo">Via Guido Puletti 6, Sant’Eufemia, Brescia</string>
