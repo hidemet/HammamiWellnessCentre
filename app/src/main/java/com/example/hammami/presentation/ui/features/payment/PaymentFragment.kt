@@ -28,7 +28,7 @@ import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.domain.usecase.booking.GetBookingByIdUseCase
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.NotificationReceiverFragment.Companion.REQUEST_CODE_POST_NOTIFICATIONS
-import com.example.hammami.util.hideKeyboard
+//import com.example.hammami.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -127,7 +127,7 @@ class PaymentFragment : BaseFragment() {
         }
 
         applyDiscountButton.setOnClickListener {
-            hideKeyboard()
+            //hideKeyboard()    <-------------------    COMMENTATO PERCHE' NON RICONOSCE hideKeyboard()
             viewModel.onApplyVoucher()
         }
 
