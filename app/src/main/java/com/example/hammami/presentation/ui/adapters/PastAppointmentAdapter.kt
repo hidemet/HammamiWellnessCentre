@@ -45,11 +45,15 @@ class PastAppointmentAdapter : ListAdapter<Booking, PastAppointmentAdapter.ViewH
         }
         private fun ItemAppuntamentoPassatoBinding.setupClickListener(appointment: Booking) {
             root.setOnClickListener {
-                val action =
-                    AppointmentsFragmentDirections.actionAppointmentsFragmentToAddReviewFragment(
-                        appointment
-                    )
-                it.findNavController().navigate(action)
+                if(appointment.hasReview){
+                    Log.e("PastAppointmentAdapter", "L'utente ha già recensito questo appuntamento")
+                } else {
+                    val action =
+                        AppointmentsFragmentDirections.actionAppointmentsFragmentToAddReviewFragment(
+                            appointment
+                        )
+                    it.findNavController().navigate(action)
+                }
             }
         }
     }

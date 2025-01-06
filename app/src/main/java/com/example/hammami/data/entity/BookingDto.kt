@@ -17,6 +17,7 @@ data class BookingDto(
     var creationTimestamp: Timestamp? = null,
     var reservationTimestamp: Timestamp? = null,
     var transactionId: String? = null,
+    val hasReview: Boolean = false,
     val price: Double? = null,
     ) {
     constructor() : this(null, null, null, null, null, null, null, null, null, null, null)
@@ -35,6 +36,7 @@ data class BookingDto(
             creationTimestamp = creationTimestamp ?: Timestamp.now(),
             reservationTimestamp = reservationTimestamp ?: Timestamp.now(),
             transactionId = transactionId,
+            hasReview = hasReview,
             price = price ?: 0.0
         )
     }
