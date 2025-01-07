@@ -80,6 +80,19 @@ class BookingRepository @Inject constructor(
         }
     }
 
+    fun updateBookingReview(bookingId: String): Result<Unit, DataError> {
+        return try {
+            if(bookingId.isBlank()) {
+                return Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
+            }
+            bookingDataSource.updateBookingReview(bookingId)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Log.e("BookingRepository", "Errore nell'aggiornare la recensione della prenotazione", e)
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
     suspend fun getBookingsForDate(date: LocalDate): Result<List<Booking>, DataError> {
         return try {
             val dateMillis = date.toMillis()

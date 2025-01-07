@@ -1,15 +1,19 @@
 package com.example.hammami.presentation.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hammami.R
+import com.example.hammami.core.ui.UiText
 import com.example.hammami.databinding.ItemAppuntamentoPassatoBinding
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.localDate
 import com.example.hammami.presentation.ui.features.client.AppointmentsFragmentDirections
+import com.google.android.material.snackbar.Snackbar
 import java.time.format.DateTimeFormatter
 
 class PastAppointmentAdapter : ListAdapter<Booking, PastAppointmentAdapter.ViewHolder>(PastAppointmentDiffCallback())  {
@@ -37,15 +41,28 @@ class PastAppointmentAdapter : ListAdapter<Booking, PastAppointmentAdapter.ViewH
             tvTitle.text = appointment.serviceName
             binding.tvGiorno.text = appointment.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
             binding.tvOra.text = "${appointment.startTime} - ${appointment.endTime}"
+            Log.e("PastAppointmentAdapter", "hasReview: ${appointment.hasReview}")
+            if(appointment.hasReview){
+                binding.ivAddReview.visibility = android.view.View.GONE
+            }
         }
         private fun ItemAppuntamentoPassatoBinding.setupClickListener(appointment: Booking) {
             root.setOnClickListener {
-                val action =
-                    AppointmentsFragmentDirections.actionAppointmentsFragmentToAddReviewFragment(
-                        appointment
-                    )
-                it.findNavController().navigate(action)
+                if(appointment.hasReview){
+                    Log.e("PastAppointmentAdapter", "L'utente ha già recensito questo appuntamento")
+                    showSnackbar(UiText.StringResource(R.string.review_already_added))
+                } else {
+                    val action =
+                        AppointmentsFragmentDirections.actionAppointmentsFragmentToAddReviewFragment(
+                            appointment
+                        )
+                    it.findNavController().navigate(action)
+                }
             }
+        }
+
+        private fun showSnackbar(message: UiText) {
+            Snackbar.make(binding.root, message.asString(binding.root.context), Snackbar.LENGTH_LONG).show()
         }
     }
 }

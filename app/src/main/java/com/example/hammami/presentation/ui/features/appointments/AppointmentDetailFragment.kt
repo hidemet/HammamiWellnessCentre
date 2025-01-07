@@ -78,8 +78,7 @@ class AppointmentDetailFragment : BaseFragment() {
         binding.tvTitle.text = args.appointment.serviceName
         binding.tvGiorno.text = args.appointment.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
         binding.tvOra.text = "${args.appointment.startTime} - ${args.appointment.endTime}"
-
-        binding.tvPrice.text = "DA METTERE"
+        binding.tvPrice.text = args.appointment.price.toString() + " €"
 
     }
 

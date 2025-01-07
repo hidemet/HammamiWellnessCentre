@@ -39,6 +39,7 @@ import com.example.hammami.core.result.Result
 import com.example.hammami.domain.usecase.AddReviewToServiceUseCase
 import com.example.hammami.domain.usecase.GetCollectionFromServiceIdUseCase
 import com.example.hammami.domain.usecase.GetIdFromNameUseCase
+import com.example.hammami.domain.usecase.booking.UpdateBookingReviewUseCase
 import com.example.hammami.presentation.ui.features.service.BenessereFragmentDirections
 
 @AndroidEntryPoint
@@ -66,6 +67,9 @@ class AddReviewFragment : BaseFragment() {
 
     @Inject
     lateinit var setReviewUseCase: SetReviewUseCase
+
+    @Inject
+    lateinit var updateBookingReviewUseCase: UpdateBookingReviewUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -125,7 +129,13 @@ class AddReviewFragment : BaseFragment() {
             //val nomeServizio = args.appointment.name          <------------------------------------ PRIMA NON ERA COMMENTATO DAVA ERRORE, VERIFICARE QUANDO TUTTO FUNZIONA
             val textReview = binding.editTextReview.text.toString()
             val rating = binding.ratingBar.rating
-            val reviewToAdd = viewModel.uiState.value.user?.let { it1 -> Review(textReview, it1.firstName, rating) }
+            val reviewToAdd = viewModel.uiState.value.user?.let { it1 ->
+                Review(
+                    textReview,
+                    it1.firstName,
+                    rating
+                )
+            }
 
             if (textReview.isEmpty()) {
                 //showAlert("Per favore, inserisci una recensione.")
@@ -141,46 +151,53 @@ class AddReviewFragment : BaseFragment() {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 if (reviewToAdd != null) {
-                    when (val result = setReviewUseCase(reviewToAdd)) {
-                        is Result.Success -> {
-                            val reviewId = result.data.first
-                            when(val result2 = getIdFromNameUseCase(args.appointment.serviceName)) {
-                                is Result.Success -> {
-                                    val serviceId = result2.data.toString()
-                                    //Log.e("AddReview", "Nome servizio: $nomeServizio")
-                                    //Log.e("AddReview", "serviceId: $serviceId")
-                                    addReviewToServiceUseCase(serviceId, reviewId)
-                                    //Log.e("AddReview", "Recensione aggiunta al servizio")
-                                    //onBackClick()
-                                    val action =
-                                        AddReviewFragmentDirections.actionAddReviewFragmentToReviewSummaryFragment(
-                                            args.appointment.serviceName,
-                                            reviewToAdd
-                                        )
-                                    it.findNavController().navigate(action)
+                    if (!args.appointment.hasReview) {
+                        when (val result = setReviewUseCase(reviewToAdd)) {
+                            is Result.Success -> {
+                                val reviewId = result.data.first
+                                when (val result2 =
+                                    getIdFromNameUseCase(args.appointment.serviceName)) {
+                                    is Result.Success -> {
+                                        val serviceId = result2.data.toString()
+                                        //Log.e("AddReview", "Nome servizio: $nomeServizio")
+                                        //Log.e("AddReview", "serviceId: $serviceId")
+                                        addReviewToServiceUseCase(serviceId, reviewId)
+                                        updateBookingReviewUseCase(args.appointment.id)
+                                        Log.e("AddReview", "Aggiornato il valore hasReview a true a seguito dell'aggiunta della recensione")
+
+                                        //Log.e("AddReview", "Recensione aggiunta al servizio")
+                                        val action =
+                                            AddReviewFragmentDirections.actionAddReviewFragmentToReviewSummaryFragment(
+                                                args.appointment.serviceName,
+                                                reviewToAdd
+                                            )
+                                        it.findNavController().navigate(action)
                                     }
-                                is Result.Error -> {
-                                    // Gestisci l'errore
+
+                                    is Result.Error -> {
+                                        // Gestisci l'errore
+                                    }
                                 }
                             }
-                        }
-                        is Result.Error -> {
-                            // Gestisci l'errore
+
+                            is Result.Error -> {
+                                // Gestisci l'errore
+                            }
                         }
                     }
                 }
             }
-        }
 
-    }
-
-    private suspend fun setRatingBar() {
-        binding.ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            binding.ratingBar.rating = rating
         }
     }
 
-    /*
+        private suspend fun setRatingBar() {
+            binding.ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                binding.ratingBar.rating = rating
+            }
+        }
+
+        /*
     override fun onResume() {
         super.onResume()
         Log.d("BenessereFragment", "onResume")
@@ -188,14 +205,14 @@ class AddReviewFragment : BaseFragment() {
     }
      */
 
-    override fun onPause() {
-        super.onPause()
-        Log.d("AddReviewFragment", "onPause")
-    }
+        override fun onPause() {
+            super.onPause()
+            Log.d("AddReviewFragment", "onPause")
+        }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+        override fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
+        }
 
 }

@@ -20,6 +20,7 @@ data class Booking(
     val creationTimestamp: Timestamp = Timestamp.now(),
     val reservationTimestamp: Timestamp = Timestamp.now(),
     val transactionId: String? = null,
+    val hasReview: Boolean = false,
     val price: Double,
 ) : Parcelable
 

@@ -48,6 +48,17 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         }
     }
 
+    fun updateBookingReview(bookingId: String) {
+        try {
+            val bookingRef = bookingsCollection.document(bookingId)
+            Log.e("FirestoreBookingDataSource", "$bookingRef")
+            bookingRef.update("hasReview", true)
+            Log.e("FirestoreBookingDataSource", "Impostato hasReview a true")
+        } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
+    }
+
     suspend fun getBookingsForDate(dateMillis: Long): List<Booking> {
         try {
             val querySnapshot = bookingsCollection
