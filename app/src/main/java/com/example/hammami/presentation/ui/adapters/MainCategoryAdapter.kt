@@ -1,7 +1,10 @@
 package com.example.hammami.presentation.ui.adapters
 
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -12,6 +15,7 @@ import com.example.hammami.domain.model.Service
 import com.example.hammami.databinding.ItemHomepageBinding
 import com.example.hammami.presentation.ui.features.service.MainCategoryFragmentDirections
 import com.example.hammami.presentation.ui.features.client.HomeFragmentDirections
+import com.example.hammami.presentation.ui.features.service.MainCategoryFragmentDirections.Companion.actionMainCategoryFragmentToServiceDetailFragment
 
 class MainCategoryAdapter() : ListAdapter<Service, MainCategoryAdapter.ViewHolder>(MainCategoryDiffCallback()) {
 
@@ -35,7 +39,7 @@ class MainCategoryAdapter() : ListAdapter<Service, MainCategoryAdapter.ViewHolde
         fun bind(service: Service) {
             with(binding) {
                 setupServiceInfo(service)
-                setupClickListener(service)
+                setupListeners(service)
             }
         }
 
@@ -51,15 +55,15 @@ class MainCategoryAdapter() : ListAdapter<Service, MainCategoryAdapter.ViewHolde
             tvNewItemRvPrice.text = "${service.price} €"
         }
 
-        private fun ItemHomepageBinding.setupClickListener(service: Service) {
-            root.setOnClickListener {
+        private fun ItemHomepageBinding.setupListeners(service: Service) {
+            itemView.setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToServiceDetailFragment(service)
-                it.findNavController().navigate(action)
+                root.findNavController().navigate(action)
             }
         }
-    }
 
-}
+
+    }
 
     private class MainCategoryDiffCallback : DiffUtil.ItemCallback<Service>() {
         override fun areItemsTheSame(oldItem: Service, newItem: Service): Boolean =
@@ -68,6 +72,7 @@ class MainCategoryAdapter() : ListAdapter<Service, MainCategoryAdapter.ViewHolde
         override fun areContentsTheSame(oldItem: Service, newItem: Service): Boolean =
             oldItem == newItem
     }
+}
 
 /*
 
