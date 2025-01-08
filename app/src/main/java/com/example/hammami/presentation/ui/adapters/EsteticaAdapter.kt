@@ -2,14 +2,19 @@ package com.example.hammami.presentation.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hammami.domain.model.Service
 import com.example.hammami.databinding.ItemEsteticaBinding
+import com.example.hammami.databinding.ItemMassaggiBenessereBinding
+import com.example.hammami.presentation.ui.features.client.HomeFragmentDirections
+import com.example.hammami.presentation.ui.features.service.BenessereFragmentDirections
+import com.example.hammami.presentation.ui.features.service.EsteticaFragmentDirections
 
 
-class EsteticaAdapter : ListAdapter<Service, EsteticaAdapter.ViewHolder>(EsteticaAdapter.EsteticaDiffCallback()) {
+class EsteticaAdapter : ListAdapter<Service, EsteticaAdapter.ViewHolder>(EsteticaDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemEsteticaBinding.inflate(
@@ -31,7 +36,7 @@ class EsteticaAdapter : ListAdapter<Service, EsteticaAdapter.ViewHolder>(Estetic
         fun bind(service: Service) {
             with(binding) {
                 setupServiceInfo(service)
-                //setupClickListener(coupon)
+                setupClickListener(service)
             }
         }
 
@@ -40,16 +45,19 @@ class EsteticaAdapter : ListAdapter<Service, EsteticaAdapter.ViewHolder>(Estetic
             tvPrice.text = "${service.price} €"
         }
 
-        /*
-        private fun ItemMassaggiBenessereBinding.setupClickListener(service: Service) {
+        private fun ItemEsteticaBinding.setupClickListener(service: Service) {
             root.setOnClickListener {
-                if (coupon.isEnabled) {
-                    onCouponSelected(coupon)
-                }
+                //onServiceSelected(service)
+                //Navigation.findNavController(root).navigate(R.id.action_benessereFragment_to_servizioDetailFragment)
+                //ServizioDettaglioBinding.setupServiceDetails(service)
+                val action =
+                    EsteticaFragmentDirections.actionEsteticaFragmentToServiceDetailFragment(
+                        service
+                    )
+                it.findNavController().navigate(action)
             }
         }
     }
-    */
 
     }
 
@@ -61,7 +69,6 @@ class EsteticaAdapter : ListAdapter<Service, EsteticaAdapter.ViewHolder>(Estetic
             oldItem == newItem
     }
 
-}
 
     /*
     inner class EsteticaViewHolder(private val binding: ItemEsteticaBinding) :
