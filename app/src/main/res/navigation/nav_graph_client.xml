@@ -182,6 +182,9 @@
             android:name="com.example.hammami.presentation.ui.features.service.EsteticaFragment"
             android:label="EsteticaFragment"
             tools:layout="@layout/fragment_servizi_estetica" />
+        <action
+            android:id="@+id/action_esteticaFragment_to_serviceDetailFragment"
+            app:destination="@id/servizioDetailFragment" />
     </navigation>
 
     <fragment
