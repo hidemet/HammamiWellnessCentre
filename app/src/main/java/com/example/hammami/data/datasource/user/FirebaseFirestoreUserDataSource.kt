@@ -1,5 +1,6 @@
 package com.example.hammami.data.datasource.user
 
+import android.util.Log
 import com.example.hammami.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -83,7 +84,9 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         val userDocument = usersCollection.document(uid)
         val userSnapshot = transaction.get(userDocument)
         val currentPoints = userSnapshot.getLong("points")?.toInt() ?: 0
-        transaction.update(userDocument, "points", currentPoints + pointsToAdd)
+        val newPoints = currentPoints + pointsToAdd
+        transaction.update(userDocument, "points", newPoints)
+        Log.d("UserRepository", "User points updated successfully for user: $uid, new points: $newPoints")
     }
 
 

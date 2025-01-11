@@ -79,7 +79,7 @@ class GiftCardSummaryFragment : BaseFragment() {
 
     private fun setupButtons() = with(binding) {
         buttonGoToHome.setOnClickListener {
-            findNavController().navigate(R.id.action_global_home)
+            findNavController().navigate(R.id.action_giftCardSummaryFragment_to_homeFragment)
         }
         buttonBackToGiftCards.setOnClickListener {
             findNavController().popBackStack(R.id.giftCardsFragment, false)

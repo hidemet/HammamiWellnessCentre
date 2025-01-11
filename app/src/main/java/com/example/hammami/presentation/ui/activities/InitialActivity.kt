@@ -33,7 +33,7 @@ class InitialActivity : AppCompatActivity() {
             } else {
                 navigateToLogin()
             }
-        }, 1000) // Ritardo di 1 secondo (modifica se necessario)
+        }, 1000) // Ritardo di 1 secondo
 
     }
 

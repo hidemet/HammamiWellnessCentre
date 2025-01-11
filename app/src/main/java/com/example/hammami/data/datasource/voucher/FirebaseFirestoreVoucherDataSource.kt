@@ -27,7 +27,8 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
         return try {
             val documentReference = vouchersCollection.document()
             transaction.set(documentReference, voucher)
-             documentReference.id
+             val voucherId = documentReference.id
+            voucherId
         } catch (e: Exception) {
             throw mapFirebaseException(e)
         }
@@ -103,21 +104,30 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
         }
     }
 
-    suspend fun deleteVoucher(code: String) {
+     suspend fun deleteVoucher(transaction: Transaction, code: String) {
         try {
-            val snapshot = vouchersCollection
-                .whereEqualTo("code", code)
-                .limit(1)
-                .get()
-                .await()
+            // 1. Cerca il documento con il codice fornito (ora asincrono e al di fuori della transazione)
+            val querySnapshot = vouchersCollection.whereEqualTo("code", code).limit(1).get().await()
 
-            val doc = snapshot.documents.firstOrNull()
-            doc?.reference?.delete()?.await()
+            // 2. Verifica se è stato trovato un documento
+            if (querySnapshot.isEmpty) {
+                throw FirebaseFirestoreException("Voucher not found with code: $code", FirebaseFirestoreException.Code.NOT_FOUND)
+            }
 
-        } catch (e: Exception) {
-            throw mapFirebaseException(e)
+            // 3. Ottieni il riferimento al documento
+            val voucherDocumentRef = querySnapshot.documents[0].reference
+
+            // 4. Elimina il documento all'interno della transazione
+            transaction.delete(voucherDocumentRef)
+
+            Log.d("FirestoreVoucherDataSource", "Voucher with code: $code deleted successfully in transaction.")
+
+        } catch (e: FirebaseFirestoreException) {
+            Log.e("FirestoreVoucherDataSource", "Error deleting voucher with code: $code", e)
+            throw e // Rilancia l'eccezione per la gestione a livello superiore
         }
     }
+
 
     private fun mapFirebaseException(e: Exception): Throwable {
         when (e) {

@@ -74,7 +74,6 @@ class PaymentViewModel @AssistedInject constructor(
     val event = _event.asSharedFlow()
 
     init {
-        Log.e("PaymentViewModel", "paymentItem.id: $paymentItem.id")
         loadUserPoints()
     }
 

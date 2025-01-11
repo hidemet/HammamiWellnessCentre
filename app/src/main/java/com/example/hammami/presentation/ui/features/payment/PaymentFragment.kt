@@ -28,12 +28,10 @@ import com.example.hammami.domain.model.payment.PaymentMethod
 import com.example.hammami.domain.usecase.booking.GetBookingByIdUseCase
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.NotificationReceiverFragment.Companion.REQUEST_CODE_POST_NOTIFICATIONS
-//import com.example.hammami.util.hideKeyboard
+import com.example.hammami.core.utils.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 import com.example.hammami.core.result.Result
 import android.Manifest
@@ -127,7 +125,7 @@ class PaymentFragment : BaseFragment() {
         }
 
         applyDiscountButton.setOnClickListener {
-            //hideKeyboard()    <-------------------    COMMENTATO PERCHE' NON RICONOSCE hideKeyboard()
+            hideKeyboard()
             viewModel.onApplyVoucher()
         }
 

@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -74,6 +75,14 @@ class ProfileFragment : BaseFragment() {
         viewModel.uiEvents.collect { event ->
             when (event) {
                 is UserProfileViewModel.UiEvent.UserMessage -> showSnackbar(event.message)
+                is UserProfileViewModel.UiEvent.NavigateToLogin ->      findNavController().navigate(
+                    R.id.action_global_login,
+                    null,
+                    NavOptions.Builder()
+                        .setPopUpTo(findNavController().graph.startDestinationId, true)
+                        .build()
+                )
+
                 else -> Unit
             }
         }
@@ -108,7 +117,7 @@ class ProfileFragment : BaseFragment() {
                 "Gift Card",
                 R.drawable.ic_gift_card,
                 action = {
-                    findNavController().navigate(R.id.giftCardsFragment)
+                    findNavController().navigate(R.id.action_profileFragment_to_giftCardsFragment)
                 }
             ),
             ItemProfileOption(
