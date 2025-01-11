@@ -47,7 +47,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         )
 
         val viewPager2Adapter = HomeViewpagerAdapter(categoriesFragments, childFragmentManager, lifecycle)
-        binding.viewpagerHome.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.viewpagerHome.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.viewpagerHome.adapter = viewPager2Adapter
     }
 
