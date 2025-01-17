@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@id/adminAppointmentsFragment"
+        android:enabled="true"
+        android:icon="@drawable/ic_appuntamenti"
+        android:title="Appuntamenti"/>
+
+    <item
+        android:id="@id/adminUsersFragment"
+        android:enabled="true"
+        android:icon="@drawable/ic_group"
+        android:title="Clienti"/>
+
+    <item
+        android:id="@id/adminBookingsHistoryFragment"
+        android:enabled="true"
+        android:icon="@drawable/ic_calendar_clock"
+        android:title="Storico"/>
+
+</menu>

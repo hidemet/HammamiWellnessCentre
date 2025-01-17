@@ -11,4 +11,10 @@ data class User(
     var email: String = "",
     var profileImage: String = "",
     var points: Int = 0,
-)
+    val role: String = "client"
+) {
+    companion object {
+        const val ROLE_ADMIN = "admin"
+        const val ROLE_CLIENT = "client"
+    }
+}

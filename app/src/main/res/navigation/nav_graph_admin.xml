@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_admin"
+    app:startDestination="@id/adminHomeFragment">
+
+    <fragment
+        android:id="@+id/adminHomeFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.home.AdminHomeFragment"
+        android:label="AdminHomeFragment"
+        tools:layout="@layout/fragment_admin_home" />
+
+    <fragment
+        android:id="@+id/adminAppointmentsFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin."
+        android:label="AdminAppointmentsFragment"
+        tools:layout="@layout/fragment_admin_appointments" />
+
+    <fragment
+        android:id="@+id/adminUsersFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.users.AdminUsersFragment"
+        android:label="AdminUsersFragment"
+        tools:layout="@layout/fragment_admin_users" />
+
+    <fragment
+        android:id="@+id/adminBookingsHistoryFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.bookingsHistory.AdminBookingsHistoryFragment"
+        android:label="AdminBookingsHistoryFragment"
+        tools:layout="@layout/fragment_admin_bookings_history" />
+</navigation>

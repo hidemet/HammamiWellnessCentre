@@ -37,6 +37,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".presentation.ui.activities.AdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.ui.activities.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />

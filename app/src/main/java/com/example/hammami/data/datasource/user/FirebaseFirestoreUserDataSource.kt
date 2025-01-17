@@ -21,7 +21,7 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
     fun listenToUserDocument(userId: String): Flow<User?> = callbackFlow {
         val listenerRegistration = usersCollection.document(userId).addSnapshotListener { snapshot, error ->
             if (error != null) {
-                close(error) // Chiudi il flow in caso di errore
+                close(error) // Chiude il flow in caso di errore
                 return@addSnapshotListener
             }
 
