@@ -7,7 +7,9 @@ import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
+import com.google.firebase.Timestamp
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 
 
@@ -16,12 +18,11 @@ class CreateBookingUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         service: Service,
-        selectedDate: LocalDate,
-        startTime: String,
-        endTime: String,
+        startDate: Timestamp,
+        endDate: Timestamp,
         status: BookingStatus = BookingStatus.RESERVED,
         price: Double
     ): Result<Booking, DataError> {
-        return bookingRepository.createBooking(service, selectedDate, startTime, endTime, status,price)
+        return bookingRepository.createBooking(service, startDate,endDate, status,price)
     }
 }

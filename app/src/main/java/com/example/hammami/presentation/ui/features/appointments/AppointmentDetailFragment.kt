@@ -8,8 +8,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
+import com.example.hammami.core.time.DateTimeUtils
 import com.example.hammami.databinding.FragmentAppointmentDetailBinding
-import com.example.hammami.domain.model.localDate
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -76,8 +76,8 @@ class AppointmentDetailFragment : BaseFragment() {
 
          */
         binding.tvTitle.text = args.appointment.serviceName
-        binding.tvGiorno.text = args.appointment.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
-        binding.tvOra.text = "${args.appointment.startTime} - ${args.appointment.endTime}"
+        binding.tvGiorno.text = DateTimeUtils.formatDate(args.appointment.startDate)
+        binding.tvOra.text = DateTimeUtils.formatTimeRange(args.appointment.startDate, args.appointment.endDate)
         binding.tvPrice.text = args.appointment.price.toString() + " €"
 
     }

@@ -47,6 +47,15 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         }
     }
 
+    suspend fun checkIfAdmin(userId: String): Boolean {
+        return try {
+            val userDoc = usersCollection.document(userId).get().await()
+            userDoc.getBoolean("isAdmin") ?: false
+        } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
+    }
+
     suspend fun updateUser(uid: String, user: User) {
         try {
             usersCollection.document(uid).set(user).await()

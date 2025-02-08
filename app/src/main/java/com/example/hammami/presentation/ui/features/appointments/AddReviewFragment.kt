@@ -11,28 +11,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.example.hammami.R
-import com.example.hammami.data.datasource.reviews.FirebaseFirestoreReviewsDataSource
 import com.example.hammami.databinding.FragmentAddReviewBinding
-import com.example.hammami.databinding.FragmentPastAppointmentsBinding
-import com.example.hammami.databinding.ServizioDettaglioBinding
 import com.example.hammami.domain.model.Review
-import com.example.hammami.domain.usecase.GetCurrentUserDataUseCase
 import com.example.hammami.domain.usecase.GetReviewsUseCase
 import com.example.hammami.domain.usecase.SetReviewUseCase
-import com.example.hammami.presentation.ui.adapters.AddReviewAdapter
 //import com.example.hammami.presentation.ui.adapters.AppointmentAdapter
-import com.example.hammami.presentation.ui.adapters.BeneficiAdapter
-import com.example.hammami.presentation.ui.adapters.Beneficio
 import com.example.hammami.presentation.ui.adapters.ReviewsAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
-import com.example.hammami.presentation.ui.features.service.ReviewsViewModel
-import com.example.hammami.presentation.ui.features.service.ServiceDetailFragmentArgs
-import com.example.hammami.presentation.ui.features.service.ServiceDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.hammami.core.result.Result
@@ -40,7 +26,6 @@ import com.example.hammami.domain.usecase.AddReviewToServiceUseCase
 import com.example.hammami.domain.usecase.GetCollectionFromServiceIdUseCase
 import com.example.hammami.domain.usecase.GetIdFromNameUseCase
 import com.example.hammami.domain.usecase.booking.UpdateBookingReviewUseCase
-import com.example.hammami.presentation.ui.features.service.BenessereFragmentDirections
 
 @AndroidEntryPoint
 class AddReviewFragment : BaseFragment() {

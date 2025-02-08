@@ -60,6 +60,13 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false"
+            tools:node="merge"
+            />
+
     </application>
 
 </manifest>

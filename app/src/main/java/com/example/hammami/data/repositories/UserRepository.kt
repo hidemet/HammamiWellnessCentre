@@ -23,7 +23,33 @@ class UserRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
 
-     fun deductPoints(transaction: Transaction, userId: String, pointsToDeduct: Int): Result<Unit, DataError> {
+    suspend fun isUserAdmin(userId: String): Result<Boolean, DataError> {
+        return try {
+            Result.Success(firestoreDataSource.checkIfAdmin(userId))
+        } catch (e: Exception) {
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+    suspend fun getUserById(userId: String): Result<User, DataError> {
+        return try {
+            val user = firestoreDataSource.fetchUserData(userId)
+            if (user != null) {
+                Result.Success(user)
+            } else {
+                Result.Error(DataError.User.USER_NOT_FOUND)
+            }
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Errore nel recupero dei dati utente per ID: $userId", e)
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+    fun deductPoints(
+        transaction: Transaction,
+        userId: String,
+        pointsToDeduct: Int
+    ): Result<Unit, DataError> {
         try {
             val userDocument = firestore.collection("users").document(userId)
             val userSnapshot = transaction.get(userDocument)
@@ -41,7 +67,11 @@ class UserRepository @Inject constructor(
     }
 
 
-    fun addUserPoints(transaction: Transaction, userId: String, pointsToAdd: Int): Result<Unit, DataError> {
+    fun addUserPoints(
+        transaction: Transaction,
+        userId: String,
+        pointsToAdd: Int
+    ): Result<Unit, DataError> {
         return try {
             firestoreDataSource.addUserPoints(transaction, userId, pointsToAdd)
             Result.Success(Unit)

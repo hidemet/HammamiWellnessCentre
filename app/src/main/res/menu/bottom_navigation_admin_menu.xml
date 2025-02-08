@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@id/adminAppointmentsFragment"
+        android:id="@id/homeAdminFragment"
         android:enabled="true"
-        android:icon="@drawable/ic_appuntamenti"
-        android:title="Appuntamenti"/>
+        android:icon="@drawable/ic_home"
+        android:title="Home"/>
 
     <item
-        android:id="@id/adminUsersFragment"
+        android:id="@id/agendaAdminFragment"
         android:enabled="true"
         android:icon="@drawable/ic_group"
-        android:title="Clienti"/>
+        android:title="Agenda"/>
 
     <item
-        android:id="@id/adminBookingsHistoryFragment"
+        android:id="@id/catalogueAdminFragment"
         android:enabled="true"
         android:icon="@drawable/ic_calendar_clock"
-        android:title="Storico"/>
+        android:title="Catalogo"/>
 
 </menu>

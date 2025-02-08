@@ -10,33 +10,13 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout2"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="1dp"
             android:layout_marginTop="52dp">
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topAppBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize"
-                app:menu="@menu/top_app_bar">
-
-                <ImageView
-                    android:id="@+id/logo_hammam"
-                    android:layout_width="158.52dp"
-                    android:layout_height="27.12dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginStart="110dp"
-                    android:layout_marginTop="18dp"
-                    android:clipToOutline="true"
-                    android:src="@drawable/logo_hammami" />
-
-
-            </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -51,6 +31,29 @@
 
 
         </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_anchor="@+id/appBarLayout2"
+            app:layout_anchorGravity="center"
+            app:menu="@menu/top_app_bar">
+
+            <ImageView
+                android:id="@+id/logo_hammam"
+                android:layout_width="158.52dp"
+                android:layout_height="27.12dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="110dp"
+                android:layout_marginTop="18dp"
+                android:clipToOutline="true"
+                android:src="@drawable/logo_hammami" />
+
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

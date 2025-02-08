@@ -10,9 +10,11 @@ data class BookingDto(
     var serviceId: String? = null,
     var userId: String? = null,
     var serviceName: String? = null,
-    var dateMillis: Long? = null,
-    var startTime: String? = null,
-    var endTime: String? = null,
+//    var dateMillis: Long? = null,
+//    var startTime: String? = null,
+//    var endTime: String? = null,
+    var startDate: Timestamp? = null, // Modifica
+    var endDate: Timestamp? = null,   // Modifica
     var status: String? = null,
     var creationTimestamp: Timestamp? = null,
     var reservationTimestamp: Timestamp? = null,
@@ -20,24 +22,5 @@ data class BookingDto(
     val hasReview: Boolean = false,
     val price: Double? = null,
     ) {
-    constructor() : this(null, null, null, null, null, null, null, null, null, null, null)
-
-    // Metodo per mappare il Booking
-    fun toBooking(): Booking {
-        return Booking(
-            id = id ?: throw IllegalArgumentException("L'id non può essere nullo"),
-            serviceId = serviceId ?: "",
-            userId = userId ?: "",
-            serviceName = serviceName ?: "",
-            dateMillis = dateMillis ?: throw IllegalArgumentException("La data non può essere nulla"),
-            startTime = startTime ?: "",
-            endTime = endTime ?: "",
-            status = BookingStatus.valueOf(status ?: BookingStatus.RESERVED.name),
-            creationTimestamp = creationTimestamp ?: Timestamp.now(),
-            reservationTimestamp = reservationTimestamp ?: Timestamp.now(),
-            transactionId = transactionId,
-            hasReview = hasReview,
-            price = price ?: 0.0
-        )
-    }
+    constructor() : this(null, null, null, null, null, null, null, null, null, null)
 }

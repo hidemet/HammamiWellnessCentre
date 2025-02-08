@@ -1,11 +1,13 @@
 package com.example.hammami.presentation.ui.features.booking
 
+
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.result.Result
+import com.example.hammami.core.time.DateTimeUtils
+import com.example.hammami.core.time.TimeSlot
 import com.example.hammami.core.ui.UiText
-import com.example.hammami.core.time.TimeSlotCalculator
 import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.model.BookingStatus
@@ -19,7 +21,6 @@ import com.example.hammami.domain.usecase.booking.IsTimeSlotAvailableUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,17 +31,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
-import javax.inject.Inject
+import java.time.LocalTime
 import kotlin.time.Duration.Companion.minutes
 
- @AssistedFactory
+@AssistedFactory
 interface BookingViewModelFactory {
     fun create(service: Service): BookingViewModel
 }
@@ -84,25 +79,25 @@ class BookingViewModel @AssistedInject constructor(
         _uiState.update { it.copy(service = service) }
     }
 
-    fun onDateSelected(dateString: String) {
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
-        val date = LocalDate.parse(dateString, dateFormatter)
-
+    fun onDateSelected(date: LocalDate) = viewModelScope.launch {
         _uiState.update { it.copy(selectedDate = date, availableTimeSlots = emptyList()) }
-        viewModelScope.launch {
-            if (date != null) {
-                loadAvailableTimeSlots(date)
-            }
-        }
+        loadAvailableTimeSlots(date)
     }
 
     fun resetBookingConfirmation() {
         _uiState.update { it.copy(isBookingConfirmed = false) }
     }
 
-    fun onTimeSlotSelected(timeSlot: TimeSlotCalculator.AvailableSlot?) = viewModelScope.launch {
+    fun onTimeSlotSelected(timeSlot: TimeSlot?) = viewModelScope.launch {
         _uiState.update { it.copy(selectedTimeSlot = timeSlot) }
     }
+
+    fun onTimeSlotSelected(startTime: LocalTime) {
+        val selectedSlot = uiState.value.availableTimeSlots.find { it.startTime == startTime }
+        _uiState.update { it.copy(selectedTimeSlot = selectedSlot) }
+
+    }
+
 
     suspend fun onConfirmBooking() {
         val state = uiState.value
@@ -135,12 +130,13 @@ class BookingViewModel @AssistedInject constructor(
                     )
                 }
             }
+
             is Result.Error -> {
-                // Gestisci l'errore nel recupero della disponibilità
                 _uiEvent.emit(BookingUiEvent.ShowError(availabilityResult.error.asUiText()))
             }
         }
     }
+
     private suspend fun reserveSlot() {
         val service = uiState.value.service ?: return
         val selectedDate = uiState.value.selectedDate ?: return
@@ -149,11 +145,11 @@ class BookingViewModel @AssistedInject constructor(
 
         releaseSlotTimerJob?.cancel() // Annulla il timer precedente, se presente
 
+        val (startDate,endDate) = DateTimeUtils.createStartAndEndTimestamps(selectedDate, selectedTimeSlot.startTime, selectedTimeSlot.endTime)
         when (val result = createBookingUseCase(
             service = service,
-            selectedDate = selectedDate,
-            startTime = selectedTimeSlot.startTime,
-            endTime = selectedTimeSlot.endTime,
+            startDate = startDate,
+            endDate= endDate,
             status = BookingStatus.RESERVED,
             price = price
         )) {
@@ -233,15 +229,14 @@ class BookingViewModel @AssistedInject constructor(
                 _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
             }
         }
-
     }
 
     data class BookingUiState(
         val service: Service,
         val currentBookingId: String? = null,
-        val availableTimeSlots: List<TimeSlotCalculator.AvailableSlot> = emptyList(),
+        val availableTimeSlots: List<TimeSlot> = emptyList(),
         val selectedDate: LocalDate? = null,
-        val selectedTimeSlot: TimeSlotCalculator.AvailableSlot? = null,
+        val selectedTimeSlot: TimeSlot? = null,
         val isBookingConfirmed: Boolean = false,
         val isSlotReserved: Boolean = false,
         val reservationTimerActive: Boolean = false,

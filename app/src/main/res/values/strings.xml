@@ -529,6 +529,25 @@
     <string name="confirm_password_message">Inserisci la password associata alla tua email attuale (%1$s) per confermare la modifica.</string>
     <string name="error_required_password">Inserisci la password</string>
     <string name="giorni_chiusura">Il negozio è chiuso la domenica e il lunedì.</string>
+    <string name="today">Oggi</string>
+    <string name="booking_time_format"><![CDATA[<string name=\"booking_time_format\">%1$s - %2$s</string>]]></string>
+    <string name="reschedule_appointment">Riprogramma appuntamento</string>
+    <string name="cancel_booking">Annulla appuntamento</string>
+    <string name="booking_details_title">Dettagli prenotazione</string>
+    <string name="person_icon">person icon</string>
+    <string name="booking_cancelled">prenotazione cancellata con successo</string>
+    <string name="cancel_booking_title">Annulla prenotazione</string>
+    <string name="cancel_booking_message">Sei sicuro di voler annullare questa prenotazione?</string>
+    <string name="booking_status_reserved">Riservato</string>
+    <string name="booking_status_confirmed">Confermato</string>
+    <string name="booking_status_completed">Completato</string>
+    <string name="client_name_format">%1$s %2$s</string>
+    <string name="edit_booking_title">Modifica la prenotazione</string>
+    <string name="save_changes">Conferma</string>
+    <string name="booking_updated">Prenotazione aggiornata con successo!</string>
+    <string name="notification_title">Promemoria appuntamento</string>
+    <string name="notification_permission_denied">Per ricevere promemoria, è necessario attivare le notifiche</string>
+    <string name="notification_text">Hai un appuntamento per %1$s domani alle %2$s!</string>
 
 
 </resources>

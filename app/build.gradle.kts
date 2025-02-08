@@ -61,6 +61,7 @@ android {
         implementation(libs.firebase.firestore.ktx)
         implementation(libs.firebase.storage.ktx)
         implementation(libs.androidx.material3.android)
+        implementation(libs.androidx.hilt.common)
 
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)
@@ -110,6 +111,9 @@ android {
 
         // Splash screen
         implementation("androidx.core:core-splashscreen:1.0.0")
+
+        // Notification
+        implementation("androidx.work:work-runtime-ktx:2.9.0")
 
         // Retrofit
         implementation("com.squareup.retrofit2:retrofit:2.9.0")

@@ -192,7 +192,7 @@ class RegisterViewModel @Inject constructor(
             allergies = allergies,
             disabilities = disabilities,
             phoneNumber = phoneNumber,
-            email = email
+            email = email,
         )
     }
 }

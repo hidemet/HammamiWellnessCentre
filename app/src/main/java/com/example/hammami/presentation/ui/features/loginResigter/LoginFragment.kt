@@ -20,6 +20,7 @@ import com.example.hammami.presentation.ui.activities.MainActivity
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.loginResigter.LoginViewModel.*
 import com.example.hammami.core.utils.hideKeyboardOnOutsideTouch
+import com.example.hammami.presentation.ui.activities.AdminActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -52,17 +53,17 @@ class LoginFragment : BaseFragment() {
 
 
     private fun setupClickListeners() = with(binding) {
-        buttonLogin.setOnClickListener { viewModel.onEvent(LoginFormEvent.Login) }
+        buttonLogin.setOnClickListener { viewModel.submitLogin() }
         buttonRegister.setOnClickListener { navigateToRegister() }
         buttonForgotPassword.setOnClickListener { showResetPasswordDialog() }
     }
 
     private fun setupTextChangeListeners() = with(binding) {
         textFieldEmail.editText?.doAfterTextChanged {
-            viewModel.onEvent(LoginFormEvent.EmailChanged(it.toString()))
+            viewModel.updateEmailField(it.toString())
         }
         textFieldPassword.editText?.doAfterTextChanged {
-            viewModel.onEvent(LoginFormEvent.PasswordChanged(it.toString()))
+            viewModel.updatePasswordField(it.toString())
         }
     }
 
@@ -81,14 +82,15 @@ class LoginFragment : BaseFragment() {
     }
 
     private suspend fun observeState() {
-        viewModel.state.collect { updateUIWithState(it) }
+        viewModel.state.collect { updateUI(it) }
     }
 
     private suspend fun observeUiEvents() {
         viewModel.uiEvent.collect { handleUiEvent(it) }
     }
 
-    private fun updateUIWithState(state: LoginFormState) = with(binding) {
+    private fun updateUI(state: UiState) = with(binding) {
+        showLoading(state.isLoading)
         textFieldEmail.error = state.emailError?.asString(requireContext())
         textFieldPassword.error = state.passwordError?.asString(requireContext())
         _bottomSheetBinding?.textFieldResetPasswordEmail?.error =
@@ -97,11 +99,9 @@ class LoginFragment : BaseFragment() {
 
     private fun handleUiEvent(event: UiEvent) {
         when (event) {
-            is UiEvent.ShowError -> {
-                showSnackbar(event.error)
-                showLoading(false)
-            }
-            is UiEvent.LoginSuccess -> navigateToMain()
+            is UiEvent.ShowError -> showSnackbar(event.error)
+            is UiEvent.NavigateToMainActivity -> navigateToMainActivity()
+            is UiEvent.NavigateToAdminActivity -> navigateToAdminActivity()
             is UiEvent.ResetPasswordSuccess -> {
                 showSnackbar(
                     UiText.StringResource(
@@ -112,12 +112,7 @@ class LoginFragment : BaseFragment() {
                 showLoading(false)
                 _bottomSheetDialog?.dismiss()
             }
-            is UiEvent.Loading -> showLoading(true)
-            is UiEvent.Idle -> showLoading(false)
-            is UiEvent.ResetPasswordError -> {
-                showSnackbar(event.error)
-                showLoading(false)
-            }
+            is UiEvent.ResetPasswordError -> showSnackbar(event.error)
         }
     }
 
@@ -133,8 +128,15 @@ class LoginFragment : BaseFragment() {
         findNavController().navigate(R.id.action_loginFragment_to_registerFragment1)
     }
 
-    private fun navigateToMain() {
+    private fun navigateToMainActivity() {
         Intent(requireActivity(), MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(this)
+        }
+    }
+
+    private fun navigateToAdminActivity() {
+        Intent(requireActivity(), AdminActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(this)
         }
@@ -156,7 +158,7 @@ class LoginFragment : BaseFragment() {
         buttonCancel.setOnClickListener { _bottomSheetDialog?.dismiss() }
         buttonConfirm.setOnClickListener {
             val email = textFieldResetPasswordEmail.editText?.text.toString()
-            viewModel.onEvent(LoginFormEvent.ResetPassword(email))
+            viewModel.handlePasswordReset(email)
         }
 
         // Osserva lo stato del reset password

@@ -6,11 +6,10 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hammami.core.time.DateTimeUtils
 import com.example.hammami.databinding.ItemAppuntamentoFuturoBinding
 import com.example.hammami.domain.model.Booking
-import com.example.hammami.domain.model.localDate
 import com.example.hammami.presentation.ui.features.client.AppointmentsFragmentDirections
-import java.time.format.DateTimeFormatter
 
 class FutureAppointmentAdapter : ListAdapter<Booking, FutureAppointmentAdapter.ViewHolder>(AppointmentDiffCallback())  {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -59,8 +58,8 @@ class FutureAppointmentAdapter : ListAdapter<Booking, FutureAppointmentAdapter.V
              */
 
             tvTitle.text = appointment.serviceName
-            binding.tvGiorno.text = appointment.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
-            binding.tvOra.text = "${appointment.startTime} - ${appointment.endTime}"
+            binding.tvGiorno.text = DateTimeUtils.formatDate(appointment.startDate)
+            binding.tvOra.text = DateTimeUtils.formatTimeRange(appointment.startDate, appointment.endDate)
 
 
         }
