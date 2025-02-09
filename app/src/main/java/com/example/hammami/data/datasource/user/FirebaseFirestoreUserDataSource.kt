@@ -50,8 +50,11 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
     suspend fun checkIfAdmin(userId: String): Boolean {
         return try {
             val userDoc = usersCollection.document(userId).get().await()
-            userDoc.getBoolean("isAdmin") ?: false
+            val isAdmin = userDoc.getBoolean("isadmin") ?: false
+            Log.d("FirebaseFirestoreUserDataSource", "checkIfAdmin: User ID $userId, isAdmin: $isAdmin") // Aggiunto log
+            isAdmin
         } catch (e: FirebaseFirestoreException) {
+            Log.e("FirebaseFirestoreUserDataSource", "checkIfAdmin: Error", e) // Aggiunto log
             throw e
         }
     }

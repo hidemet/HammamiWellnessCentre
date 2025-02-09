@@ -1,5 +1,6 @@
 package com.example.hammami.core.time
 
+import android.util.Log
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -77,9 +78,10 @@ object DateTimeUtils {
     fun toTimestamp(date: LocalDate, time: TimeSlot): Timestamp {
         val dateTime =
             LocalDateTime.of(date, time.startTime).atZone(ZoneId.systemDefault()).toInstant()
-        return Timestamp(Date.from(dateTime))
+        val timestamp =  Timestamp(Date.from(dateTime))
+        Log.d("DateTimeUtils", "toTimestamp: date=$date, time=${time.startTime}, timestamp=$timestamp") // LOG
+        return timestamp
     }
-
     fun Timestamp.toLocalDate(): LocalDate {
         return this.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
     }

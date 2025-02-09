@@ -1,6 +1,7 @@
 
 package com.example.hammami.core.time
 
+import android.util.Log
 import java.time.Duration
 import java.time.LocalTime
 import javax.inject.Inject
@@ -25,7 +26,7 @@ class TimeSlotGenerator @Inject constructor() {
             }
             currentSlotStart = currentSlotEnd
         }
-
+        Log.d("TimeSlotGenerator", "Generated slots: $timeSlots")
         return timeSlots.sortedBy { it.startTime }
     }
 }

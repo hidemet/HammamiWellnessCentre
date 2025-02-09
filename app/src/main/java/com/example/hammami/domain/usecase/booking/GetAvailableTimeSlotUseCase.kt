@@ -1,5 +1,6 @@
 package com.example.hammami.domain.usecase.booking
 
+import android.util.Log
 import com.example.hammami.core.result.Result
 import com.example.hammami.core.time.TimeSlot
 import com.example.hammami.core.time.TimeSlotCalculator
@@ -20,13 +21,14 @@ class GetAvailableTimeSlotsUseCase @Inject constructor(
         date: LocalDate,
         serviceDurationMinutes: Int
     ): Result<List<TimeSlot>, DataError> {
-
+Log.d("GetAvailableTimeSlotsUseCase", "Date: $date") //LOG
         return try {
             val availableSlots = timeSlotCalculator.generateAvailableTimeSlots(
                 serviceDurationMinutes = serviceDurationMinutes,
                 date = date
             )
-            val filteredSlots = filterSlotsForToday(availableSlots, date)
+            Log.d("GetAvailableTimeSlotsUseCase", "Available Slots: $availableSlots") //LOG
+         val filteredSlots = filterSlotsForToday(availableSlots, date)
             Result.Success(filteredSlots)
         } catch (e: Exception) {
             Result.Error(DataError.Booking.SLOT_NOT_AVAILABLE)
@@ -35,12 +37,9 @@ class GetAvailableTimeSlotsUseCase @Inject constructor(
 
     private fun filterSlotsForToday(slots: List<TimeSlot>, date: LocalDate): List<TimeSlot> {
         val today = LocalDate.now()
-        val isToday = date.isEqual(today)
-        val now = LocalTime.now()
-
-        return if (isToday) {
-            slots.filter { slot -> slot.startTime.isAfter(now)
-            }
+        return if (date.isEqual(today)) {
+            val now = LocalTime.now()
+            slots.filter { slot -> slot.startTime.isAfter(now) }
         } else {
             slots
         }

@@ -41,7 +41,7 @@ interface BookingViewModelFactory {
 }
 
 class BookingViewModel @AssistedInject constructor(
-    @Assisted private val service: Service,
+    @Assisted private var service: Service,
     private val getAvailableTimeSlotsUseCase: GetAvailableTimeSlotsUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
@@ -73,6 +73,21 @@ class BookingViewModel @AssistedInject constructor(
 
             is Result.Error -> _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
         }
+    }
+
+    fun setService(newService: Service) {
+        if (service != newService) {
+            service = newService
+            _uiState.value = BookingUiState(service = service)
+
+            viewModelScope.launch {
+                uiState.value.selectedDate?.let { loadAvailableTimeSlots(it) }
+            }
+        }
+    }
+
+    fun resetState() {
+        _uiState.value = BookingUiState(service = service) // Reimposta allo stato iniziale
     }
 
     fun onServiceChanged(service: Service) {
@@ -214,6 +229,7 @@ class BookingViewModel @AssistedInject constructor(
         )) {
             is Result.Success -> {
                 _uiState.update {
+                    Log.d("BookingViewModel", "loadAvailableTimeSlots: Success: ${result.data}") // LOG
                     it.copy(
                         isLoading = false, availableTimeSlots = result.data
                     )
@@ -221,6 +237,7 @@ class BookingViewModel @AssistedInject constructor(
             }
 
             is Result.Error -> {
+                Log.e("BookingViewModel", "loadAvailableTimeSlots: Error: ${result.error}") //LOG
                 _uiState.update {
                     it.copy(
                         isLoading = false, availableTimeSlots = emptyList()

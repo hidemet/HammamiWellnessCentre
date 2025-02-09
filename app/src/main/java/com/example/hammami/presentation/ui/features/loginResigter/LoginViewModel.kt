@@ -1,5 +1,6 @@
 package com.example.hammami.presentation.ui.features.loginResigter
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.R
@@ -51,10 +52,14 @@ class LoginViewModel @Inject constructor(
             return@launch
         }
 
+        Log.d("LoginViewModel", "submitLogin: Calling signInUseCase") // Log PRIMA
+
         when (val resultSignIn = signInUseCase(state.value.email, state.value.password)) {
             is Result.Success -> {
+                Log.d("LoginViewModel", "submitLogin: SignIn successful") // Log DOPO successo
                 when (val isAdminResult = isAdminUseCase()) {
                     is Result.Success -> {
+                        Log.d("LoginViewModel", "isAdminResult: ${isAdminResult.data}") // Log is admin
                         if (isAdminResult.data) {
                             emitUiEvent(UiEvent.NavigateToAdminActivity)
                         } else {
@@ -62,7 +67,10 @@ class LoginViewModel @Inject constructor(
                         }
                     }
 
-                    is Result.Error -> emitUiEvent(UiEvent.ShowError(isAdminResult.error.asUiText()))
+                    is Result.Error -> {
+                        Log.e("LoginViewModel", "submitLogin: SignIn failed", (isAdminResult.error.asUiText() as Throwable ) )// Log DOPO errore
+                        emitUiEvent(UiEvent.ShowError(isAdminResult.error.asUiText()))
+                    }
                 }
             }
 

@@ -32,7 +32,7 @@ class RegisterViewModel @Inject constructor(
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validatePasswordUseCase: ValidatePasswordUseCase,
     private val validateConfirmedPasswordUseCase: ValidateConfirmedPasswordUseCase,
-    private val signUpUseCase: SignUpUseCase
+    private val signUpUseCase: SignUpUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RegistrationFormState())

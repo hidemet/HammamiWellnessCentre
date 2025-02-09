@@ -12,6 +12,9 @@ import android.net.Uri
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Transaction
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,10 +26,17 @@ class UserRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
 
+    private val _isAdmin = MutableStateFlow<Boolean?>(null)
+    val isAdmin: StateFlow<Boolean?> = _isAdmin.asStateFlow()
+
     suspend fun isUserAdmin(userId: String): Result<Boolean, DataError> {
         return try {
-            Result.Success(firestoreDataSource.checkIfAdmin(userId))
+            val isAdmin = firestoreDataSource.checkIfAdmin(userId)
+            _isAdmin.value = isAdmin
+            Result.Success(isAdmin)
         } catch (e: Exception) {
+            Log.e("UserRepository", "isUserAdmin: Error for user ID: $userId", e)
+            _isAdmin.value = false
             Result.Error(mapExceptionToDataError(e))
         }
     }

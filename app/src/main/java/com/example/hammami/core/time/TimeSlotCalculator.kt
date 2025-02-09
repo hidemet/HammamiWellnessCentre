@@ -1,12 +1,13 @@
 package com.example.hammami.core.time
 
+import android.util.Log
 import com.example.hammami.core.result.Result
 import com.example.hammami.domain.usecase.booking.IsTimeSlotAvailableUseCase
 import java.time.LocalDate
 import javax.inject.Inject
 
 class TimeSlotCalculator @Inject constructor(
-    private val timeSlotGenerator: TimeSlotGenerator, // Dipendenza da TimeSlotGenerator
+    private val timeSlotGenerator: TimeSlotGenerator,
     private val isTimeSlotAvailableUseCase: IsTimeSlotAvailableUseCase
 ) {
 
@@ -14,28 +15,37 @@ class TimeSlotCalculator @Inject constructor(
         serviceDurationMinutes: Int,
         date: LocalDate
     ): List<TimeSlot> {
-        // Usa TimeSlotGenerator per generare la lista POTENZIALE di slot
+        Log.d("TimeSlotCalculator", "generateAvailableTimeSlots called with date: $date, duration: $serviceDurationMinutes") // LOG IMPORTANTE
+
         val potentialSlots = timeSlotGenerator.generateTimeSlots(serviceDurationMinutes)
+        Log.d("TimeSlotCalculator", "Potential slots generated: $potentialSlots") // LOG
+
         val availableSlots = mutableListOf<TimeSlot>()
 
-        potentialSlots.forEach { slot ->
+        for (slot in potentialSlots) {
+            val startTimestamp = DateTimeUtils.toTimestamp(date, slot.startTime)
+            val endTimestamp = DateTimeUtils.toTimestamp(date, slot.endTime)
+
+            Log.d("TimeSlotCalculator", "Checking slot: $slot, startTimestamp: $startTimestamp, endTimestamp: $endTimestamp") // LOG
 
 
-            // Verifica la disponibilità di ogni singolo slot usando IsTimeSlotAvailableUseCase
-            val isBookedResult = isTimeSlotAvailableUseCase(
-                date = date,
-                slot = slot
-            )
-            when (isBookedResult) {
+            when (val isAvailableResult = isTimeSlotAvailableUseCase(date = date, slot = slot)) {
                 is Result.Success -> {
-                    if (!isBookedResult.data) {
+                    Log.d("TimeSlotCalculator", "isTimeSlotAvailableUseCase returned: ${isAvailableResult.data}") // LOG
+                    if (isAvailableResult.data) {
                         availableSlots.add(slot)
+                    } else {
+                        Log.d("TimeSlotCalculator", "Slot $slot è NON disponibile") // LOG
                     }
                 }
+                is Result.Error -> {
+                    Log.e("TimeSlotCalculator", "Error checking availability for slot $slot: ${isAvailableResult.error}") // LOG
 
-                is Result.Error -> Unit
+                }
             }
         }
+
+        Log.d("TimeSlotCalculator", "Final available slots: $availableSlots") // LOG
         return availableSlots.sortedBy { it.startTime }
     }
 }

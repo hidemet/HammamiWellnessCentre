@@ -42,7 +42,6 @@ class BookingFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val args: BookingFragmentArgs by navArgs()
-    private val service: Service by lazy { args.service }
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
@@ -53,7 +52,7 @@ class BookingFragment : BaseFragment() {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return bookingViewModelFactory.create(service) as T
+                return bookingViewModelFactory.create(args.service) as T
             }
         }
     }
@@ -84,6 +83,14 @@ class BookingFragment : BaseFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.setService(args.service) // Aggiungi questa chiamata
+        setupUI()
+        observeFlows()
+        //viewModel.loadBooking(args.bookingId)  <-- Rimuovi questa riga se presente!
+    }
+
     private fun hasNotificationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             requireContext(),
@@ -98,7 +105,7 @@ class BookingFragment : BaseFragment() {
     override fun setupUI() {
         setupTopAppBar()
         setupListeners()
-        binding.serviceNameTextView.text = service.name
+        binding.serviceNameTextView.text = args.service.name
 
         // Imposta la data corrente sul CalendarView
         binding.calendarView.date = Calendar.getInstance().timeInMillis
@@ -115,14 +122,18 @@ class BookingFragment : BaseFragment() {
     }
 
     private fun observeUiEvents(event: BookingUiEvent) {
+
         when (event) {
             is BookingUiEvent.ShowError -> showSnackbar(event.message)
             is BookingUiEvent.ShowUserMassage -> showSnackbar(event.message)
-            is BookingUiEvent.NavigateToPayment -> navigateToPayment(event.paymentItem)
+            is BookingUiEvent.NavigateToPayment -> {
+                navigateToPayment(event.paymentItem)
+                viewModel.resetState()
+            }
         }
     }
 
-    private fun updateUiState(uiState: BookingViewModel.BookingUiState) {
+    private fun updateUiState(uiState: BookingUiState) {
         binding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
         binding.bookButton.isEnabled =
             uiState.selectedDate != null && uiState.selectedTimeSlot != null && !uiState.isLoading
@@ -156,6 +167,7 @@ class BookingFragment : BaseFragment() {
             text = DateTimeUtils.formatTime(timeSlot.startTime)
             isCheckable = true
             setOnClickListener { viewModel.onTimeSlotSelected(timeSlot) }
+            Log.d("BookingFragment", "Creating chip with text: ${this.text}")
         }
     }
 
@@ -185,18 +197,19 @@ class BookingFragment : BaseFragment() {
         }
 
         binding.bookButton.setOnClickListener {
-                if (hasNotificationPermission()) { //usa il metodo creato prima per controllare se ha già i permessi
-                    lifecycleScope.launch {
-                        viewModel.onConfirmBooking()
-                    }
-                } else {
-                    requestNotificationPermission()
+            if (hasNotificationPermission()) { //usa il metodo creato prima per controllare se ha già i permessi
+                lifecycleScope.launch {
+                    viewModel.onConfirmBooking()
                 }
+            } else {
+                requestNotificationPermission()
+            }
         }
     }
 
     private fun handleDateChange(calendar: Calendar) {
         val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        Log.d("BookingFragment", "handleDateChange: dayOfWeek = $dayOfWeek") // AGGIUNGI QUESTO
         if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.MONDAY) {
             // Pulisci gli slot e mostra il messaggio
             binding.timeSlotsChipGroup.removeAllViews()
@@ -207,6 +220,8 @@ class BookingFragment : BaseFragment() {
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
+            Log.d("BookingFragment", "Selected date: $selectedDate") // LOG
+
             viewModel.onDateSelected(selectedDate)
         }
     }

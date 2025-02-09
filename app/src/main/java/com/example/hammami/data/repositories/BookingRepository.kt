@@ -133,6 +133,7 @@ class BookingRepository @Inject constructor(
     ): Result<Boolean, DataError> {
         return try {
             val isAvailable = bookingDataSource.isTimeSlotAvailable(startDate, endDate)
+            Log.d("BookingRepository", "isTimeSlotAvailable: startDate=$startDate, endDate=$endDate, isAvailable=$isAvailable")
             Result.Success(isAvailable)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel verificare la disponibilità dello slot", e)

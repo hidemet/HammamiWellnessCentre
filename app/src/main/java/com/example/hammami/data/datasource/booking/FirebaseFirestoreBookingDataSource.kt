@@ -91,6 +91,7 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
 
     suspend fun isTimeSlotAvailable(startDate: Timestamp, endDate: Timestamp): Boolean {
         return try {
+            Log.d("FirestoreBookingDataSource", "isTimeSlotAvailable: startDate=$startDate, endDate=$endDate")
             val querySnapshot = bookingsCollection
                 .whereLessThanOrEqualTo("startDate", endDate)
                 .whereGreaterThanOrEqualTo("endDate", startDate)
@@ -98,7 +99,10 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
                 .get()
                 .await()
 
-            querySnapshot.isEmpty
+            val isAvailable = querySnapshot.isEmpty // Se la query è vuota, lo slot è disponibile
+            Log.d("FirestoreBookingDataSource", "isTimeSlotAvailable: slot is available: $isAvailable")
+            isAvailable
+
         } catch (e: Exception) {
             Log.e(
                 "FirestoreBookingDataSource",

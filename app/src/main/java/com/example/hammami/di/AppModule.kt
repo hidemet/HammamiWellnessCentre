@@ -25,6 +25,7 @@ import com.example.hammami.domain.usecase.validation.user.ValidateGenderUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidateLastNameUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidatePhoneNumberUseCase
 import com.example.hammami.core.utils.ClipboardManager
+import com.example.hammami.domain.usecase.user.GetCurrentUserIdUseCase
 import com.example.hammami.util.PreferencesManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -54,6 +55,10 @@ object AppModule {
     @Singleton
     fun provideFirebaseAuth() = FirebaseAuth.getInstance()
 
+    @Provides
+    fun provideGetCurrentUserIdUseCase(authRepository: AuthRepository): GetCurrentUserIdUseCase {
+        return GetCurrentUserIdUseCase(authRepository)
+    }
 
     @Provides
     @Singleton

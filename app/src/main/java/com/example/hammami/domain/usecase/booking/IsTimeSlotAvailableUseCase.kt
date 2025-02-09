@@ -1,5 +1,6 @@
 package com.example.hammami.domain.usecase.booking
 
+import android.util.Log
 import com.example.hammami.core.result.Result
 import com.example.hammami.core.time.DateTimeUtils
 import com.example.hammami.core.time.TimeSlot
@@ -20,7 +21,7 @@ class IsTimeSlotAvailableUseCase @Inject constructor(
         // Converti LocalTime in Timestamp per la query al database
         val startTimestamp = DateTimeUtils.toTimestamp(date, slot)
         val endTimestamp = DateTimeUtils.toTimestamp(date, slot.endTime)
-
+        Log.d("IsTimeSlotAvailableUseCase", "Checking availability: start=$startTimestamp, end=$endTimestamp") // LOG
         return bookingRepository.isTimeSlotAvailable(startTimestamp, endTimestamp)
     }
 }
