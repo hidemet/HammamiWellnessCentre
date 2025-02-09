@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -56,7 +57,7 @@ class BookingSummaryFragment : BaseFragment() {
             findNavController().popBackStack(R.id.homeFragment, false)
         }
         buttonViewBookings.setOnClickListener {
-            findNavController().popBackStack(R.id.appointmentsFragment, false)
+            findNavController().navigate(R.id.action_global_appointmentsFragment)
         }
     }
 
@@ -64,13 +65,14 @@ class BookingSummaryFragment : BaseFragment() {
         with(binding) {
             bookingCard.serviceName.text = booking.serviceName
             bookingCard.bookingDate.text = DateTimeUtils.formatDate(booking.startDate)
-            bookingCard.bookingTime.text = DateTimeUtils.formatTimeRange(booking.startDate, booking.endDate)
+            bookingCard.bookingTime.text =
+                DateTimeUtils.formatTimeRange(booking.startDate, booking.endDate)
+            bookingCard.bookingPrice.isVisible = true
             bookingPrice.text = getString(R.string.booking_price_format, booking.price)
         }
         // Gestione click slla card
         //binding.bookingCard.setOnClickListener {
-            // TODO: apri il dettaglio della prenotazione, ad esempio:
-            // findNavController().navigate(R.id.action_bookingSummaryFragment_to_bookingDetailFragment, bundleOf("bookingId" to booking.id))
+        // findNavController().navigate(R.id.action_bookingSummaryFragment_to_bookingDetailFragment, bundleOf("bookingId" to booking.id))
         //}
     }
 
@@ -94,7 +96,7 @@ class BookingSummaryFragment : BaseFragment() {
     }
 
     private suspend fun observeState() {
-        viewModel.newBooking.collect { booking -> booking?.let{updateBookingUi(it)} }
+        viewModel.newBooking.collect { booking -> booking?.let { updateBookingUi(it) } }
     }
 
     override fun onDestroyView() {

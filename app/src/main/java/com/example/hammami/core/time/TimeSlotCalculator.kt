@@ -17,8 +17,13 @@ class TimeSlotCalculator @Inject constructor(
     ): List<TimeSlot> {
         Log.d("TimeSlotCalculator", "generateAvailableTimeSlots called with date: $date, duration: $serviceDurationMinutes") // LOG IMPORTANTE
 
-        val potentialSlots = timeSlotGenerator.generateTimeSlots(serviceDurationMinutes)
+        val potentialSlots = timeSlotGenerator.generateTimeSlots(serviceDurationMinutes, date)
         Log.d("TimeSlotCalculator", "Potential slots generated: $potentialSlots") // LOG
+
+        if (potentialSlots.isEmpty()) {
+            Log.d("TimeSlotCalculator", "No potential slots, returning empty list.")
+            return emptyList()
+        }
 
         val availableSlots = mutableListOf<TimeSlot>()
 

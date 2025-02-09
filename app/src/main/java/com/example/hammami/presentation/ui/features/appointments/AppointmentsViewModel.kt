@@ -25,8 +25,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppointmentsViewModel @Inject constructor(
-    private val getNewAppointmentUseCase: GetUserBookingsUseCase,
-    private val getPastAppointmentUseCase: GetUserBookingsUseCase,
     private val getCurrentUserDataUseCase: GetCurrentUserDataUseCase,
     private val getUserBookingsSeparatedUseCase: GetUserBookingSeparatedUseCase
 ): ViewModel() {

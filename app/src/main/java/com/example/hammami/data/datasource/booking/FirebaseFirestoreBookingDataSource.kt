@@ -93,9 +93,8 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         return try {
             Log.d("FirestoreBookingDataSource", "isTimeSlotAvailable: startDate=$startDate, endDate=$endDate")
             val querySnapshot = bookingsCollection
-                .whereLessThanOrEqualTo("startDate", endDate)
-                .whereGreaterThanOrEqualTo("endDate", startDate)
-                .limit(1)
+                .whereLessThan("startDate", endDate)
+                .whereGreaterThan("endDate", startDate)
                 .get()
                 .await()
 

@@ -3,6 +3,7 @@ package com.example.hammami.presentation.ui.features.admin.booking
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,21 +42,17 @@ class EditBookingFragment : BaseFragment() {
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Inizializza il launcher per la richiesta di permessi
-        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                // PERMESSO CONCESSO:  Procedi con la logica di prenotazione/modifica
-                lifecycleScope.launch{viewModel.onConfirmChanges()}
+        requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                if (isGranted) {
+                    // Permesso concesso, procedi con la logica di prenotazione
 
-            } else {
-                // PERMESSO NEGATO:  Mostra un messaggio all'utente e/o gestisci la situazione
-                showSnackbar(UiText.StringResource(R.string.notification_permission_denied))
-                // Potresti disabilitare la funzionalità, ecc.
+                } else {
+                    showSnackbar(UiText.StringResource(R.string.notification_permission_denied))
+                }
             }
-        }
     }
 
     override fun onCreateView(
@@ -85,11 +82,19 @@ class EditBookingFragment : BaseFragment() {
     }
 
     override fun setupUI() {
+        setupTopAppBar()
         binding.topAppBar.title = getString(R.string.edit_booking_title)
         binding.bookButton.text = getString(R.string.save_changes)
 
         setupListeners()
     }
+
+    private fun setupTopAppBar() = with(binding) {
+        topAppBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
 
     private fun setupListeners() {
         binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
@@ -100,7 +105,7 @@ class EditBookingFragment : BaseFragment() {
         }
 
         binding.bookButton.setOnClickListener {
-            if (hasNotificationPermission()) { //usa il metodo creato prima per controllare se ha già i permessi
+            if (hasNotificationPermission()) {
                 lifecycleScope.launch {
                     viewModel.onConfirmChanges()
                 }
@@ -112,15 +117,25 @@ class EditBookingFragment : BaseFragment() {
 
     private fun handleDateChange(calendar: Calendar) {
         val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-        if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.MONDAY) {
-            binding.timeSlotsChipGroup.removeAllViews()
-            showSnackbar(UiText.StringResource(R.string.giorni_chiusura))
+        val isClosed = (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.MONDAY)
+
+        if (isClosed) {
+            // Mostra il messaggio che il giorno è chiuso
+            binding.timeSlotsChipGroup.removeAllViews()  // Svuota eventuali chip precedenti
+            binding.closedDayMessage.visibility = View.VISIBLE // Mostra il messaggio
+            binding.timeSlotsChipGroup.visibility = View.GONE // Nascondi il ChipGroup
         } else {
+            // Nascondi il messaggio e procedi con la selezione della data
+            binding.closedDayMessage.visibility = View.GONE
+            binding.timeSlotsChipGroup.visibility = View.VISIBLE //Assicurati che sia visibile
+
             val selectedDate = LocalDate.of(
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
+            Log.d("BookingFragment", "Selected date: $selectedDate") // LOG
+
             viewModel.onDateSelected(selectedDate)
         }
     }

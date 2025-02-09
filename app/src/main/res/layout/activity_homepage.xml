@@ -39,7 +39,7 @@
             android:minHeight="?attr/actionBarSize"
             app:layout_anchor="@+id/appBarLayout2"
             app:layout_anchorGravity="center"
-            app:menu="@menu/top_app_bar">
+            app:menu="@menu/top_app_home_menu">
 
             <ImageView
                 android:id="@+id/logo_hammam"

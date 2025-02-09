@@ -8,13 +8,25 @@
     <include app:graph="@navigation/nav_graph_login_register" />
 
     <action
+        android:id="@+id/action_global_to_bookingDetailFragment"
+        app:destination="@id/bookingDetailFragment" />
+
+    <action
+        android:id="@+id/action_global_to_editBookingFragment"
+        app:destination="@id/editBookingFragment" />
+
+    <action
         android:id="@+id/action_global_login"
         app:destination="@id/login_register_graph"
         app:popUpTo="@id/client_graph"
         app:popUpToInclusive="true" />
 
 
-
+    <action
+        android:id="@+id/action_global_appointmentsFragment"
+        app:destination="@id/appointmentsFragment"
+        app:popUpTo="@id/client_graph"
+        app:popUpToInclusive="false" />
 
     <fragment
         android:id="@+id/homeFragment"
@@ -28,7 +40,6 @@
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
     </fragment>
-
 
     <fragment
         android:id="@+id/profileFragment"
@@ -61,7 +72,7 @@
         android:id="@+id/editUserProfileFragment"
         android:name="com.example.hammami.presentation.ui.features.userProfile.EditUserFragment"
         android:label="EditUserProfileFragment"
-        tools:layout="@layout/fragment_edit_user_profile" >
+        tools:layout="@layout/fragment_edit_user_profile">
         <action
             android:id="@+id/action_editUserProfileFragment_to_editPersonalInfoFragment"
             app:destination="@id/editPersonalInfoFragment" />
@@ -75,26 +86,25 @@
         android:id="@+id/editPersonalInfoFragment"
         android:name="com.example.hammami.presentation.ui.features.userProfile.editUser.EditPersonalInfoFragment"
         android:label="EditPersonalInfoFragment"
-        tools:layout="@layout/fragment_edit_personal_info"/>
+        tools:layout="@layout/fragment_edit_personal_info" />
     <fragment
         android:id="@+id/editContactInfoFragment"
         android:name="com.example.hammami.presentation.ui.features.userProfile.editUser.EditContactInfoFragment"
         android:label="EditContactInfoFragment"
-        tools:layout="@layout/fragment_edit_contact_info"
-        />
+        tools:layout="@layout/fragment_edit_contact_info" />
 
 
-<!--    <action-->
-<!--        android:id="@+id/action_global_profileFragment"-->
-<!--        app:destination="@id/profileFragment" />-->
+    <!--    <action-->
+    <!--        android:id="@+id/action_global_profileFragment"-->
+    <!--        app:destination="@id/profileFragment" />-->
 
-<!--    &lt;!&ndash; Azione globale per tornare alla home da qualsiasi punto &ndash;&gt;-->
-<!--    <action-->
-<!--        android:id="@+id/action_global_home"-->
-<!--        app:destination="@id/homeFragment"-->
-<!--        app:launchSingleTop="true"-->
-<!--        app:popUpTo="@id/client_graph"-->
-<!--        app:popUpToInclusive="false" />-->
+    <!--    &lt;!&ndash; Azione globale per tornare alla home da qualsiasi punto &ndash;&gt;-->
+    <!--    <action-->
+    <!--        android:id="@+id/action_global_home"-->
+    <!--        app:destination="@id/homeFragment"-->
+    <!--        app:launchSingleTop="true"-->
+    <!--        app:popUpTo="@id/client_graph"-->
+    <!--        app:popUpToInclusive="false" />-->
 
 
     <fragment
@@ -202,15 +212,16 @@
         android:id="@+id/appointmentsFragment"
         android:name="com.example.hammami.presentation.ui.features.client.AppointmentsFragment"
         android:label="AppointmentsFragment"
-        tools:layout="@layout/fragment_about_us">
+        tools:layout="@layout/fragment_appointments">
+
         <action
-            android:id="@+id/action_appointmentsFragment_to_appointmentDetailFragment"
-            app:destination="@id/AppointmentDetailFragment" />
+            android:id="@+id/action_appointmentsFragment_to_bookingDetailFragment"
+            app:destination="@id/bookingDetailFragment" />
+
         <action
             android:id="@+id/action_appointmentsFragment_to_AddReviewFragment"
             app:destination="@id/AddReviewFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/servizioDetailFragment"
         android:name="com.example.hammami.presentation.ui.features.service.ServiceDetailFragment"
@@ -269,16 +280,27 @@
             app:destination="@id/servizioDetailFragment" />
     </navigation>
 
+
     <fragment
-        android:id="@+id/AppointmentDetailFragment"
-        android:name="com.example.hammami.presentation.ui.features.appointments.AppointmentDetailFragment"
-        android:label="AppointmentDetailFragment"
-        tools:layout="@layout/fragment_appointment_detail">
+        android:id="@+id/bookingDetailFragment"
+        android:name="com.example.hammami.presentation.ui.features.shared.booking.BookingDetailFragment"
+        android:label="fragment_booking_detail"
+        tools:layout="@layout/fragment_booking_detail">
         <argument
-            android:name="appointment"
-            app:argType="com.example.hammami.domain.model.Booking" />
+            android:name="bookingId"
+            app:argType="string" />
     </fragment>
 
+    <fragment
+        android:id="@+id/editBookingFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.booking.EditBookingFragment"
+        android:label="fragment_booking"
+        tools:layout="@layout/fragment_booking">
+        <argument
+            android:name="bookingId"
+            app:argType="string"
+            />
+    </fragment>
     <fragment
         android:id="@+id/AddReviewFragment"
         android:name="com.example.hammami.presentation.ui.features.appointments.AddReviewFragment"
@@ -384,7 +406,6 @@
             app:popUpTo="@id/client_graph"
             app:popUpToInclusive="true" />
     </fragment>
-
 
 
 </navigation>

@@ -5,6 +5,26 @@
     android:id="@+id/nav_graph_admin"
     app:startDestination="@id/homeAdminFragment">
 
+    <action
+        android:id="@+id/action_global_to_bookingDetailFragment"
+        app:destination="@id/bookingDetailFragment" />
+
+    <action
+        android:id="@+id/action_global_to_editBookingFragment"
+        app:destination="@id/editBookingFragment" />
+
+
+    <fragment
+        android:id="@+id/bookingDetailFragment"
+        android:name="com.example.hammami.presentation.ui.features.shared.booking.BookingDetailFragment"
+        android:label="fragment_booking_detail"
+        tools:layout="@layout/fragment_booking_detail" >
+        <argument
+            android:name="bookingId"
+            app:argType="string" />
+    </fragment>
+
+
     <fragment
         android:id="@+id/homeAdminFragment"
         android:name="com.example.hammami.presentation.ui.features.admin.home.HomeAdminFragment"
@@ -16,18 +36,6 @@
             app:destination="@id/bookingDetailFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/bookingDetailFragment"
-        android:name="com.example.hammami.presentation.ui.features.admin.booking.BookingDetailFragment"
-        android:label="fragment_booking_detail"
-        tools:layout="@layout/fragment_booking_detail" >
-        <argument
-            android:name="bookingId"
-            app:argType="string" />
-        <action
-            android:id="@+id/action_bookingDetailFragment_to_editBookingFragment"
-            app:destination="@id/editBookingFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/editBookingFragment"
@@ -38,9 +46,7 @@
             android:name="bookingId"
             app:argType="string"
             />
-
     </fragment>
-
     <fragment
         android:id="@+id/agendaAdminFragment"
         android:name="com.example.hammami.presentation.ui.features.admin.agenda.AgendaAdminFragment"

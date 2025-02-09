@@ -528,7 +528,7 @@
     <string name="contact_info">Contatti</string>
     <string name="confirm_password_message">Inserisci la password associata alla tua email attuale (%1$s) per confermare la modifica.</string>
     <string name="error_required_password">Inserisci la password</string>
-    <string name="giorni_chiusura">Il negozio è chiuso la domenica e il lunedì.</string>
+    <string name="closed_day">Il negozio è chiuso la domenica e il lunedì.</string>
     <string name="today">Oggi</string>
     <string name="booking_time_format"><![CDATA[<string name=\"booking_time_format\">%1$s - %2$s</string>]]></string>
     <string name="reschedule_appointment">Riprogramma appuntamento</string>
@@ -548,6 +548,8 @@
     <string name="notification_title">Promemoria appuntamento</string>
     <string name="notification_permission_denied">Per ricevere promemoria, è necessario attivare le notifiche</string>
     <string name="notification_text">Hai un appuntamento per %1$s domani alle %2$s!</string>
+    <string name="start_navigation">Portami all\'Hammami</string>
+    <string name="error_navigation_app_not_found">Non è stata trovata nessun app per la navigazione\n</string>
 
 
 </resources>

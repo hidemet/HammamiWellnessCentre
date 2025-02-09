@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -30,6 +31,7 @@ import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.booking.BookingViewModel.*
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Calendar
@@ -59,17 +61,13 @@ class BookingFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Inizializza il launcher per la richiesta di permessi
         requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
                 if (isGranted) {
                     // Permesso concesso, procedi con la logica di prenotazione
-                    viewLifecycleOwner.lifecycleScope.launch { viewModel.onConfirmBooking() }
 
                 } else {
-                    // Permesso negato, mostra un messaggio all'utente
                     showSnackbar(UiText.StringResource(R.string.notification_permission_denied))
-                    // Potresti disabilitare la funzionalità di prenotazione, ecc.
                 }
             }
     }
@@ -88,7 +86,6 @@ class BookingFragment : BaseFragment() {
         viewModel.setService(args.service) // Aggiungi questa chiamata
         setupUI()
         observeFlows()
-        //viewModel.loadBooking(args.bookingId)  <-- Rimuovi questa riga se presente!
     }
 
     private fun hasNotificationPermission(): Boolean {
@@ -115,50 +112,75 @@ class BookingFragment : BaseFragment() {
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.uiState.collect { updateUiState(it) } }
-                launch { viewModel.uiEvent.collect { observeUiEvents(it) } }
+                launch { observeState() }
+                launch { observeEvents() }
             }
         }
     }
 
-    private fun observeUiEvents(event: BookingUiEvent) {
+    private suspend fun observeState() {
+        viewModel.uiState.collectLatest { state ->
+            binding.progressBar.isVisible = state.isLoading
+            binding.bookButton.isEnabled =
+                state.selectedDate != null && state.selectedTimeSlot != null && !state.isLoading
 
-        when (event) {
-            is BookingUiEvent.ShowError -> showSnackbar(event.message)
-            is BookingUiEvent.ShowUserMassage -> showSnackbar(event.message)
-            is BookingUiEvent.NavigateToPayment -> {
-                navigateToPayment(event.paymentItem)
-                viewModel.resetState()
-            }
-        }
-    }
+            // Gestione visibilità del messaggio per i giorni di chiusura
+            binding.closedDayMessage.isVisible = state.isClosedDay
+            binding.timeSlotsChipGroup.isVisible = !state.isClosedDay
 
-    private fun updateUiState(uiState: BookingUiState) {
-        binding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
-        binding.bookButton.isEnabled =
-            uiState.selectedDate != null && uiState.selectedTimeSlot != null && !uiState.isLoading
-
-        binding.timeSlotsChipGroup.apply {
-            removeAllViews() // Pulisce le chip precedenti
-            uiState.availableTimeSlots.forEach { timeSlot ->
-                // Aggiunge una chip per ogni slot
-                addView(createTimeSlotChip(timeSlot))
+            state.selectedDate?.let {
+                val calendar = Calendar.getInstance().apply {
+                    set(it.year, it.monthValue - 1, it.dayOfMonth)
+                }
+                binding.calendarView.date = calendar.timeInMillis
             }
 
-            // Imposta come selezionata la chip corrispondente all'orario di inizio selezionato
-            uiState.selectedTimeSlot?.let { selectedTimeSlot ->
-                for (i in 0 until childCount) {
-                    val chip = getChildAt(i) as Chip
-                    if (chip.text == DateTimeUtils.formatTime(selectedTimeSlot.startTime)) {
+            binding.timeSlotsChipGroup.apply {
+                removeAllViews()
+                state.availableTimeSlots.forEach { timeSlot ->
+                    val chip = createTimeSlotChip(timeSlot)
+                    if (timeSlot == state.selectedTimeSlot) {
                         chip.isChecked = true
-                        break
+                    }
+                    addView(chip)
+                }
+                // Se c'è uno slot selezionato, assicurati che sia visibile
+                state.selectedTimeSlot?.let { selectedTimeSlot ->
+                    for (i in 0 until childCount) {
+                        val chip = getChildAt(i) as Chip
+                        if (chip.text == DateTimeUtils.formatTime(selectedTimeSlot.startTime)) {
+                            chip.isChecked = true
+                            break
+                        }
                     }
                 }
-            } ?: run {
-                // Deseleziona tutte le chip se non c'è un orario selezionato
-                binding.timeSlotsChipGroup.clearCheck()
             }
+        }
+    }
 
+    private suspend fun observeEvents() {
+        viewModel.uiEvent.collect{ event ->
+            when (event) {
+                is BookingUiEvent.ShowError -> showSnackbar(event.message)
+                is BookingUiEvent.ShowUserMassage -> showSnackbar(event.message)
+                is BookingUiEvent.NavigateToPayment -> {
+                    Log.d(
+                        "BookingFragment",
+                        "Navigating to PaymentFragment with bookingId: ${event.paymentItem.bookingId}"
+                    )
+                    navigateToPaymentFragment(event.paymentItem)
+                }
+            }
+        }
+    }
+
+    private fun navigateToPaymentFragment(paymentItem: PaymentItem) {
+        val currentDestination = findNavController().currentDestination?.id
+        if (currentDestination == R.id.bookingFragment) {
+            val action = BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem)
+            findNavController().navigate(action)
+        } else {
+            Log.e("Navigation", "Current destination is not BookingFragment")
         }
     }
 
@@ -171,15 +193,6 @@ class BookingFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToPayment(paymentItem: PaymentItem.ServiceBookingPayment) {
-        Log.d(
-            "BookingFragment",
-            "Navigating to PaymentFragment with bookingId: ${paymentItem.bookingId}"
-        )
-        findNavController().navigate(
-            BookingFragmentDirections.actionBookingFragmentToPaymentFragment(paymentItem)
-        )
-    }
 
     private fun setupTopAppBar() {
         binding.topAppBar.setNavigationOnClickListener {
@@ -197,7 +210,7 @@ class BookingFragment : BaseFragment() {
         }
 
         binding.bookButton.setOnClickListener {
-            if (hasNotificationPermission()) { //usa il metodo creato prima per controllare se ha già i permessi
+            if (hasNotificationPermission()) {
                 lifecycleScope.launch {
                     viewModel.onConfirmBooking()
                 }
@@ -209,12 +222,18 @@ class BookingFragment : BaseFragment() {
 
     private fun handleDateChange(calendar: Calendar) {
         val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-        Log.d("BookingFragment", "handleDateChange: dayOfWeek = $dayOfWeek") // AGGIUNGI QUESTO
-        if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.MONDAY) {
-            // Pulisci gli slot e mostra il messaggio
-            binding.timeSlotsChipGroup.removeAllViews()
-            showSnackbar(UiText.StringResource(R.string.giorni_chiusura))
+        val isClosed = (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.MONDAY)
+
+        if (isClosed) {
+            // Mostra il messaggio che il giorno è chiuso
+            binding.timeSlotsChipGroup.removeAllViews()  // Svuota eventuali chip precedenti
+            binding.closedDayMessage.visibility = View.VISIBLE // Mostra il messaggio
+            binding.timeSlotsChipGroup.visibility = View.GONE // Nascondi il ChipGroup
         } else {
+            // Nascondi il messaggio e procedi con la selezione della data
+            binding.closedDayMessage.visibility = View.GONE
+            binding.timeSlotsChipGroup.visibility = View.VISIBLE //Assicurati che sia visibile
+
             val selectedDate = LocalDate.of(
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,

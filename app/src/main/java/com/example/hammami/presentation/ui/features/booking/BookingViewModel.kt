@@ -4,6 +4,7 @@ package com.example.hammami.presentation.ui.features.booking
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hammami.R
 import com.example.hammami.core.result.Result
 import com.example.hammami.core.time.DateTimeUtils
 import com.example.hammami.core.time.TimeSlot
@@ -22,6 +23,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -52,17 +55,26 @@ class BookingViewModel @AssistedInject constructor(
     private val _uiState = MutableStateFlow(BookingUiState(service = service))
     val uiState: StateFlow<BookingUiState> = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<BookingUiEvent>()
-    val uiEvent: SharedFlow<BookingUiEvent> = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<BookingUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _newBooking = MutableStateFlow<Booking?>(null)
     val newBooking = _newBooking.asStateFlow()
+
+    private var serviceDurationMinutes: Int = 0
 
     private var reservationJob: Job? = null
     private val reservationDuration = 5.minutes
 
     private var releaseSlotTimerJob: Job? = null
-    private val slotReservationTimeout = 5.minutes // Imposta la durata del timer (es. 5 minuti)
+    private val slotReservationTimeout = 5.minutes
+
+
+    init {
+        service.length?.toInt()?.let {
+            serviceDurationMinutes = it
+        }
+    }
 
     fun loadBooking(bookingId: String) = viewModelScope.launch {
         when (val result = getBookingUseCase(bookingId)) {
@@ -71,7 +83,7 @@ class BookingViewModel @AssistedInject constructor(
                 _uiState.update { it.copy(isLoading = false) }
             }
 
-            is Result.Error -> _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
+            is Result.Error -> _uiEvent.send(BookingUiEvent.ShowError(result.error.asUiText()))
         }
     }
 
@@ -95,9 +107,25 @@ class BookingViewModel @AssistedInject constructor(
     }
 
     fun onDateSelected(date: LocalDate) = viewModelScope.launch {
-        _uiState.update { it.copy(selectedDate = date, availableTimeSlots = emptyList()) }
-        loadAvailableTimeSlots(date)
+        val dayOfWeek = date.dayOfWeek.value
+        val isClosed = (dayOfWeek == 7 || dayOfWeek == 1)
+
+        _uiState.update {
+            it.copy(
+                selectedDate = date,
+                availableTimeSlots = emptyList(),
+                selectedTimeSlot = null,
+                isClosedDay = isClosed
+            )
+        }
+
+        if (!isClosed) {
+            loadAvailableTimeSlots(date)
+        } else {
+            _uiState.update { it.copy(isLoading = false) }
+        }
     }
+
 
     fun resetBookingConfirmation() {
         _uiState.update { it.copy(isBookingConfirmed = false) }
@@ -122,23 +150,10 @@ class BookingViewModel @AssistedInject constructor(
         when (val availabilityResult = isTimeSlotAvailableUseCase(selectedDate, selectedTimeSlot)) {
             is Result.Success -> {
                 if (availabilityResult.data) {
-                    // Lo slot è disponibile, procedi con la prenotazione
                     reserveSlot()
-                    val service = uiState.value.service ?: return
-                    val currentBookingId = uiState.value.currentBookingId
 
-                    val paymentItem = PaymentItem.ServiceBookingPayment.from(
-                        service = state.service,
-                        bookingId = currentBookingId ?: "",
-                        date = selectedDate,
-                        startTime = selectedTimeSlot.startTime,
-                        endTime = selectedTimeSlot.endTime,
-                        price = service.price!!.toDouble()
-                    )
-                    _uiEvent.emit(BookingUiEvent.NavigateToPayment(paymentItem))
                 } else {
-                    // Lo slot non è più disponibile
-                    _uiEvent.emit(
+                    _uiEvent.send(
                         BookingUiEvent.ShowError(
                             UiText.DynamicString("L'orario selezionato non è più disponibile. Si prega di selezionarne un altro.")
                         )
@@ -147,24 +162,29 @@ class BookingViewModel @AssistedInject constructor(
             }
 
             is Result.Error -> {
-                _uiEvent.emit(BookingUiEvent.ShowError(availabilityResult.error.asUiText()))
+                _uiEvent.send(BookingUiEvent.ShowError(availabilityResult.error.asUiText()))
             }
         }
     }
 
     private suspend fun reserveSlot() {
-        val service = uiState.value.service ?: return
-        val selectedDate = uiState.value.selectedDate ?: return
+        val state = uiState.value
+        val selectedDate = state.selectedDate ?: return
         val selectedTimeSlot = uiState.value.selectedTimeSlot ?: return
         val price = service.price?.toDouble() ?: 0.0
+        val service = state.service
 
         releaseSlotTimerJob?.cancel() // Annulla il timer precedente, se presente
 
-        val (startDate,endDate) = DateTimeUtils.createStartAndEndTimestamps(selectedDate, selectedTimeSlot.startTime, selectedTimeSlot.endTime)
+        val (startDate, endDate) = DateTimeUtils.createStartAndEndTimestamps(
+            selectedDate,
+            selectedTimeSlot.startTime,
+            selectedTimeSlot.endTime
+        )
         when (val result = createBookingUseCase(
             service = service,
             startDate = startDate,
-            endDate= endDate,
+            endDate = endDate,
             status = BookingStatus.RESERVED,
             price = price
         )) {
@@ -178,19 +198,26 @@ class BookingViewModel @AssistedInject constructor(
                         availableTimeSlots = emptyList(),
                     )
                 }
-                _newBooking.value = result.data
+
                 startReservationTimer()
-                //Avvia il timer di rilascio
-                releaseSlotTimerJob = viewModelScope.launch {
-                    delay(slotReservationTimeout)
-                    releaseReservedSlot()
-                    _uiEvent.emit(BookingUiEvent.ShowError(UiText.DynamicString("Tempo scaduto. Rieffettua la prenotazione")))
-                }
+
+             //   _newBooking.value = result.data
+                val paymentItem = PaymentItem.ServiceBookingPayment.from(
+                    service = service,
+                    bookingId = result.data.id, // Usa l'ID corretto
+                    date = selectedDate,
+                    startTime = selectedTimeSlot.startTime,
+                    endTime = selectedTimeSlot.endTime,
+                    price = price
+                )
+
+
+                _uiEvent.send(BookingUiEvent.NavigateToPayment(paymentItem))
             }
 
             is Result.Error -> {
                 _uiState.update { it.copy(isSlotReserved = false, reservationTimerActive = false) }
-                _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
+                _uiEvent.send(BookingUiEvent.ShowError(result.error.asUiText()))
             }
         }
     }
@@ -201,7 +228,7 @@ class BookingViewModel @AssistedInject constructor(
             _uiState.update { it.copy(isSlotReserved = true, reservationTimerActive = true) }
             delay(reservationDuration)
             releaseReservedSlot() // rilascio lo slot riservato dopo il ritardo
-            _uiEvent.emit(BookingUiEvent.ShowError(UiText.DynamicString("Tempo scaduto. Rieffettua la prenotazione")))
+            _uiEvent.send(BookingUiEvent.ShowError(UiText.DynamicString("Tempo scaduto. Rieffettua la prenotazione")))
         }
     }
 
@@ -215,21 +242,20 @@ class BookingViewModel @AssistedInject constructor(
                 )
             }
 
-            is Result.Error -> _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
+            is Result.Error -> _uiEvent.send(BookingUiEvent.ShowError(result.error.asUiText()))
         }
     }
 
     private suspend fun loadAvailableTimeSlots(date: LocalDate) {
-        val service = uiState.value.service ?: return
         _uiState.update { it.copy(isLoading = true) }
 
         when (val result = getAvailableTimeSlotsUseCase(
             date = date,
-            serviceDurationMinutes = service.length?.toInt() ?: 60
+            serviceDurationMinutes = serviceDurationMinutes
         )) {
             is Result.Success -> {
                 _uiState.update {
-                    Log.d("BookingViewModel", "loadAvailableTimeSlots: Success: ${result.data}") // LOG
+                    Log.d("BookingViewModel", "loadAvailableTimeSlots: Success: ${result.data}")
                     it.copy(
                         isLoading = false, availableTimeSlots = result.data
                     )
@@ -237,13 +263,13 @@ class BookingViewModel @AssistedInject constructor(
             }
 
             is Result.Error -> {
-                Log.e("BookingViewModel", "loadAvailableTimeSlots: Error: ${result.error}") //LOG
+                Log.e("BookingViewModel", "loadAvailableTimeSlots: Error: ${result.error}")
                 _uiState.update {
                     it.copy(
                         isLoading = false, availableTimeSlots = emptyList()
                     )
                 }
-                _uiEvent.emit(BookingUiEvent.ShowError(result.error.asUiText()))
+                _uiEvent.send(BookingUiEvent.ShowError(result.error.asUiText()))
             }
         }
     }
@@ -257,6 +283,7 @@ class BookingViewModel @AssistedInject constructor(
         val isBookingConfirmed: Boolean = false,
         val isSlotReserved: Boolean = false,
         val reservationTimerActive: Boolean = false,
+        val isClosedDay: Boolean = false,
         val isLoading: Boolean = false,
     )
 

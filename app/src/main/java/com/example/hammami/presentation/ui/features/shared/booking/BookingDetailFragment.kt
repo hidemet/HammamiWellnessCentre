@@ -1,5 +1,7 @@
-package com.example.hammami.presentation.ui.features.admin.booking
+package com.example.hammami.presentation.ui.features.shared.booking
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,14 +19,19 @@ import com.example.hammami.core.time.DateTimeUtils.formatDate
 import com.example.hammami.core.time.DateTimeUtils.formatTimeRange
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.utils.BookingUiHelper
+import com.example.hammami.core.utils.WellnessCenterInfo
 import com.example.hammami.databinding.FragmentBookingDetailBinding
 import com.example.hammami.domain.model.Booking
+import com.example.hammami.domain.model.BookingOption
 import com.example.hammami.domain.model.ItemProfileOption
 import com.example.hammami.domain.model.User
 import com.example.hammami.presentation.ui.features.BaseFragment
+import com.example.hammami.presentation.ui.features.shared.booking.BookingDetailViewModel.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class BookingDetailFragment : BaseFragment() {
@@ -45,9 +52,9 @@ class BookingDetailFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.loadBooking(args.bookingId)
         setupUI()
         observeFlows()
-        viewModel.loadBooking(args.bookingId)
     }
 
     override fun setupUI() {
@@ -60,28 +67,25 @@ class BookingDetailFragment : BaseFragment() {
     }
 
     private fun setupOptionsList() {
-        val options = listOf(
-            ItemProfileOption(
-                title = getString(R.string.reschedule_appointment),
-                leadingIconResId = R.drawable.ic_event_repeat,
-                action = { navigateToEditBooking() }
-            ),
-            ItemProfileOption(
-                title = getString(R.string.cancel_booking),
-                leadingIconResId = R.drawable.ic_delete,
-                action = { showCancellationConfirmationDialog(args.bookingId) }
-            )
-        )
-
-        optionsAdapter = BookingOptionsAdapter(options)
+        optionsAdapter = BookingOptionsAdapter(emptyList()) { optionType ->
+            viewModel.onOptionSelected(optionType)
+        }
         binding.optionsList.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = optionsAdapter
         }
+
+        // Osserva i cambiamenti *nello stato* e aggiorna l'adapter.
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.state.collectLatest { state ->  // Usa collectLatest per lo stato
+                optionsAdapter.submitList(state.availableOptions)
+            }
+        }
     }
 
+
     private fun navigateToEditBooking() {
-        val action = BookingDetailFragmentDirections.actionBookingDetailFragmentToEditBookingFragment(args.bookingId)
+        val action = BookingDetailFragmentDirections.
         findNavController().navigate(action)
     }
 
@@ -97,27 +101,48 @@ class BookingDetailFragment : BaseFragment() {
     override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.state.collect { state -> updateUI(state) } }
+                launch { viewModel.state.collectLatest { state -> updateUI(state) } }
                 launch { viewModel.uiEvent.collect { event -> observeUiEvent(event) } }
             }
         }
     }
-    private fun updateUI(state: BookingDetailViewModel.BookingDetailUiState) {
+
+    private fun startNavigation() {
+        val uri = Uri.parse("geo:0,0?q=${Uri.encode(WellnessCenterInfo.ADDRESS)}") // Modificato
+        val mapIntent = Intent(Intent.ACTION_VIEW, uri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+
+        if (mapIntent.resolveActivity(requireActivity().packageManager) != null) {
+            startActivity(mapIntent)
+        } else {
+            showSnackbar(UiText.StringResource(R.string.error_navigation_app_not_found))
+        }
+    }
+
+    private fun updateUI(state: BookingDetailUiState) {
         state.booking?.let { booking ->
             state.user?.let { user ->
                 updateBookingDetails(booking, user)
             }
         }
+        optionsAdapter.submitList(state.availableOptions)
         showLoading(state.isLoading)
     }
 
-    private fun observeUiEvent(event: BookingDetailViewModel.BookingDetailUiEvent) {
+    private fun observeUiEvent(event: BookingDetailUiEvent) {
         when (event) {
-            is BookingDetailViewModel.BookingDetailUiEvent.ShowError -> showSnackbar(event.message)
-            is BookingDetailViewModel.BookingDetailUiEvent.BookingCancelled -> {
+            is BookingDetailUiEvent.ShowError -> showSnackbar(event.message)
+            is BookingDetailUiEvent.BookingCancelled -> {
                 showSnackbar(UiText.StringResource(R.string.booking_cancelled))
                 findNavController().popBackStack()
             }
+
+            is BookingDetailUiEvent.NavigateToEditBooking -> navigateToEditBooking()
+            is BookingDetailUiEvent.ConfirmCancellation -> showCancellationConfirmationDialog(
+                event.bookingId
+            )
+
+            is BookingDetailUiEvent.StartNavigation -> startNavigation()
         }
     }
 
@@ -128,7 +153,10 @@ class BookingDetailFragment : BaseFragment() {
         bookingCard.bookingPrice.text = getString(R.string.booking_price_format, booking.price)
         bookingCard.bookingPriceLayout.visibility = View.VISIBLE
         bookingCard.bookingClientLayout.visibility = View.VISIBLE
-        bookingCard.bookingClient.text = getString(R.string.client_name_format, user.firstName, user.lastName)
+        bookingCard.bookingClientLayout.visibility =
+            if (viewModel.isAdmin) View.VISIBLE else View.GONE
+        bookingCard.bookingClient.text =
+            getString(R.string.client_name_format, user.firstName, user.lastName)
         BookingUiHelper.setupBookingStatusChip(bookingStatusChip, booking.status, requireContext())
     }
 
