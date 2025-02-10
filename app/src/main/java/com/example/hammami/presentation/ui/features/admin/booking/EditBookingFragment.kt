@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.navigateUp
 import com.example.hammami.R
 import com.example.hammami.core.time.DateTimeUtils
 import com.example.hammami.core.time.TimeSlot
@@ -79,6 +80,12 @@ class EditBookingFragment : BaseFragment() {
         setupUI()
         observeFlows()
         viewModel.loadBooking(args.bookingId)
+
+        findNavController().addOnDestinationChangedListener { controller, destination, arguments ->
+            Log.d("EditBookingFragment", "Navigated to: ${destination.label}")
+            // Puoi anche stampare gli argomenti se necessario:
+            // Log.d("EditBookingFragment", "Arguments: $arguments")
+        }
     }
 
     override fun setupUI() {
@@ -192,7 +199,9 @@ class EditBookingFragment : BaseFragment() {
             is EditBookingViewModel.EditBookingUiEvent.ShowError -> showSnackbar(event.message)
             is EditBookingViewModel.EditBookingUiEvent.BookingUpdatedSuccessfully -> {
                 showSnackbar(UiText.StringResource(R.string.booking_updated))
-                findNavController().popBackStack()
+                Log.d("EditBookingFragment", "Navigating up...") // Aggiunto log
+                findNavController().popBackStack(R.id.bookingDetailFragment, false)
+
             }
         }
     }

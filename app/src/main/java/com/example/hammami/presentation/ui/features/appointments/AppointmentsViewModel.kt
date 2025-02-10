@@ -11,6 +11,7 @@ import com.example.hammami.domain.usecase.GetCurrentUserDataUseCase
 import com.example.hammami.domain.usecase.appointment.GetNewAppointmentUseCase
 import com.example.hammami.domain.usecase.appointment.GetPastAppointmentUseCase
 import com.example.hammami.domain.usecase.booking.GetUserBookingsUseCase
+import com.example.hammami.domain.usecase.user.GetCurrentUserIdUseCase
 import com.example.hammami.domain.usecase.user.GetUserBookingSeparatedUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AppointmentsViewModel @Inject constructor(
     private val getCurrentUserDataUseCase: GetCurrentUserDataUseCase,
-    private val getUserBookingsSeparatedUseCase: GetUserBookingSeparatedUseCase
+    private val getUserBookingsSeparatedUseCase: GetUserBookingSeparatedUseCase,
+    private val getCurrentUserIdUseCase: GetCurrentUserIdUseCase
 ): ViewModel() {
 
     private val _newAppointments = MutableStateFlow<List<Booking>>(emptyList())
@@ -38,15 +40,54 @@ class AppointmentsViewModel @Inject constructor(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-
-    val userEmail = FirebaseAuth.getInstance().currentUser?.email
-
-    val userId = FirebaseAuth.getInstance().currentUser?.uid
+    private val _uiState = MutableStateFlow(AppointmentsUiState())
+    val uiState: StateFlow<AppointmentsUiState> = _uiState.asStateFlow()
 
     init {
-        loadUserData()
+        loadData()
+    }
+
+    private fun loadData() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            val userIdResult = getCurrentUserIdUseCase()
+            if (userIdResult is Result.Success) {
+                val userId = userIdResult.data
+                loadUserData(userId)
+                loadUserBookings(userId)
+            } else if (userIdResult is Result.Error) {
+                emitUiEvent(UiEvent.ShowError(userIdResult.error.asUiText()))
+                _uiState.update { it.copy(isLoading = false) } // Fine caricamento
+            }
+        }
+    }
+
+    private fun loadUserData(userId: String){
+        viewModelScope.launch {
+            when (val result = getCurrentUserDataUseCase()) {
+                is Result.Success -> {
+                    _uiState.update { it.copy(user = result.data, isLoading = false) }
+                }
+                is Result.Error -> {
+                    emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+
+    fun refreshData() {
+        viewModelScope.launch {
+            val userIdResult = getCurrentUserIdUseCase()
+            if (userIdResult is Result.Success) {
+                loadUserBookings(userIdResult.data)
+
+            } else if (userIdResult is Result.Error) {
+                _uiEvent.emit( UiEvent.ShowError(userIdResult.error.asUiText()))
+            }
+        }
     }
 
     /*
@@ -124,32 +165,24 @@ class AppointmentsViewModel @Inject constructor(
 
      */
 
-    fun loadUserBookingsSeparated(userId: String) {
+    fun loadUserBookings(userId: String) {
         viewModelScope.launch {
             when (val result = getUserBookingsSeparatedUseCase(userId)) {
                 is Result.Success -> {
                     val (pastBookings, futureBookings) = result.data
-                    _pastAppointments.update { pastBookings }
-                    _newAppointments.update { futureBookings }
+                    _uiState.update {
+                        it.copy(
+                            pastAppointments = pastBookings,
+                            newAppointments = futureBookings,
+                            isLoading = false // Fine caricamento
+                        )
+                    }
                 }
                 is Result.Error -> {
                     emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
-                }
-            }
-        }
-    }
+                    _uiState.update { it.copy(isLoading = false) }  // Fine caricamento in caso di errore
 
-    fun loadUserData(){
-        viewModelScope.launch {
-            when (val result = getCurrentUserDataUseCase()) {
-                is Result.Success -> {
-                    _uiState.update { it.copy(user = result.data) }
                 }
-                is Result.Error -> {
-                    emitUiEvent(UiEvent.ShowError(result.error.asUiText()))
-                }
-
-                else -> {}
             }
         }
     }
@@ -160,20 +193,16 @@ class AppointmentsViewModel @Inject constructor(
         }
     }
 
+
     sealed class UiEvent {
         data class ShowError(val message: UiText) : UiEvent()
         data class ShowMessage(val message: UiText) : UiEvent()
     }
 
-    data class UiState(
-        val user: User? = null
+    data class AppointmentsUiState(
+        val user: User? = null,
+        val newAppointments: List<Booking> = emptyList(),
+        val pastAppointments: List<Booking> = emptyList(),
+        val isLoading: Boolean = false
     )
-
-    fun returnUserEmail(): String {
-        return FirebaseAuth.getInstance().currentUser?.email.toString()
-    }
-
-    fun requireCurrentUser(): User =
-        uiState.value.user ?: throw IllegalStateException("User not found")
-
 }

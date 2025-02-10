@@ -289,6 +289,14 @@
         <argument
             android:name="bookingId"
             app:argType="string" />
+
+        <action
+            android:id="@+id/action_bookingDetailFragment_to_editBookingFragment"
+            app:destination="@id/editBookingFragment" >
+            <argument
+                android:name="bookingId"
+                app:argType="string" />
+        </action>
     </fragment>
 
     <fragment

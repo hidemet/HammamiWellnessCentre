@@ -45,9 +45,6 @@ class PastAppointmentsFragment : BaseFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("PastAppointmentsFragment", "userid: ${viewModel.userId}")
-        //viewModel.loadPastAppointmentsData(viewModel.userId!!)
-        viewModel.loadUserBookingsSeparated(viewModel.userId!!)
         setupUI()
         observeFlows()
     }
@@ -91,12 +88,11 @@ class PastAppointmentsFragment : BaseFragment(){
         }
     }
 
-    /*
     override fun onResume() {
         super.onResume()
-        Log.d("BenessereFragment", "onResume")
-        viewModel.loadData()
+        viewModel.refreshData() // <--- CHIAMA QUESTO in onResume()
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -107,8 +103,6 @@ class PastAppointmentsFragment : BaseFragment(){
         super.onDestroyView()
         _binding = null
     }
-
-     */
 
 }
 

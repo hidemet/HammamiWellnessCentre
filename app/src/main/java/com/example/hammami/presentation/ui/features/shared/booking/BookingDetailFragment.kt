@@ -60,6 +60,7 @@ class BookingDetailFragment : BaseFragment() {
     override fun setupUI() {
         setupAppBar()
         setupOptionsList()
+
     }
 
     private fun setupAppBar() {
@@ -85,7 +86,7 @@ class BookingDetailFragment : BaseFragment() {
 
 
     private fun navigateToEditBooking() {
-        val action = BookingDetailFragmentDirections.
+        val action = BookingDetailFragmentDirections.actionBookingDetailFragmentToEditBookingFragment(args.bookingId)
         findNavController().navigate(action)
     }
 
