@@ -6,16 +6,14 @@ import com.example.hammami.domain.error.DataError
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.core.result.Result
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.flow.Flow
 
 import javax.inject.Inject
 
 class GetBookingsForDateRangeUseCase @Inject constructor(
     private val bookingRepository: BookingRepository,
-    private val bookingMapper: BookingMapper
 ) {
-    //Modificato per usare Timestamp
-    suspend operator fun invoke(startDate: Timestamp, endDate: Timestamp): Result<List<Booking>, DataError> {
-
+     operator fun invoke(startDate: Timestamp, endDate: Timestamp): Flow<Result<List<Booking>, DataError>> {
         return bookingRepository.getBookingsForDateRange(startDate, endDate)
     }
 }

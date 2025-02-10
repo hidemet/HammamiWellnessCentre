@@ -12,6 +12,9 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -111,20 +114,20 @@ class BookingRepository @Inject constructor(
         }
     }
 
-    suspend fun getBookingsForDateRange(
+    fun getBookingsForDateRange(
         startDate: Timestamp,
         endDate: Timestamp
-    ): Result<List<Booking>, DataError> {
+    ): Flow<Result<List<Booking>, DataError>> {
         return try {
-
-            val bookings = bookingDataSource.getBookingsForDateRange(startDate, endDate)
-                .map { bookingMapper.toDomain(it) }
-
-            Result.Success(bookings)
+            bookingDataSource.getBookingsForDateRange(startDate, endDate)
+                .map { dtoList ->
+                    Result.Success(dtoList.map { bookingMapper.toDomain(it) })
+                }
         } catch (e: Exception) {
-            Log.e("BookingRepository", "Errore nel recuperare le prenotazioni per data", e)
-            Result.Error(mapExceptionToDataError(e))
+            Log.e("BookingRepository", "Errore nel recuperare le prenotazioni per l'intervallo di date", e)
+            flowOf(Result.Error(mapExceptionToDataError(e)))
         }
+
     }
 
     suspend fun isTimeSlotAvailable(
@@ -154,13 +157,14 @@ class BookingRepository @Inject constructor(
 
     suspend fun getUserBookingsSeparated(userId: String): Result<Pair<List<Booking>, List<Booking>>, DataError> {
         return try {
+            Log.d("BookingRepository", "getUserBookingsSeparated: Fetching bookings for user: $userId") // LOG
             val bookings =
                 bookingDataSource.getUserBookings(userId).map { bookingMapper.toDomain(it) }
             val currentDate = Timestamp.now()
 
             val pastBookings = bookings.filter { it.startDate < currentDate }
             val futureBookings = bookings.filter { it.startDate >= currentDate }
-
+            Log.d("BookingRepository", "getUserBookingsSeparated: Past bookings: ${pastBookings.size}, Future bookings: ${futureBookings.size}") // LOG
             Result.Success(Pair(pastBookings, futureBookings))
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel recuperare le prenotazioni dell'utente", e)

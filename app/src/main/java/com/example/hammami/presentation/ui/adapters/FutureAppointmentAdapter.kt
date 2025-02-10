@@ -1,5 +1,6 @@
 package com.example.hammami.presentation.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -12,6 +13,21 @@ import com.example.hammami.domain.model.Booking
 import com.example.hammami.presentation.ui.features.client.AppointmentsFragmentDirections // Assicurati che sia il percorso corretto
 
 class FutureAppointmentAdapter : ListAdapter<Booking, FutureAppointmentAdapter.ViewHolder>(AppointmentDiffCallback())  {
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemAppuntamentoFuturoBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return ViewHolder(binding)
+    }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val booking = getItem(position)
+        Log.d("FutureAppointmentAdapter", "onBindViewHolder: posizione=$position, bookingId=${booking.id}") // LOG
+        holder.bind(booking)
+    }
 
     inner class ViewHolder(
         private val binding: ItemAppuntamentoFuturoBinding,
@@ -35,23 +51,24 @@ class FutureAppointmentAdapter : ListAdapter<Booking, FutureAppointmentAdapter.V
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemAppuntamentoFuturoBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return ViewHolder(binding)
-    }
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-
 }
-class AppointmentDiffCallback : DiffUtil.ItemCallback<Booking>() {
-    override fun areItemsTheSame(oldItem: Booking, newItem: Booking): Boolean =
-        oldItem.id == newItem.id  // Usa l'ID, non transactionId
 
-    override fun areContentsTheSame(oldItem: Booking, newItem: Booking): Boolean =
-        oldItem == newItem
+class AppointmentDiffCallback : DiffUtil.ItemCallback<Booking>() {
+    override fun areItemsTheSame(oldItem: Booking, newItem: Booking): Boolean {
+        val areTheSame = oldItem.id == newItem.id
+        Log.d(
+            "AppointmentDiffCallback",
+            "areItemsTheSame: oldId=${oldItem.id}, newId=${newItem.id}, result=$areTheSame"
+        )
+        return areTheSame
+    }
+
+    override fun areContentsTheSame(oldItem: Booking, newItem: Booking): Boolean {
+        val areTheSame = oldItem == newItem
+        Log.d(
+            "AppointmentDiffCallback",
+            "areContentsTheSame: oldItem=$oldItem, newItem=$newItem, result=$areTheSame"
+        )
+        return areTheSame
+    }
 }

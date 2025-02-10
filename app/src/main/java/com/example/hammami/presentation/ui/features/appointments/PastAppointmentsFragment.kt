@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -25,7 +26,7 @@ class PastAppointmentsFragment : BaseFragment(){
     private var _binding: FragmentPastAppointmentsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AppointmentsViewModel by viewModels()
+    private val viewModel: AppointmentsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -33,15 +34,6 @@ class PastAppointmentsFragment : BaseFragment(){
         _binding = FragmentPastAppointmentsBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-    /*
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.loadPastAppointmentsData(viewModel.userEmail!!)
-        setupUI()
-        observeFlows()
-    }
-     */
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,8 +56,7 @@ class PastAppointmentsFragment : BaseFragment(){
     }
 
     private suspend fun observeAppointments() {
-        viewModel.pastAppointments.collectLatest { state ->
-            //updateUI(state)
+        viewModel.pastAppointments.collect { state ->  // Usa collect
             appointmentAdapter.submitList(state)
         }
     }
@@ -75,7 +66,6 @@ class PastAppointmentsFragment : BaseFragment(){
         when (event) {
             is AppointmentsViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
             is AppointmentsViewModel.UiEvent.ShowError -> showSnackbar(event.message)
-            else -> {}
         }
     }
 
@@ -90,7 +80,7 @@ class PastAppointmentsFragment : BaseFragment(){
 
     override fun onResume() {
         super.onResume()
-        viewModel.refreshData() // <--- CHIAMA QUESTO in onResume()
+        viewModel.refreshData()
     }
 
 
@@ -105,17 +95,3 @@ class PastAppointmentsFragment : BaseFragment(){
     }
 
 }
-
-
-
-/*
-override fun onCreateView(
-    inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?
-): View? {
-
-    return inflater.inflate(R.layout.fragment_new_appointments, container, false)
-}
-
-
- */

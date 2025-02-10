@@ -10,13 +10,10 @@ import java.time.ZoneId
 
 @Parcelize
 data class Booking(
-    var id: String,
+    val id: String,
     val serviceId: String,
     val userId: String,
     val serviceName: String,
-   // val dateMillis: Long,
-    //val startTime: String, // formato: "HH:mm"
-    //val endTime: String, // formato: "HH:mm"
     val startDate: Timestamp, // Modifica
     val endDate: Timestamp,   // Modifica
     val status: BookingStatus = BookingStatus.RESERVED,
@@ -33,14 +30,3 @@ enum class BookingStatus {
     COMPLETED,
     CANCELED
 }
-
-
-
-//val Booking.localDate: LocalDate?
-//    get() = this.dateMillis.let {
-//        Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-//    }
-//
-//fun Booking.withLocalDate(localDate: LocalDate): Booking {
-//    return this.copy(dateMillis = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli())
-//}

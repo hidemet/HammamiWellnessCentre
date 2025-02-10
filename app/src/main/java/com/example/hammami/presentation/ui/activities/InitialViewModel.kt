@@ -6,8 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.result.Result
 import com.example.hammami.data.repositories.AuthRepository // Importa AuthRepository
 import com.example.hammami.data.repositories.UserRepository
-import com.example.hammami.domain.usecase.user.GetCurrentUserIdUseCase
-import com.example.hammami.domain.usecase.user.ObserveUserChangesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow

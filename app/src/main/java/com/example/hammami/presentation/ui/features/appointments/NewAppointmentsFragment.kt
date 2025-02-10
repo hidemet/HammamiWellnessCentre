@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -25,7 +26,7 @@ class NewAppointmentsFragment : BaseFragment(){
     private var _binding: FragmentNewAppointmentsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AppointmentsViewModel by viewModels()
+    private val viewModel: AppointmentsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -55,12 +56,10 @@ class NewAppointmentsFragment : BaseFragment(){
     }
 
     private suspend fun observeAppointments() {
-        viewModel.newAppointments.collectLatest { state ->
-            //updateUI(state)
+        viewModel.newAppointments.collect { state ->  // Usa collect
             appointmentAdapter.submitList(state)
         }
     }
-
 
     private fun handleEvent(event: AppointmentsViewModel.UiEvent) {
         when (event) {
@@ -90,17 +89,3 @@ class NewAppointmentsFragment : BaseFragment(){
     }
 
 }
-
-
-
-    /*
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        return inflater.inflate(R.layout.fragment_new_appointments, container, false)
-    }
-
-
-     */
