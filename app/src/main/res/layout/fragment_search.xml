@@ -57,7 +57,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/tvBenessere"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:src="@drawable/massaggio4mani"/>
+                        android:src="@drawable/benessereHammami"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tvBenessere"
