@@ -550,6 +550,8 @@
     <string name="notification_text">Hai un appuntamento per %1$s domani alle %2$s!</string>
     <string name="start_navigation">Portami all\'Hammami</string>
     <string name="error_navigation_app_not_found">Non è stata trovata nessun app per la navigazione\n</string>
+    <string name="notification_cancellation_title">Prenotazione Cancellata</string>
+    <string name="notification_cancellation_text">La tua prenotazione per %1$s è stata cancellata.</string>
 
 
 </resources>

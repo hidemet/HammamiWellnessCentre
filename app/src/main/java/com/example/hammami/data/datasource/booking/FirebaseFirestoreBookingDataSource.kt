@@ -1,9 +1,7 @@
 package com.example.hammami.data.datasource.booking
 
 import android.util.Log
-import com.example.hammami.domain.model.Booking
 import com.example.hammami.data.entity.BookingDto
-import com.example.hammami.data.mapper.BookingMapper
 import com.example.hammami.domain.model.BookingStatus
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,7 +18,6 @@ import javax.inject.Singleton
 @Singleton
 class FirebaseFirestoreBookingDataSource @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val bookingMapper: BookingMapper
 ) {
     private val bookingsCollection = firestore.collection("Bookings")
 
@@ -82,6 +79,7 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
             val querySnapshot = bookingsCollection
                 .whereGreaterThanOrEqualTo("startDate", startDate)
                 .whereLessThanOrEqualTo("startDate", endDate)
+                .orderBy("startDate")
 
             listenerRegistration = querySnapshot.addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -91,9 +89,9 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
 
                 if (snapshot != null) {
                     val bookings = snapshot.documents.mapNotNull { it.toObject(BookingDto::class.java) }
-                    trySend(bookings) // Emette la lista di BookingDto
+                    trySend(bookings)
                 } else {
-                    trySend(emptyList()) // Nessun documento
+                    trySend(emptyList())
                 }
             }
         } catch (e: Exception) {
@@ -106,6 +104,44 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
             listenerRegistration.remove()
         }
 
+    }
+
+    fun getBookingsForUser(
+        userId: String,
+    ): Flow<List<BookingDto>> = callbackFlow {
+        Log.d("FirestoreDataSource", "getBookingsForUserAndDateRange: userId=$userId") // LOG
+        var listenerRegistration: ListenerRegistration? = null
+
+        try {
+            val query = bookingsCollection
+                .whereEqualTo("userId", userId)
+                .orderBy("startDate")
+
+            listenerRegistration = query.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("FirestoreDataSource", "getBookingsForUserAndDateRange: Error: ${error.message}", error) // LOG errore
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val bookings = snapshot.documents.mapNotNull { it.toObject(BookingDto::class.java) }
+                    Log.d("FirestoreDataSource", "getBookingsForUserAndDateRange: Got ${bookings.size} bookings") // LOG
+                    trySend(bookings)
+                } else {
+                    Log.d("FirestoreDataSource", "getBookingsForUserAndDateRange: Snapshot is null")  // LOG
+                    trySend(emptyList())
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("FirestoreDataSource", "getBookingsForUserAndDateRange: Exception: ${e.message}", e) // LOG eccezione
+            close(e)
+        }
+
+        awaitClose {
+            Log.d("FirestoreDataSource", "Cleaning up Firestore listener (getBookingsForUserAndDateRange)")
+            listenerRegistration?.remove()
+        }
     }
 
     suspend fun isTimeSlotAvailable(startDate: Timestamp, endDate: Timestamp): Boolean {

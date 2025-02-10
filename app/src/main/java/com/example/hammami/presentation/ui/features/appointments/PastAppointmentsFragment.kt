@@ -22,11 +22,9 @@ import kotlinx.coroutines.launch
 class PastAppointmentsFragment : BaseFragment(){
 
     private lateinit var appointmentAdapter: PastAppointmentAdapter
-
+    private val viewModel: AppointmentsViewModel by activityViewModels()
     private var _binding: FragmentPastAppointmentsBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: AppointmentsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -42,7 +40,6 @@ class PastAppointmentsFragment : BaseFragment(){
     }
 
     override fun setupUI() {
-        //setupAppBar()
         setupRecyclerView()
     }
 
@@ -50,22 +47,27 @@ class PastAppointmentsFragment : BaseFragment(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { observeAppointments() }
-                launch { viewModel.uiEvent.collectLatest { event -> handleEvent(event) } }
+                launch {  observeEvents() }
             }
         }
     }
 
     private suspend fun observeAppointments() {
-        viewModel.pastAppointments.collect { state ->  // Usa collect
-            appointmentAdapter.submitList(state)
+        viewModel.state.collectLatest { state ->
+
+            Log.d("PastAppointmentsFragment", "New state: ${state.pastAppointments.size} appointments") // LOG
+
+            appointmentAdapter.submitList(state.pastAppointments) //Usa pastAppointments
         }
     }
 
 
-    private fun handleEvent(event: AppointmentsViewModel.UiEvent) {
-        when (event) {
-            is AppointmentsViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
-            is AppointmentsViewModel.UiEvent.ShowError -> showSnackbar(event.message)
+    private suspend fun observeEvents() {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is AppointmentsViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
+                is AppointmentsViewModel.UiEvent.ShowError -> showSnackbar(event.message)
+            }
         }
     }
 
@@ -78,16 +80,6 @@ class PastAppointmentsFragment : BaseFragment(){
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.refreshData()
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("BenessereFragment", "onPause")
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

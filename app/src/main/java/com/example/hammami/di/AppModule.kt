@@ -2,6 +2,7 @@ package com.example.hammami.di
 
 import android.app.Application
 import android.content.Context
+import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.hammami.R
@@ -50,6 +51,13 @@ object AppModule {
             .error(R.drawable.ic_launcher_foreground)
             .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.DATA)
     )
+
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(@ApplicationContext context: Context): WorkManager {
+        return WorkManager.getInstance(context)
+    }
 
     @Provides
     @Singleton

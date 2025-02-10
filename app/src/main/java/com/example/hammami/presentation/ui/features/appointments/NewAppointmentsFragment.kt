@@ -25,7 +25,6 @@ class NewAppointmentsFragment : BaseFragment(){
 
     private var _binding: FragmentNewAppointmentsBinding? = null
     private val binding get() = _binding!!
-
     private val viewModel: AppointmentsViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -42,7 +41,6 @@ class NewAppointmentsFragment : BaseFragment(){
     }
 
     override fun setupUI() {
-        //setupAppBar()
         setupRecyclerView()
     }
 
@@ -50,25 +48,26 @@ class NewAppointmentsFragment : BaseFragment(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { observeAppointments() }
-                //launch { observeEvents() }
+                launch { observeEvents() }
             }
         }
     }
 
     private suspend fun observeAppointments() {
-        viewModel.newAppointments.collect { state ->  // Usa collect
-            appointmentAdapter.submitList(state)
+        viewModel.state.collectLatest { state ->
+            Log.d("NewAppointmentsFragment", "New state: ${state.newAppointments.size} appointments") // LOG
+            appointmentAdapter.submitList(state.newAppointments) // Usa newAppointments
         }
     }
 
-    private fun handleEvent(event: AppointmentsViewModel.UiEvent) {
-        when (event) {
-            is AppointmentsViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
-            is AppointmentsViewModel.UiEvent.ShowError -> showSnackbar(event.message)
-            else -> {}
+    private suspend fun observeEvents() {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is AppointmentsViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
+                is AppointmentsViewModel.UiEvent.ShowError -> showSnackbar(event.message)
+            }
         }
     }
-
     private fun setupRecyclerView() {
         appointmentAdapter = FutureAppointmentAdapter()
         binding.rvNewAppointments.apply{
@@ -76,11 +75,6 @@ class NewAppointmentsFragment : BaseFragment(){
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = appointmentAdapter
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.refreshData()
     }
 
     override fun onDestroyView() {
