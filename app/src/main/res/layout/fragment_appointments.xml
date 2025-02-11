@@ -10,14 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            app:titleCentered="true"
-            app:title="Appuntamenti" />
-
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tlAppuntamenti"
             android:layout_width="match_parent"
@@ -32,6 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Passati" />
+
         </com.google.android.material.tabs.TabLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
