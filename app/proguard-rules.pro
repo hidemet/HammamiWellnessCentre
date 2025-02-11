@@ -19,3 +19,15 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Mantieni la classe NotificationWorker e il suo costruttore
+
+-keep class com.example.hammami.presentation.notification.NotificationWorker { *; }
+-keep class * extends androidx.work.Worker { *; }
+-keep class * extends androidx.work.ListenableWorker { *; }
+-keep class * extends androidx.work.CoroutineWorker { *; }
+
+# Hilt specific rules (se usi Hilt per altre dipendenze *dentro* il Worker)
+-keepclassmembers class * extends androidx.work.Worker {
+    public <init>(android.content.Context,androidx.work.WorkerParameters);
+}

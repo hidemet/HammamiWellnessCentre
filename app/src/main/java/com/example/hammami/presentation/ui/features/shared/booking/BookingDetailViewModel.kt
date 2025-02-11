@@ -11,12 +11,11 @@ import com.example.hammami.domain.model.BookingOption
 import com.example.hammami.domain.model.User
 import com.example.hammami.domain.usecase.booking.CancelBookingUseCase
 import com.example.hammami.domain.usecase.booking.GetBookingByIdUseCase
+import com.example.hammami.domain.usecase.booking.SendCancellationNotificationUseCase
 import com.example.hammami.domain.usecase.user.GetUserByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -27,7 +26,8 @@ import javax.inject.Inject
 class BookingDetailViewModel @Inject constructor(
     private val getBookingByIdUseCase: GetBookingByIdUseCase,
     private val getUserByIdUseCase: GetUserByIdUseCase,
-    private val cancelBookingUseCase: CancelBookingUseCase
+    private val cancelBookingUseCase: CancelBookingUseCase,
+    private val sendCancellationNotificationUseCase: SendCancellationNotificationUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookingDetailUiState())
@@ -52,7 +52,6 @@ class BookingDetailViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun loadUser(userId: String) {
         viewModelScope.launch {
@@ -117,6 +116,8 @@ class BookingDetailViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = cancelBookingUseCase(bookingId)) {
                 is Result.Success -> {
+                    // Invia la notifica di cancellazione *immediatamente*
+                    sendCancellationNotificationUseCase(bookingId)
                     emitUiEvent(BookingDetailUiEvent.BookingCancelled)
                 }
 

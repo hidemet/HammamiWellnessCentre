@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,11 +22,9 @@ import kotlinx.coroutines.launch
 class PastAppointmentsFragment : BaseFragment(){
 
     private lateinit var appointmentAdapter: PastAppointmentAdapter
-
+    private val viewModel: AppointmentsViewModel by activityViewModels()
     private var _binding: FragmentPastAppointmentsBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: AppointmentsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -34,15 +33,6 @@ class PastAppointmentsFragment : BaseFragment(){
         return binding.root
     }
 
-    /*
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.loadPastAppointmentsData(viewModel.userEmail!!)
-        setupUI()
-        observeFlows()
-    }
-     */
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
@@ -50,7 +40,6 @@ class PastAppointmentsFragment : BaseFragment(){
     }
 
     override fun setupUI() {
-        //setupAppBar()
         setupRecyclerView()
     }
 
@@ -58,24 +47,27 @@ class PastAppointmentsFragment : BaseFragment(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { observeAppointments() }
-                launch { viewModel.uiEvent.collectLatest { event -> handleEvent(event) } }
+                launch {  observeEvents() }
             }
         }
     }
 
     private suspend fun observeAppointments() {
-        viewModel.pastAppointments.collectLatest { state ->
-            //updateUI(state)
-            appointmentAdapter.submitList(state)
+        viewModel.state.collectLatest { state ->
+
+            Log.d("PastAppointmentsFragment", "New state: ${state.pastAppointments.size} appointments") // LOG
+
+            appointmentAdapter.submitList(state.pastAppointments) //Usa pastAppointments
         }
     }
 
 
-    private fun handleEvent(event: AppointmentsViewModel.UiEvent) {
-        when (event) {
-            is AppointmentsViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
-            is AppointmentsViewModel.UiEvent.ShowError -> showSnackbar(event.message)
-            else -> {}
+    private suspend fun observeEvents() {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is AppointmentsViewModel.UiEvent.ShowMessage -> showSnackbar(event.message)
+                is AppointmentsViewModel.UiEvent.ShowError -> showSnackbar(event.message)
+            }
         }
     }
 
@@ -88,16 +80,6 @@ class PastAppointmentsFragment : BaseFragment(){
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.refreshData() // <--- CHIAMA QUESTO in onResume()
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("BenessereFragment", "onPause")
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -105,17 +87,3 @@ class PastAppointmentsFragment : BaseFragment(){
     }
 
 }
-
-
-
-/*
-override fun onCreateView(
-    inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?
-): View? {
-
-    return inflater.inflate(R.layout.fragment_new_appointments, container, false)
-}
-
-
- */

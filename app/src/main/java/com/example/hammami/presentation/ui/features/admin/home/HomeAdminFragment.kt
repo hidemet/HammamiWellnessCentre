@@ -30,7 +30,7 @@ class HomeAdminFragment : BaseFragment() {
     private val viewModel: HomeAdminViewModel by viewModels()
     private var _binding: FragmentHomeAdminBinding? = null
     private val binding get() = _binding!!
-    private lateinit var bookingsAdapter: BookingsAdapter // Il tuo adapter per la RecyclerView
+    private lateinit var bookingsAdapter: BookingsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -40,7 +40,7 @@ class HomeAdminFragment : BaseFragment() {
     }
 
 
-    override fun setupUI() { // Implementa il metodo astratto di BaseFragment
+    override fun setupUI() {
         setupRecyclerView()
     }
 
@@ -55,11 +55,11 @@ class HomeAdminFragment : BaseFragment() {
         }
     }
 
-    override fun observeFlows() { // Implementa il metodo astratto di BaseFragment
+    override fun observeFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.state.collectLatest { state ->
+                    viewModel.state.collect { state ->
                         binding.linearProgressIndicator.isVisible = state.isLoading
                         bookingsAdapter.submitList(state.bookings)
                     }
@@ -68,7 +68,7 @@ class HomeAdminFragment : BaseFragment() {
                     viewModel.uiEvent.collect { event ->
                         when (event) {
                             is HomeAdminViewModel.UiEvent.ShowSnackbar -> {
-                                showSnackbar(event.message) // Usa il metodo di BaseFragment
+                                showSnackbar(event.message)
                             }
                         }
                     }
