@@ -70,6 +70,11 @@ object DateTimeUtils {
         return "$start - $end"
     }
 
+    fun formatDateRange(startDate: Date, endDate: Date): String { //Modificato
+        val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return "${dateFormatter.format(startDate)} - ${dateFormatter.format(endDate)}"
+    }
+
     fun toTimestamp(date: LocalDate, time: LocalTime): Timestamp {
         val dateTime = LocalDateTime.of(date, time).atZone(ZoneId.systemDefault()).toInstant()
         return Timestamp(Date.from(dateTime))
