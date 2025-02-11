@@ -5,12 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hammami.R
 import com.example.hammami.databinding.FragmentPastAppointmentsBinding
 import com.example.hammami.presentation.ui.adapters.PastAppointmentAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
@@ -51,6 +54,7 @@ class PastAppointmentsFragment : BaseFragment(){
             }
         }
     }
+
 
     private suspend fun observeAppointments() {
         viewModel.state.collectLatest { state ->

@@ -3,7 +3,6 @@ package com.example.hammami.domain.usecase.validation.creditCard
 
 
 import com.example.hammami.core.result.Result
-import com.example.hammami.domain.error.ValidationError
 import com.example.hammami.domain.error.ValidationError.Card.NumberError
 import javax.inject.Inject
 

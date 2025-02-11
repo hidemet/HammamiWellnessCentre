@@ -336,6 +336,7 @@
     <string name="error_too_many_requests">Troppe richieste. Riprova più tardi.</string>
     <string name="error_operation_not_allowed">Operazione non consentita. Contatta il supporto.</string>
 
+
     <string name="app_name">Hammami</string>
     <string name="benvenuto_">Benvenuto!</string>
     <string name="placeholder__login_email">Inserisci email</string>
@@ -423,6 +424,7 @@
         Futuro e passato insieme a professionalità, competenza e passione sono i valori in cui crediamo.\n\nMassaggi\nIl massaggio è una forma di terapia antica ed anche uno dei gesti più naturali che compaiono quotidianamente che si perde nella notte dei tempi.
         In pratica è un insieme di diverse manovre eseguite sul corpo per lenire dolore per tonificare, ma anche per preservare e migliorare il benessere psichico allentando tensioni e fatiche.</string>
     <string name="profile_updated_successfully">Profilo utente aggiornato con successo!</string>
+    <string name="review_added_successfully">Recensione aggiunta con successo!</string>
     <string name="update_failed">L\'aggiornamento del profilo utene non è riuscito!</string>
     <string name="password_changed_successfully">Password aggiornata con successo</string>
     <string name="contacts_updated_successfully">Contatti aggiornati con successo!</string>
@@ -552,6 +554,8 @@
     <string name="error_navigation_app_not_found">Non è stata trovata nessun app per la navigazione\n</string>
     <string name="notification_cancellation_title">Prenotazione Cancellata</string>
     <string name="notification_cancellation_text">La tua prenotazione per %1$s è stata cancellata.</string>
+    <string name="error_text_empty">Inserisci il testo della recensione!</string>
+    <string name="error_rating_invalid">Inserisci una valutazione</string>
 
 
 </resources>

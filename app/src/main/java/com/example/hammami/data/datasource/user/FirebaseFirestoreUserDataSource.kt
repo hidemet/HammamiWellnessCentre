@@ -83,6 +83,15 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         }
     }
 
+   suspend fun fetchUserFirstName(uid: String): String {
+    return try {
+        usersCollection.document(uid).get().await().getString("firstName") ?: ""
+    } catch (e: FirebaseFirestoreException) {
+        throw e
+    }
+}
+
+
     suspend fun setUserPoints(uid: String, points: Int) {
         try {
             usersCollection.document(uid).update("points", points).await()

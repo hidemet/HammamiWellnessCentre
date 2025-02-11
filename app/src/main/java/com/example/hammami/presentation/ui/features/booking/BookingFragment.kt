@@ -2,7 +2,6 @@ package com.example.hammami.presentation.ui.features.booking
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,7 +24,6 @@ import com.example.hammami.core.time.DateTimeUtils
 import com.example.hammami.core.time.TimeSlot
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.databinding.FragmentBookingBinding
-import com.example.hammami.domain.model.Service
 import com.example.hammami.domain.model.payment.PaymentItem
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.booking.BookingViewModel.*

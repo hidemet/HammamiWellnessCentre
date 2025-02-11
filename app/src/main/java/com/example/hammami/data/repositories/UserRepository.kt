@@ -110,6 +110,20 @@ class UserRepository @Inject constructor(
         }
     }
 
+     suspend fun getCurrentUserFirstName(): Result<String, DataError> {
+        return when (val uidResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                try {
+                    val firstName = firestoreDataSource.fetchUserFirstName(uidResult.data)
+                    Result.Success(firstName)
+                } catch (e: Exception) {
+                    Result.Error(mapExceptionToDataError(e))
+                }
+            }
+            is Result.Error -> Result.Error(uidResult.error)
+        }
+    }
+
     suspend fun deductPoints(userId: String, requiredPoints: Int): Result<Unit, DataError> {
         return try {
             val userPoints = firestoreDataSource.getUserPoints(userId)

@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.adapters.TextViewBindingAdapter.setText
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +20,7 @@ import com.example.hammami.domain.model.Review
 import com.example.hammami.presentation.ui.adapters.ReviewsAdapter
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +31,7 @@ class AddReviewFragment : BaseFragment() {
     private val binding get() = _binding!!
     private val args: AddReviewFragmentArgs by navArgs()
 
-    private val viewModel: AddReviewViewModel by viewModels()
+    private val viewModel: AppointmentsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,66 +45,63 @@ class AddReviewFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
         observeFlows()
-        viewModel.loadUserData() //Carico il nome utente
     }
 
     override fun setupUI() {
         setupAppBar()
+        setupSubmitButton()
     }
 
     private fun setupAppBar() {
         binding.topAppBar.setNavigationOnClickListener { onBackClick() }
     }
 
-    override fun observeFlows() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { observeEvents() }
-                launch { setRatingBar() }
-            }
-        }
-    }
-
-
-    private suspend fun observeEvents() {
+    private fun setupSubmitButton() {
         binding.btnInvia.setOnClickListener {
             val textReview = binding.editTextReview.text.toString()
             val rating = binding.ratingBar.rating
-            val reviewToAdd = viewModel.uiState.value.user?.let { it1 ->
-                Review(
-                    textReview,
-                    it1.firstName,
-                    rating
+
+            lifecycleScope.launch {
+                viewModel.submitReview(
+                    reviewText = textReview,
+                    rating = rating,
+                    serviceName = args.appointment.serviceName,
+                    booking = args.appointment
                 )
             }
-            if (reviewToAdd != null) {
-                viewModel.submitReview(reviewToAdd, args.appointment.serviceName, args.appointment)
+        }
+    }
+
+    override fun observeFlows() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { observeState() }
+                launch { observeEvents() }
             }
         }
+    }
+
+    private suspend fun observeState() {
+        viewModel.state.collectLatest { state ->
+            binding.editTextReview.error = state.textError?.asString(requireContext())
+        }
+    }
+
+    private suspend fun observeEvents() {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is AddReviewViewModel.AddReviewUiEvent.ShowError -> {
+                is AppointmentsViewModel.UiEvent.ShowError -> {
                     showSnackbar(event.message)
                 }
 
-                is AddReviewViewModel.AddReviewUiEvent.ReviewAddedSuccessfully -> {
-                    // Passa i dati necessari al ReviewSummaryFragment
-                    val action =
-                        AddReviewFragmentDirections.actionAddReviewFragmentToReviewSummaryFragment(
-                            event.serviceName,
-                            event.review
-                        )
-                    findNavController().navigate(action)
+                is AppointmentsViewModel.UiEvent.ShowMessage -> {
+                    showSnackbar(event.message)
+                    findNavController().popBackStack(R.id.appointmentsFragment, false)
                 }
             }
         }
     }
 
-    private suspend fun setRatingBar() {
-        binding.ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            binding.ratingBar.rating = rating
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

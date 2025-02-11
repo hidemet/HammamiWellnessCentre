@@ -220,7 +220,12 @@
 
         <action
             android:id="@+id/action_appointmentsFragment_to_AddReviewFragment"
-            app:destination="@id/AddReviewFragment" />
+            app:destination="@id/addReviewFragment" />
+
+        <action
+            android:id="@+id/action_appointmentsFragment_to_reviewSummaryFragment"
+            app:destination="@id/reviewSummaryFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/servizioDetailFragment"
@@ -310,7 +315,7 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/AddReviewFragment"
+        android:id="@+id/addReviewFragment"
         android:name="com.example.hammami.presentation.ui.features.appointments.AddReviewFragment"
         android:label="AddReviewFragment"
         tools:layout="@layout/fragment_add_review">

@@ -26,6 +26,10 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
         return bookingsCollection.document().id
     }
 
+    fun setBookingHasReview(transaction: Transaction, bookingId: String) {
+        val bookingRef = bookingsCollection.document(bookingId)
+        transaction.update(bookingRef, "hasReview", true)
+    }
 
     suspend fun saveBooking(bookingDto: BookingDto) {
         try {
@@ -69,6 +73,8 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
             throw e
         }
     }
+
+
 
      fun getBookingsForDateRange(
         startDate: Timestamp,

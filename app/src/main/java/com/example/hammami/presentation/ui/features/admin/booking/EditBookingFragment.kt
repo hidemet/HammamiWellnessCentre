@@ -17,7 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.ui.navigateUp
 import com.example.hammami.R
 import com.example.hammami.core.time.DateTimeUtils
 import com.example.hammami.core.time.TimeSlot

@@ -22,8 +22,6 @@ import com.example.hammami.core.utils.BookingUiHelper
 import com.example.hammami.core.utils.WellnessCenterInfo
 import com.example.hammami.databinding.FragmentBookingDetailBinding
 import com.example.hammami.domain.model.Booking
-import com.example.hammami.domain.model.BookingOption
-import com.example.hammami.domain.model.ItemProfileOption
 import com.example.hammami.domain.model.User
 import com.example.hammami.presentation.ui.features.BaseFragment
 import com.example.hammami.presentation.ui.features.shared.booking.BookingDetailViewModel.*
