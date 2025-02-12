@@ -19,10 +19,10 @@ class ScheduleBookingReminderUseCase @Inject constructor(
             .build()
 
         // Calcola il ritardo (normalmente 24 ore prima)
-        val delayInMillis = booking.startDate.toDate().time - System.currentTimeMillis() - (24 * 60 * 60 * 1000)
+       // val delayInMillis = booking.startDate.toDate().time - System.currentTimeMillis() - (24 * 60 * 60 * 1000)
 
         // PER I TEST: imposta il ritardo a 1 minuto DOPO l'istante corrente.
-        // val delayInMillis = 60 * 1000 // 1 minuto in millisecondi
+        val delayInMillis = (60 * 1000)/2 // 1 minuto in millisecondi
 
         // Impedisci la programmazione di notifiche nel passato.
         if (delayInMillis <= 0) {
@@ -34,7 +34,7 @@ class ScheduleBookingReminderUseCase @Inject constructor(
         }
 
         val notificationWork = OneTimeWorkRequestBuilder<NotificationWorker>()
-            .setInitialDelay(Duration.ofMillis(delayInMillis))  // Usa Duration
+            .setInitialDelay(Duration.ofMillis(delayInMillis.toLong()))  // Usa Duration
             .setInputData(data)
             .build()
 

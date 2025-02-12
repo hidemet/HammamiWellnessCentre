@@ -107,15 +107,27 @@ class BookingDetailFragment : BaseFragment() {
     }
 
     private fun startNavigation() {
-        val uri = Uri.parse("geo:0,0?q=${Uri.encode(WellnessCenterInfo.ADDRESS)}") // Modificato
-        val mapIntent = Intent(Intent.ACTION_VIEW, uri)
+        val address = WellnessCenterInfo.ADDRESS
+        val navigationIntentUri = Uri.parse("google.navigation:q=${Uri.encode(address)}")
+        val mapIntent = Intent(Intent.ACTION_VIEW, navigationIntentUri)
         mapIntent.setPackage("com.google.android.apps.maps")
 
         if (mapIntent.resolveActivity(requireActivity().packageManager) != null) {
             startActivity(mapIntent)
-        } else {
-            showSnackbar(UiText.StringResource(R.string.error_navigation_app_not_found))
+            return
         }
+
+        // 2. Se Google Maps non è disponibile, prova con un intent generico di geo URI (ricerca)
+        val geoIntentUri = Uri.parse("geo:0,0?q=${Uri.encode(address)}")
+        val geoIntent = Intent(Intent.ACTION_VIEW, geoIntentUri)
+        if (geoIntent.resolveActivity(requireActivity().packageManager) != null) {
+            startActivity(geoIntent)
+            return
+        }
+
+
+        // 3. Fallback: Nessuna app di navigazione trovata
+        showSnackbar(UiText.StringResource(R.string.error_navigation_app_not_found))
     }
 
     private fun updateUI(state: BookingDetailUiState) {

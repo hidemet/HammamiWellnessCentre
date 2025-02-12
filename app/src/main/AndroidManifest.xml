@@ -47,7 +47,7 @@
             android:name=".presentation.ui.activities.LoginRegisterActivity"
             android:exported="false" />
 
-        <receiver android:name=".presentation.ui.features.NotificationReceiverFragment"
+        <receiver android:name=".presentation.notification.NotificationWorker"
             android:exported="true" />
 
         <provider
@@ -68,5 +68,12 @@
             />
 
     </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+    </queries>
 
 </manifest>
