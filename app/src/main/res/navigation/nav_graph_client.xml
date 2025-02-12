@@ -93,20 +93,6 @@
         android:label="EditContactInfoFragment"
         tools:layout="@layout/fragment_edit_contact_info" />
 
-
-    <!--    <action-->
-    <!--        android:id="@+id/action_global_profileFragment"-->
-    <!--        app:destination="@id/profileFragment" />-->
-
-    <!--    &lt;!&ndash; Azione globale per tornare alla home da qualsiasi punto &ndash;&gt;-->
-    <!--    <action-->
-    <!--        android:id="@+id/action_global_home"-->
-    <!--        app:destination="@id/homeFragment"-->
-    <!--        app:launchSingleTop="true"-->
-    <!--        app:popUpTo="@id/client_graph"-->
-    <!--        app:popUpToInclusive="false" />-->
-
-
     <fragment
         android:id="@+id/giftCardsFragment"
         android:name="com.example.hammami.presentation.ui.features.userProfile.giftCard.GiftCardsFragment"

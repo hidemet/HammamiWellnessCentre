@@ -18,9 +18,6 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
     private val vouchersCollection = firestore.collection("vouchers")
-    private val usersCollection = firestore.collection("users")
-
-
 
 
      fun createVoucherDocument(transaction: Transaction, voucher: Voucher) : String {
@@ -119,8 +116,6 @@ class FirebaseFirestoreVoucherDataSource @Inject constructor(
 
             // 4. Elimina il documento all'interno della transazione
             transaction.delete(voucherDocumentRef)
-
-            Log.d("FirestoreVoucherDataSource", "Voucher with code: $code deleted successfully in transaction.")
 
         } catch (e: FirebaseFirestoreException) {
             Log.e("FirestoreVoucherDataSource", "Error deleting voucher with code: $code", e)

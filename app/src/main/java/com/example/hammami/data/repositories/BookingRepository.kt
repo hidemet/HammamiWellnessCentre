@@ -108,13 +108,9 @@ class BookingRepository @Inject constructor(
             val updatedBookingResult = getBookingById(bookingId)
             if (updatedBookingResult is Result.Success) {
                 val updatedBooking = updatedBookingResult.data
-                Log.d("BookingRepository", "updatedBookingDetails: updatedBooking=$updatedBooking") // LOG
-
 
                 scheduleBookingReminderUseCase(updatedBooking)
-                Log.d("BookingRepository", "Notifica riprogrammata dopo l'update")
             } else if (updatedBookingResult is Result.Error){
-                Log.e("BookingRepository", "Errore nel recuperare la prenotazione dopo l'update", (updatedBookingResult.error as Throwable))
                 return Result.Error(updatedBookingResult.error)
             }
             Result.Success(Unit)
@@ -161,17 +157,13 @@ class BookingRepository @Inject constructor(
         return try {
             val userIdResult = authRepository.getCurrentUserId()
             if (userIdResult is Result.Success) {
-                Log.d("BookingRepository", "getBookingsForUserAndDateRange start") // LOG
-                Log.d("BookingRepository", "getBookingsForUserAndDateRange: userId=${userIdResult.data}") // LOG
                 bookingDataSource.getBookingsForUser(
                     userIdResult.data,
                 ).map { dtoList ->
                     val bookings = dtoList.map { bookingMapper.toDomain(it) }
-                    Log.d("BookingRepository", "getBookingsForUserAndDateRange: Mapping successful, ${bookings.size} bookings")
                     Result.Success( bookings )
                 }
             } else {
-                Log.d("BookingRepository", "getBookingsForUserAndDateRange: No User") // LOG
                 flowOf(Result.Error(DataError.Auth.NOT_AUTHENTICATED))
             }
         } catch (e: Exception) {
@@ -190,10 +182,6 @@ class BookingRepository @Inject constructor(
     ): Result<Boolean, DataError> {
         return try {
             val isAvailable = bookingDataSource.isTimeSlotAvailable(startDate, endDate)
-            Log.d(
-                "BookingRepository",
-                "isTimeSlotAvailable: startDate=$startDate, endDate=$endDate, isAvailable=$isAvailable"
-            )
             Result.Success(isAvailable)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel verificare la disponibilità dello slot", e)
@@ -214,20 +202,12 @@ class BookingRepository @Inject constructor(
 
     suspend fun getUserBookingsSeparated(userId: String): Result<Pair<List<Booking>, List<Booking>>, DataError> {
         return try {
-            Log.d(
-                "BookingRepository",
-                "getUserBookingsSeparated: Fetching bookings for user: $userId"
-            ) // LOG
             val bookings =
                 bookingDataSource.getUserBookings(userId).map { bookingMapper.toDomain(it) }
             val currentDate = Timestamp.now()
 
             val pastBookings = bookings.filter { it.startDate < currentDate }
             val futureBookings = bookings.filter { it.startDate >= currentDate }
-            Log.d(
-                "BookingRepository",
-                "getUserBookingsSeparated: Past bookings: ${pastBookings.size}, Future bookings: ${futureBookings.size}"
-            ) // LOG
             Result.Success(Pair(pastBookings, futureBookings))
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel recuperare le prenotazioni dell'utente", e)

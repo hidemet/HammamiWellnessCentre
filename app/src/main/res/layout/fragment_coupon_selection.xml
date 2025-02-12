@@ -21,7 +21,6 @@
             app:navigationIcon="@drawable/ic_arrow_back"
             app:title="@string/available_coupons_title">
 
-            <!-- Points Container -->
             <LinearLayout
                 android:id="@+id/pointsContainer"
                 android:layout_width="wrap_content"

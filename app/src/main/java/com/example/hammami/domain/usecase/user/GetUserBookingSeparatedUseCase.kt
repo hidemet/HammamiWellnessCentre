@@ -1,6 +1,5 @@
 package com.example.hammami.domain.usecase.user
 
-import android.util.Log
 import com.example.hammami.core.result.Result
 import com.example.hammami.data.repositories.BookingRepository
 import com.example.hammami.domain.error.DataError
@@ -11,7 +10,6 @@ class GetUserBookingSeparatedUseCase @Inject constructor(
     private val bookingRepository: BookingRepository
 ) {
     suspend operator fun invoke(userId: String): Result<Pair<List<Booking>, List<Booking>>, DataError>{
-        Log.d("GetUserBookingSeparatedUseCase", "invoke: called with userId = $userId") // LOG
         return bookingRepository.getUserBookingsSeparated(userId)
     }
 }

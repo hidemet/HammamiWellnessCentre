@@ -4,7 +4,7 @@ data class AvailableVoucher(
     val value: Double,
     val type: VoucherType,
     val isEnabled: Boolean = true,
-    val requiredPoints: Int? = null, // null per le GIFT_CARD
+    val requiredPoints: Int? = null,
 )
 {
 

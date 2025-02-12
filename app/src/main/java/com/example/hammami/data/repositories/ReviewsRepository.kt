@@ -13,7 +13,6 @@ import com.example.hammami.data.datasource.services.FirebaseFirestoreMainCategor
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import java.lang.Error
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,23 +45,15 @@ class ReviewsRepository @Inject constructor(
         return try {
             firestore.runTransaction { transaction ->
                 // 1. Crea la recensione
-                Log.d("ReviewsRepository", "Creazione della recensione")
                 val reviewId = reviewsDataSource.addReviewData(transaction,review)
-                Log.d("ReviewsRepository", "Recensione creata con ID: $reviewId")
 
                 // 2. Aggiungi la recensione al servizio
-                Log.d("ReviewsRepository", "Aggiunta della recensione al servizio")
                 serviceDataSource.addReviewToAService(transaction,servicePath, reviewId)
-                Log.d("ReviewsRepository", "Recensione aggiunta al servizio con ID: $serviceId")
 
                 // 3. Aggiorna lo stato della prenotazione
-                Log.d("ReviewsRepository", "Aggiornamento dello stato della prenotazione")
                 bookingDataSource.setBookingHasReview(transaction, bookingId)
-                Log.d("ReviewsRepository", "Stato della prenotazione aggiornato con ID: $bookingId")
 
             }.await()
-
-            Log.d("ReviewsRepository", "Recensione creata con successo")
             Result.Success(review)
 
         } catch (e: Exception) {

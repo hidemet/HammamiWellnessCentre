@@ -19,7 +19,7 @@ sealed class PaymentItem : Parcelable {
         val date: LocalDate,
         val startTime: LocalTime,
         val endTime: LocalTime,
-        val discountCode: String? = null // Aggiunto
+        val discountCode: String? = null
     ) : PaymentItem() {
         companion object {
             fun from(

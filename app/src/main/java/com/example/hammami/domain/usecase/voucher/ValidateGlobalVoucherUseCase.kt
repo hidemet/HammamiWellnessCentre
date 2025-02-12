@@ -13,7 +13,7 @@ class ValidateGlobalVoucherUseCase @Inject constructor(
     suspend operator fun invoke(code: String, amount: Double): Result<Voucher, DataError> {
         return when (val voucherResult = voucherRepository.getVoucherByCode(code)) {
             is Result.Success -> {
-                val voucher = voucherResult.data ?: return Result.Error(DataError.Voucher.NOT_FOUND)
+                val voucher = voucherResult.data
 
                 when {
                     voucher.isExpired -> Result.Error(DataError.Voucher.EXPIRED)

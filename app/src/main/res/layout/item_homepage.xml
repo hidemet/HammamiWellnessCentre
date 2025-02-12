@@ -16,7 +16,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Media -->
             <ImageView
                 android:id="@+id/imageNewRvItem"
                 android:layout_width="match_parent"
@@ -31,7 +30,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Title, secondary and supporting text -->
                 <TextView
                     android:id="@+id/tvNewRvItemName"
                     android:layout_width="match_parent"

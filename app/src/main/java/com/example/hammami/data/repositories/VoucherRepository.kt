@@ -20,8 +20,7 @@ import javax.inject.Singleton
 class VoucherRepository @Inject constructor(
     private val dataSource: FirebaseFirestoreVoucherDataSource,
     private val voucherFactory: VoucherFactory,
-    private val userRepository: UserRepository, // per gestire i punti dell'utente
-    private val authRepository: AuthRepository, // per gestire l'utente corrente,
+    private val userRepository: UserRepository,
     private val firestore: FirebaseFirestore
 ) {
 
@@ -49,7 +48,7 @@ class VoucherRepository @Inject constructor(
                     throw Exception("Create voucher failed: ${createVoucherResult.error}")
                 }
 
-                newVoucher // Restituisco il voucher creato
+                newVoucher
             }.await()
             Result.Success(newVoucher)
         } catch (e: Exception) {
