@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/notify"
-        android:title="notifiche"
-        android:icon="@drawable/ic_notifiche"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/profile"
         android:icon="@drawable/ic_profile"
         android:title="profilo"

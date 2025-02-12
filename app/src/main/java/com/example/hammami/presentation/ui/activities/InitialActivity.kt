@@ -1,62 +1,110 @@
 package com.example.hammami.presentation.ui.activities
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.hammami.R
 import com.example.hammami.databinding.ActivityInitialBinding
-import com.example.hammami.util.PreferencesManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class InitialActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityInitialBinding
-    @Inject
-    lateinit var preferencesManager: PreferencesManager
+    private val viewModel: InitialViewModel by viewModels()
     private var keepSplashScreenOn = true
 
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        continueToNextActivity(isGranted)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupSplashScreen()
-        setupBinding()
-
-        // Reindirizza dopo un breve ritardo (per mostrare la splash screen)
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (preferencesManager.isUserLoggedIn()) {
-                navigateToMain()
-            } else {
-                navigateToLogin()
-            }
-        }, 1000) // Ritardo di 1 secondo (modifica se necessario)
-
-    }
-
-    private fun setupSplashScreen() {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { keepSplashScreenOn }
-    }
-
-    private fun setupBinding() {
         binding = ActivityInitialBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Controlla e richiedi i permessi prima di controllare l'autenticazione
+        checkPermissionsAndContinue()
+    }
+
+    private fun checkPermissionsAndContinue() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            continueToNextActivity(true)
+        } else {
+            // Richiedi il permesso.  Il risultato verrà gestito in requestPermissionLauncher.
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    private fun showPermissionRationale() {
+        // Da una spiegazione sulle ragioni per cui il permesso è richiesto il permesso
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.permission_required_title))
+            .setMessage(getString(R.string.notification_permission_rationale))
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                // Richiedi di nuovo il permesso.  L'utente avrà un'altra
+                // possibilità di concederlo.
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            //L'utente può scegliere se continuare o no
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+
+    private fun continueToNextActivity(permissionGranted: Boolean) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.navigationEvent.collect { event ->
+                    keepSplashScreenOn = false
+                    when (event) {
+                        InitialViewModel.NavigationEvent.NavigateToMain -> {
+                            navigateToMain()
+                        }
+                        InitialViewModel.NavigationEvent.NavigateToAdmin -> {
+                            navigateToAdmin()
+                        }
+                        InitialViewModel.NavigationEvent.NavigateToLogin -> {
+                            navigateToLogin()
+                        }
+                    }
+                }
+            }
+        }
+        if(!permissionGranted) {
+            showPermissionRationale()
+        }
     }
 
     private fun navigateToMain() {
-        keepSplashScreenOn = false
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
-    private fun navigateToLogin() {
-        keepSplashScreenOn = false
-        startActivity(Intent(this, LoginRegisterActivity::class.java))
+    private fun navigateToAdmin() {
+        startActivity(Intent(this, AdminActivity::class.java))
         finish()
     }
 
+    private fun navigateToLogin() {
+        startActivity(Intent(this, LoginRegisterActivity::class.java))
+        finish()
+    }
 }

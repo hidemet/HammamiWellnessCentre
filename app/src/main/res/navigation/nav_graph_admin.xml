@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_admin"
+    app:startDestination="@id/homeAdminFragment">
+
+    <action
+        android:id="@+id/action_global_to_bookingDetailFragment"
+        app:destination="@id/bookingDetailFragment" />
+
+    <action
+        android:id="@+id/action_global_to_editBookingFragment"
+        app:destination="@id/editBookingFragment" />
+
+
+    <fragment
+        android:id="@+id/bookingDetailFragment"
+        android:name="com.example.hammami.presentation.ui.features.shared.booking.BookingDetailFragment"
+        android:label="fragment_booking_detail"
+        tools:layout="@layout/fragment_booking_detail" >
+        <argument
+            android:name="bookingId"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_bookingDetailFragment_to_editBookingFragment"
+            app:destination="@id/editBookingFragment" >
+            <argument
+                android:name="bookingId"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/homeAdminFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.home.HomeAdminFragment"
+        android:label="HomeAdminFragment"
+        tools:layout="@layout/fragment_home_admin">
+
+        <action
+            android:id="@+id/action_homeAdminFragment_to_bookingDetailFragment"
+            app:destination="@id/bookingDetailFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/editBookingFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.booking.EditBookingFragment"
+        android:label="fragment_booking"
+        tools:layout="@layout/fragment_booking">
+        <argument
+            android:name="bookingId"
+            app:argType="string"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/agendaAdminFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.agenda.AgendaAdminFragment"
+        tools:layout="@layout/fragment_admin_appointments" >
+        <action
+            android:id="@+id/action_agendaAdminFragment_to_bookingDetailFragment"
+            app:destination="@id/bookingDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/adminServiceCatalogueFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.service.AdminServiceCatalogueFragment"
+        android:label="AdminUsersFragment"
+        tools:layout="@layout/fragment_admin_service_catalogue" />
+</navigation>

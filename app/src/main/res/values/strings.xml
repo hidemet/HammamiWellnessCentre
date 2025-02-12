@@ -11,6 +11,9 @@
     <string name="select_time">Seleziona l\'orario</string>
     <string name="book_now">Prenota ora</string>
 
+    <string name="permission_required_title">Permesso Necessario</string>
+    <string name="notification_permission_rationale">Per poterti inviare promemoria sui tuoi appuntamenti e aggiornamenti importanti, abbiamo bisogno del tuo permesso per inviare notifiche. Le notifiche sono fondamentali per non perdere le tue prenotazioni. Vuoi concedere il permesso?</string>
+
     <!-- Errori relativi alle prenotazioni (DataError.Booking) -->
     <string name="error_invalid_time">Orario non valido. Seleziona un orario valido.</string>
     <string name="error_invalid_date">Data non valida. Seleziona una data valida.</string>
@@ -64,7 +67,7 @@
     <string name="service_duration_format">Duration: %1$d minutes</string>
     <string name="gift_card_value_format">%.0f €</string>
     <string name="price_format">%1$.2f €</string>
-    <string name="price_format_negative">-$%1$.2f</string>
+    <string name="price_format_negative">-%1$.2f €</string>
     <string name="discount_amount">Sconto: -€%1$.2f</string>
     <string name="discount_applied">Sconto di €%1$.2f applicato</string>
     <string name="check_card_details">Per favore controlla i dettagli della tua carta</string>
@@ -336,6 +339,7 @@
     <string name="error_too_many_requests">Troppe richieste. Riprova più tardi.</string>
     <string name="error_operation_not_allowed">Operazione non consentita. Contatta il supporto.</string>
 
+
     <string name="app_name">Hammami</string>
     <string name="benvenuto_">Benvenuto!</string>
     <string name="placeholder__login_email">Inserisci email</string>
@@ -423,6 +427,7 @@
         Futuro e passato insieme a professionalità, competenza e passione sono i valori in cui crediamo.\n\nMassaggi\nIl massaggio è una forma di terapia antica ed anche uno dei gesti più naturali che compaiono quotidianamente che si perde nella notte dei tempi.
         In pratica è un insieme di diverse manovre eseguite sul corpo per lenire dolore per tonificare, ma anche per preservare e migliorare il benessere psichico allentando tensioni e fatiche.</string>
     <string name="profile_updated_successfully">Profilo utente aggiornato con successo!</string>
+    <string name="review_added_successfully">Recensione aggiunta con successo!</string>
     <string name="update_failed">L\'aggiornamento del profilo utene non è riuscito!</string>
     <string name="password_changed_successfully">Password aggiornata con successo</string>
     <string name="contacts_updated_successfully">Contatti aggiornati con successo!</string>
@@ -528,7 +533,32 @@
     <string name="contact_info">Contatti</string>
     <string name="confirm_password_message">Inserisci la password associata alla tua email attuale (%1$s) per confermare la modifica.</string>
     <string name="error_required_password">Inserisci la password</string>
-    <string name="giorni_chiusura">Il negozio è chiuso la domenica e il lunedì.</string>
+    <string name="closed_day">Il negozio è chiuso la domenica e il lunedì.</string>
+    <string name="today">Oggi</string>
+    <string name="booking_time_format"><![CDATA[<string name=\"booking_time_format\">%1$s - %2$s</string>]]></string>
+    <string name="reschedule_appointment">Riprogramma appuntamento</string>
+    <string name="cancel_booking">Annulla appuntamento</string>
+    <string name="booking_details_title">Dettagli prenotazione</string>
+    <string name="person_icon">person icon</string>
+    <string name="booking_cancelled">prenotazione cancellata con successo</string>
+    <string name="cancel_booking_title">Annulla prenotazione</string>
+    <string name="cancel_booking_message">Sei sicuro di voler annullare questa prenotazione?</string>
+    <string name="booking_status_reserved">Riservato</string>
+    <string name="booking_status_confirmed">Confermato</string>
+    <string name="booking_status_completed">Completato</string>
+    <string name="client_name_format">%1$s %2$s</string>
+    <string name="edit_booking_title">Modifica la prenotazione</string>
+    <string name="save_changes">Conferma</string>
+    <string name="booking_updated">Prenotazione aggiornata con successo!</string>
+    <string name="notification_title">Promemoria appuntamento</string>
+    <string name="notification_permission_denied">Per ricevere promemoria, è necessario attivare le notifiche</string>
+    <string name="notification_text">Hai un appuntamento per %1$s domani alle %2$s!</string>
+    <string name="start_navigation">Portami all\'Hammami</string>
+    <string name="error_navigation_app_not_found">Non è stata trovata nessun app per la navigazione\n</string>
+    <string name="notification_cancellation_title">Prenotazione Cancellata</string>
+    <string name="notification_cancellation_text">La tua prenotazione per %1$s è stata cancellata.</string>
+    <string name="error_text_empty">Inserisci il testo della recensione!</string>
+    <string name="error_rating_invalid">Inserisci una valutazione</string>
 
 
 </resources>

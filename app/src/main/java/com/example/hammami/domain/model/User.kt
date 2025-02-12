@@ -11,4 +11,5 @@ data class User(
     var email: String = "",
     var profileImage: String = "",
     var points: Int = 0,
+    var isadmin: Boolean = false
 )

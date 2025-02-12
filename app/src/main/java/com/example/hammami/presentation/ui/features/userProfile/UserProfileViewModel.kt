@@ -7,6 +7,7 @@ import com.example.hammami.R
 import com.example.hammami.core.ui.UiText
 import com.example.hammami.core.utils.asUiText
 import com.example.hammami.core.result.Result
+import com.example.hammami.data.repositories.UserStateRepository
 import com.example.hammami.domain.model.User
 import com.example.hammami.domain.usecase.auth.DeleteAccountUseCase
 import com.example.hammami.domain.usecase.auth.ResetPasswordUseCase
@@ -16,6 +17,7 @@ import com.example.hammami.domain.usecase.user.UpdateUserUseCase
 import com.example.hammami.domain.usecase.user.UploadUserImageUseCase
 import com.example.hammami.domain.usecase.validation.user.ValidateUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,7 +30,8 @@ class UserProfileViewModel @Inject constructor(
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private val validateUserUseCase: ValidateUserUseCase
+    private val validateUserUseCase: ValidateUserUseCase,
+    private val userStateRepository: UserStateRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
@@ -37,13 +40,19 @@ class UserProfileViewModel @Inject constructor(
     private val _uiEvents = MutableSharedFlow<UiEvent>()
     val uiEvents: SharedFlow<UiEvent> = _uiEvents.asSharedFlow()
 
+    private var userChangesJob: Job? = null
+
+
     init {
         observeUserChanges()
     }
 
     private fun observeUserChanges() {
+
+        userChangesJob?.cancel()
+
         viewModelScope.launch {
-            observeUserChangesUseCase().collect { result ->
+            observeUserChangesUseCase().collectLatest { result ->
                 when (result) {
                     is Result.Success -> updateUiState {
                         copy(
@@ -58,11 +67,20 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        userChangesJob?.cancel() // Cancella il Job quando il ViewModel viene distrutto
+        userStateRepository.clearUserListener()  //Chiamiamo il metodo.
+    }
 
     fun signOut() = viewModelScope.launch {
         updateUiState { copy(isLoading = true) }
         when (val result = signOutUseCase()) {
-            is Result.Success -> emitEvent(UiEvent.NavigateToLogin)
+            is Result.Success -> {
+                userStateRepository.clearUserListener()
+                _uiState.value = UiState() // RESET DELLO STATO
+                emitEvent(UiEvent.NavigateToLogin)
+            }
             is Result.Error -> emitEvent(UiEvent.UserMessage(result.error.asUiText()))
         }
     }

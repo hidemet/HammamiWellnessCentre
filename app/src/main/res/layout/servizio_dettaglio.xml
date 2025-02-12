@@ -226,9 +226,12 @@
             <Button
                 android:id="@+id/button_prosegui"
                 style="@style/Widget.Material3.Button"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="53dp"
                 android:layout_marginTop="32dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
                 android:text="Prosegui"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

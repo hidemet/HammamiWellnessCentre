@@ -7,6 +7,7 @@ import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Transaction
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,6 +26,13 @@ class FirebaseFirestoreMainCategoryDataSource @Inject constructor(
             throw e
         }
         }
+
+     fun addReviewToAService(transaction: Transaction, servicePath: String, reviewId: String){
+        Log.e("FirebaseFirestoreMainCategoryDataSource", "servicePath: $servicePath")
+         val reviewToAdd = firestore.collection("Recensioni").document(reviewId)
+         transaction.update(firestore.document(servicePath), "Recensioni", FieldValue.arrayUnion(reviewToAdd)) // Usiamo il service path completo
+
+    }
 
     suspend fun fetchBestDeals() : List<Service> {
         try {
@@ -47,11 +55,11 @@ class FirebaseFirestoreMainCategoryDataSource @Inject constructor(
     suspend fun getIdServiceFromName(name: String): String? {
 
         val collections = listOf(
-            "/Servizi/Estetica/Trattamento corpo",
-            "/Servizi/Estetica/Epilazione corpo con cera",
-            "/Servizi/Estetica/Trattamento viso",
-            "/Servizi/Benessere/trattamenti",
-            "/Servizi/Massaggi/trattamenti"
+            "Servizi/Estetica/Trattamento corpo",
+            "Servizi/Estetica/Epilazione corpo con cera",
+            "Servizi/Estetica/Trattamento viso",
+            "Servizi/Benessere/trattamenti",
+            "Servizi/Massaggi/trattamenti"
         )
 
         for (collection in collections) {
@@ -61,7 +69,9 @@ class FirebaseFirestoreMainCategoryDataSource @Inject constructor(
                 .await()
             if (snapshot.documents.isNotEmpty()) {
                 //return snapshot.documents.first().id
-                return snapshot.documents.first().reference.path
+                Log.d("FirebaseFirestoreMainCategoryDataSource", "ID: ${snapshot.documents.first().reference.path}")
+                //return snapshot.documents.first().reference.path
+                return snapshot.documents.first().id
             }
 
         }
@@ -146,11 +156,11 @@ class FirebaseFirestoreMainCategoryDataSource @Inject constructor(
 
     suspend fun getCollectionPathFromServiceId(serviceId: String): String {
         val collections = listOf(
-            "/Servizi/Estetica/Trattamento corpo",
-            "/Servizi/Estetica/Epilazione corpo con cera",
-            "/Servizi/Estetica/Trattamento viso",
-            "/Servizi/Benessere/trattamenti",
-            "/Servizi/Massaggi/trattamenti"
+            "Servizi/Estetica/Trattamento corpo",
+            "Servizi/Estetica/Epilazione corpo con cera",
+            "Servizi/Estetica/Trattamento viso",
+            "Servizi/Benessere/trattamenti",
+            "Servizi/Massaggi/trattamenti"
         )
 
         for (collection in collections) {
@@ -178,9 +188,12 @@ class FirebaseFirestoreMainCategoryDataSource @Inject constructor(
 
         for (collectionPath in collections) {
             val docRef = firestore.document("$collectionPath/$serviceId")
-            docRef.get().await()
-            return docRef.path
+            val docSnapshot = docRef.get().await()
+            if (docSnapshot.exists()) {
+                return docRef.path
+            }
         }
+
 
         return ""
     }

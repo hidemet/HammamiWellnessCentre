@@ -11,6 +11,7 @@ import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,8 +20,7 @@ import javax.inject.Singleton
 class VoucherRepository @Inject constructor(
     private val dataSource: FirebaseFirestoreVoucherDataSource,
     private val voucherFactory: VoucherFactory,
-    private val userRepository: UserRepository, // per gestire i punti dell'utente
-    private val authRepository: AuthRepository, // per gestire l'utente corrente,
+    private val userRepository: UserRepository,
     private val firestore: FirebaseFirestore
 ) {
 
@@ -48,7 +48,7 @@ class VoucherRepository @Inject constructor(
                     throw Exception("Create voucher failed: ${createVoucherResult.error}")
                 }
 
-                newVoucher // Restituisco il voucher creato
+                newVoucher
             }.await()
             Result.Success(newVoucher)
         } catch (e: Exception) {
@@ -58,10 +58,10 @@ class VoucherRepository @Inject constructor(
 
     fun deleteVoucher(transaction: Transaction, code: String): Result<Unit, DataError> {
         return try {
-            val voucherDoc = firestore.collection("vouchers").document(code)
-            transaction.delete(voucherDoc)
+            runBlocking { dataSource.deleteVoucher(transaction, code) }
             Result.Success(Unit)
         } catch (e: Exception) {
+            Log.e("VoucherRepository", "Error deleting voucher in transaction", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
@@ -72,8 +72,10 @@ class VoucherRepository @Inject constructor(
     ): Result<String, DataError> {
         return try {
             val voucherId = dataSource.createVoucherDocument(transaction, voucher)
+            Log.d("VoucherRepository", "Voucher document created with ID: $voucherId")
             Result.Success(voucherId)
         } catch (e: Exception) {
+            Log.e("VoucherRepository", "Error creating voucher document", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
@@ -130,15 +132,15 @@ class VoucherRepository @Inject constructor(
         }
     }
 
-    suspend fun deleteVoucher(code: String): Result<Unit, DataError> {
+    suspend fun getVoucherById(id: String): Result<Voucher, DataError> {
         return try {
-
-            dataSource.deleteVoucher(code)
-            Result.Success(Unit)
+            val voucher = dataSource.getVoucherById(id) ?: return Result.Error(DataError.Voucher.NOT_FOUND)
+            Result.Success(voucher)
         } catch (e: Exception) {
             Result.Error(mapExceptionToDataError(e))
         }
     }
+
 
     private fun mapExceptionToDataError(e: Exception): DataError = when (e) {
         is FirebaseFirestoreException -> when (e.code) {
@@ -153,12 +155,4 @@ class VoucherRepository @Inject constructor(
     }
 
 
-    suspend fun getVoucherById(id: String): Result<Voucher, DataError> {
-        return try {
-            val voucher = dataSource.getVoucherById(id) ?: return Result.Error(DataError.Voucher.NOT_FOUND)
-            Result.Success(voucher)
-        } catch (e: Exception) {
-            Result.Error(mapExceptionToDataError(e))
-        }
-    }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -11,13 +12,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.hammami.R
+import com.example.hammami.core.time.DateTimeUtils
 import com.example.hammami.databinding.FragmentBookingSummaryBinding
 import com.example.hammami.domain.model.Booking
-import com.example.hammami.domain.model.localDate
 import com.example.hammami.presentation.ui.features.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class BookingSummaryFragment : BaseFragment() {
@@ -57,24 +57,22 @@ class BookingSummaryFragment : BaseFragment() {
             findNavController().popBackStack(R.id.homeFragment, false)
         }
         buttonViewBookings.setOnClickListener {
-            findNavController().popBackStack(R.id.appointmentsFragment, false)
+            findNavController().navigate(R.id.action_global_appointmentsFragment)
         }
     }
 
     private fun updateBookingUi(booking: Booking) {
         with(binding) {
             bookingCard.serviceName.text = booking.serviceName
-            bookingCard.bookingDate.text = booking.localDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "Data non disponibile"
-            bookingCard.bookingTime.text = "${booking.startTime} - ${booking.endTime}"
+            bookingCard.bookingDate.text = DateTimeUtils.formatDate(booking.startDate)
+            bookingCard.bookingTime.text =
+                DateTimeUtils.formatTimeRange(booking.startDate, booking.endDate)
+            bookingCard.bookingPrice.isVisible = true
             bookingPrice.text = getString(R.string.booking_price_format, booking.price)
         }
-
-
-
-        // Gestione click sulla card
+        // Gestione click slla card
         //binding.bookingCard.setOnClickListener {
-            // TODO: apri il dettaglio della prenotazione, ad esempio:
-            // findNavController().navigate(R.id.action_bookingSummaryFragment_to_bookingDetailFragment, bundleOf("bookingId" to booking.id))
+        // findNavController().navigate(R.id.action_bookingSummaryFragment_to_bookingDetailFragment, bundleOf("bookingId" to booking.id))
         //}
     }
 
@@ -91,21 +89,15 @@ class BookingSummaryFragment : BaseFragment() {
     private suspend fun observeEvents() {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is BookingViewModel.BookingUiEvent.ShowError -> {
-                    showSnackbar(event.message)
-                }
-
+                is BookingViewModel.BookingUiEvent.ShowError -> showSnackbar(event.message)
                 else -> Unit
             }
         }
     }
 
     private suspend fun observeState() {
-        viewModel.newBooking.collect { booking ->
-            booking?.let{updateBookingUi(it)}
-        }
+        viewModel.newBooking.collect { booking -> booking?.let { updateBookingUi(it) } }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

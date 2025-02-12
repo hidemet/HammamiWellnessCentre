@@ -5,6 +5,7 @@ import com.example.hammami.domain.model.AvailableVoucher
 import com.example.hammami.domain.model.Service
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
+import java.time.LocalTime
 
 @Parcelize
 sealed class PaymentItem : Parcelable {
@@ -16,17 +17,17 @@ sealed class PaymentItem : Parcelable {
         val serviceName: String,
         val bookingId: String,
         val date: LocalDate,
-        val startTime: String,
-        val endTime: String,
-        val discountCode: String? = null // Aggiunto
+        val startTime: LocalTime,
+        val endTime: LocalTime,
+        val discountCode: String? = null
     ) : PaymentItem() {
         companion object {
             fun from(
                 service: Service,
                 bookingId: String,
                 date: LocalDate,
-                startTime: String,
-                endTime: String,
+                startTime: LocalTime,
+                endTime: LocalTime,
                 price: Double
             ): ServiceBookingPayment = ServiceBookingPayment(
                 price = price,

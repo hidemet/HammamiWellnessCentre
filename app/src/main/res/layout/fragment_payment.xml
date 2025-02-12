@@ -41,7 +41,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Service/Gift Card Details Section -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/itemCard"
                 style="@style/Widget.Material3.CardView.Elevated"
@@ -62,40 +61,7 @@
                         android:layout_height="wrap_content"
                         android:visibility="visible" />
                 </LinearLayout>
-                    <!-- Service Booking Details
-                     <LinearLayout
-                        android:id="@+id/serviceBookingDetails"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/serviceName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
-
-                        <TextView
-                            android:id="@+id/serviceDateTime"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:drawablePadding="8dp"
-                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                            app:drawableStartCompat="@drawable/ic_calendar" />
-
-                        <TextView
-                            android:id="@+id/serviceDuration"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:drawablePadding="8dp"
-                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                            app:drawableStartCompat="@drawable/ic_schedule" />
-                    </LinearLayout> -->
-
-                    <!-- Gift Card Details -->
                     <LinearLayout
                         android:id="@+id/giftCardDetails"
                         android:layout_width="match_parent"
@@ -128,7 +94,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Discount Section -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/discountSection"
                 style="@style/Widget.Material3.CardView.Outlined"
@@ -142,7 +107,6 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Sezione input codice sconto -->
                     <LinearLayout
                         android:id="@+id/discountInputContainer"
                         android:layout_width="match_parent"
@@ -179,7 +143,6 @@
 
                     </LinearLayout>
 
-                    <!-- Codice sconto applicato (visibile solo quando attivo) -->
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/appliedDiscountContainer"
                         android:layout_width="match_parent"
@@ -199,7 +162,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Payment Method Section with Card Details -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/paymentMethodCard"
@@ -214,7 +176,6 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Header con titolo e sottotitolo -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -269,7 +230,6 @@
 
                     </com.google.android.material.chip.ChipGroup>
 
-                    <!-- Container per i dettagli della carta di credito -->
                     <LinearLayout
                         android:id="@+id/creditCardDetailsContainer"
                         android:layout_width="match_parent"
@@ -278,7 +238,6 @@
                         android:orientation="vertical"
                         android:visibility="visible">
 
-                        <!-- Campo numero carta migliorato -->
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                             android:id="@+id/cardNumberLayout"
@@ -300,7 +259,6 @@
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- Container per data scadenza e CVV -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -367,7 +325,6 @@
         tools:layout_height="200dp">
 
 
-        <!-- Prezzo base -->
         <TextView
             android:id="@+id/item_price_label"
             android:layout_width="0dp"
@@ -390,7 +347,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="50.00 €" />
 
-        <!-- Sconto -->
         <TextView
             android:id="@+id/discountLabel"
             android:layout_width="0dp"
@@ -414,7 +370,6 @@
             app:layout_constraintTop_toTopOf="@id/discountLabel"
             tools:text="-10.00 €" />
 
-        <!-- Separatore -->
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider"
             android:layout_width="match_parent"
@@ -422,7 +377,6 @@
             android:layout_margin="16dp"
             app:layout_constraintTop_toBottomOf="@id/discountAmount" />
 
-        <!-- Totale finale -->
         <TextView
             android:id="@+id/totalLabel"
             android:layout_width="0dp"
@@ -464,7 +418,6 @@
             app:layout_constraintTop_toTopOf="@id/earned_karma_points"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Bottone di conferma -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/checkoutConfirmButton"
             android:layout_width="match_parent"

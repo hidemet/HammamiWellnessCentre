@@ -75,7 +75,7 @@ class CouponSuccessFragment : BaseFragment() {
 
         // Bottone per tornare alla home
         buttonBackToHome.setOnClickListener {
-            findNavController().navigate(R.id.action_global_home)
+            findNavController().navigate(R.id.action_couponSuccessFragment_to_homeFragment)
         }
     }
 

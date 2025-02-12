@@ -1,16 +1,6 @@
 package com.example.hammami.presentation.ui.features.payment
 
-import android.Manifest
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
-import android.provider.Settings
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hammami.core.utils.KarmaPointsCalculator
@@ -28,8 +18,6 @@ import com.example.hammami.domain.usecase.voucher.GetVoucherByCodeUseCase
 import com.example.hammami.domain.usecase.voucher.ValidateVoucherUseCase
 import com.example.hammami.domain.usecase.user.GetUserPointsUseCase
 import com.example.hammami.domain.usecase.validation.creditCard.ValidateCreditCardUseCase
-import com.example.hammami.presentation.ui.features.NotificationReceiverFragment
-import com.example.hammami.presentation.ui.features.NotificationReceiverFragment.Companion.REQUEST_CODE_POST_NOTIFICATIONS
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -39,8 +27,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.TimeZone
 
 
 @AssistedFactory
@@ -74,7 +60,6 @@ class PaymentViewModel @AssistedInject constructor(
     val event = _event.asSharedFlow()
 
     init {
-        Log.e("PaymentViewModel", "paymentItem.id: $paymentItem.id")
         loadUserPoints()
     }
 

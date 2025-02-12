@@ -61,34 +61,33 @@ class PaymentRepository @Inject constructor(
             }
 
             val result: String = firestore.runTransaction { transaction ->
-                // 1. Gestisco il voucher se presente
+                // 1. Calcolo i punti karma (nessuna operazione Firestore)
+                val earnedPoints = karmaPointsCalculator.calculatePoints(amount)
+
+                // 2. Aggiungo i punti karma all'utente (operazione di scrittura)
+                val userPointsResult = userRepository.addUserPoints(transaction, userId, earnedPoints)
+                val currentPoints = when (userPointsResult) {
+                    is Result.Success -> Unit
+                    is Result.Error -> throw Exception("Failed to get user points: ${userPointsResult.error}")
+                }
+
+                // 4. Gestisco il voucher se presente (operazione di scrittura)
                 appliedVoucher?.let { voucher ->
+                    Log.d("PaymentRepository", "Deleting voucher with code: ${voucher.code}")
                     when (val deleteVoucherresult =
                         voucherRepository.deleteVoucher(transaction, voucher.code)) {
                         is Result.Error -> throw Exception(
                             deleteVoucherresult.error.asUiText().asString(context)
                         )
 
-                        is Result.Success -> Unit
+                        is Result.Success -> {
+                            Log.d("PaymentRepository", "Voucher deleted successfully")
+                            Unit
+                        }
                     }
                 }
 
-                // 2. Calcolo e aggiungo i punti karma
-                val earnedPoints = karmaPointsCalculator.calculatePoints(amount)
-                when (val updatePointsResult =
-                    userRepository.addUserPoints(
-                        transaction,
-                        userId,
-                        earnedPoints
-                    )) {
-                    is Result.Error -> throw Exception(
-                        updatePointsResult.error.asUiText().asString(context)
-                    )
-
-                    is Result.Success -> Unit
-                }
-
-                // 3. Creo il documento appropriato in base al tipo di acquisto
+                // 5. Creo il documento appropriato in base al tipo di acquisto (operazione di scrittura)
                 when (paymentItem) {
                     is PaymentItem.GiftCardPayment -> {
                         val newVoucher = voucherFactory.createVoucher(
@@ -136,7 +135,14 @@ class PaymentRepository @Inject constructor(
     }
 
     private fun mapToPaymentError(e: Exception): DataError = when (e) {
-        is FirebaseFirestoreException -> DataError.Network.SERVER_ERROR
+        is FirebaseFirestoreException -> when (e.code) {
+            FirebaseFirestoreException.Code.ALREADY_EXISTS -> DataError.Voucher.ALREADY_EXISTS
+            FirebaseFirestoreException.Code.NOT_FOUND -> DataError.Voucher.NOT_FOUND
+            FirebaseFirestoreException.Code.PERMISSION_DENIED -> DataError.Voucher.PERMISSION_DENIED
+            FirebaseFirestoreException.Code.FAILED_PRECONDITION -> DataError.User.INSUFFICIENT_POINTS
+            else -> DataError.Network.SERVER_ERROR
+        }
+
         is FirebaseNetworkException -> DataError.Network.NO_INTERNET
         else -> DataError.Payment.UNKNOWN
     }

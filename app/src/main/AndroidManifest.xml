@@ -37,6 +37,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".presentation.ui.activities.AdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.ui.activities.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
@@ -56,6 +59,13 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false"
+            tools:node="merge"
+            />
 
     </application>
 

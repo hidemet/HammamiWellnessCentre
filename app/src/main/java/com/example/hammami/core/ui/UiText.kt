@@ -12,6 +12,7 @@ sealed class UiText {
         @StringRes val id: Int,
         vararg val args: Any
     ) : UiText()
+
     fun asString(context: Context): String {
         return when (this) {
             is DynamicString -> value

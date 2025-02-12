@@ -1,5 +1,6 @@
 package com.example.hammami.data.datasource.user
 
+import android.util.Log
 import com.example.hammami.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -20,7 +21,7 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
     fun listenToUserDocument(userId: String): Flow<User?> = callbackFlow {
         val listenerRegistration = usersCollection.document(userId).addSnapshotListener { snapshot, error ->
             if (error != null) {
-                close(error) // Chiudi il flow in caso di errore
+                close(error) // Chiude il flow in caso di errore
                 return@addSnapshotListener
             }
 
@@ -42,6 +43,18 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         try {
             return usersCollection.document(uid).get().await().toObject(User::class.java)
         } catch (e: FirebaseFirestoreException) {
+            throw e
+        }
+    }
+
+    suspend fun checkIfAdmin(userId: String): Boolean {
+        return try {
+            val userDoc = usersCollection.document(userId).get().await()
+            val isAdmin = userDoc.getBoolean("isadmin") ?: false
+            Log.d("FirebaseFirestoreUserDataSource", "checkIfAdmin: User ID $userId, isAdmin: $isAdmin") // Aggiunto log
+            isAdmin
+        } catch (e: FirebaseFirestoreException) {
+            Log.e("FirebaseFirestoreUserDataSource", "checkIfAdmin: Error", e) // Aggiunto log
             throw e
         }
     }
@@ -70,6 +83,15 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         }
     }
 
+   suspend fun fetchUserFirstName(uid: String): String {
+    return try {
+        usersCollection.document(uid).get().await().getString("firstName") ?: ""
+    } catch (e: FirebaseFirestoreException) {
+        throw e
+    }
+}
+
+
     suspend fun setUserPoints(uid: String, points: Int) {
         try {
             usersCollection.document(uid).update("points", points).await()
@@ -83,7 +105,9 @@ class FirebaseFirestoreUserDataSource @Inject constructor(
         val userDocument = usersCollection.document(uid)
         val userSnapshot = transaction.get(userDocument)
         val currentPoints = userSnapshot.getLong("points")?.toInt() ?: 0
-        transaction.update(userDocument, "points", currentPoints + pointsToAdd)
+        val newPoints = currentPoints + pointsToAdd
+        transaction.update(userDocument, "points", newPoints)
+        Log.d("UserRepository", "User points updated successfully for user: $uid, new points: $newPoints")
     }
 
 

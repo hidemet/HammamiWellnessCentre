@@ -6,22 +6,65 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException
 import android.util.Log
+import com.example.hammami.data.datasource.booking.FirebaseFirestoreBookingDataSource
 import com.example.hammami.domain.model.Review
 import com.example.hammami.data.datasource.reviews.FirebaseFirestoreReviewsDataSource
 import com.example.hammami.data.datasource.services.FirebaseFirestoreMainCategoryDataSource
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ReviewsRepository @Inject constructor(
-    private val firestoreDataSource: FirebaseFirestoreReviewsDataSource,
-    private val firestoreDataSourceService: FirebaseFirestoreMainCategoryDataSource
+    private val reviewsDataSource: FirebaseFirestoreReviewsDataSource,
+    private val serviceDataSource: FirebaseFirestoreMainCategoryDataSource,
+    private val bookingDataSource: FirebaseFirestoreBookingDataSource,
+    private val firestore: FirebaseFirestore
 ) {
+
+
+    suspend fun createReview(
+        reviewText: String,
+        rating: Float,
+        serviceName: String,
+        userName: String,
+        bookingId: String):Result<Review,DataError> {
+
+        val review = Review(
+            commento = reviewText,
+            utente = userName,
+            valutazione = rating
+        )
+
+        val serviceId = serviceDataSource.getIdServiceFromName(serviceName) ?: return Result.Error(DataError.Service.SERVICE_NOT_FOUND)
+        val servicePath = serviceDataSource.getPathFromServiceId(serviceId)
+
+        Log.d("ReviewsRepository", "ID del servizio: $serviceId")
+        return try {
+            firestore.runTransaction { transaction ->
+                // 1. Crea la recensione
+                val reviewId = reviewsDataSource.addReviewData(transaction,review)
+
+                // 2. Aggiungi la recensione al servizio
+                serviceDataSource.addReviewToAService(transaction,servicePath, reviewId)
+
+                // 3. Aggiorna lo stato della prenotazione
+                bookingDataSource.setBookingHasReview(transaction, bookingId)
+
+            }.await()
+            Result.Success(review)
+
+        } catch (e: Exception) {
+            Log.d("ReviewsRepository", "Errore nella creazione della recensione", e)
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
 
     suspend fun getReviewsData(reviewsPath: List<DocumentReference>?): Result<List<Review>, DataError> {
         return try {
-            val reviewsService = firestoreDataSource.fetchReviewsData(reviewsPath)
+            val reviewsService = reviewsDataSource.fetchReviewsData(reviewsPath)
             if (reviewsService.isNotEmpty()) {
                 Result.Success(reviewsService)
             } else {
@@ -33,30 +76,10 @@ class ReviewsRepository @Inject constructor(
         }
     }
 
-    suspend fun addReviewData(review: Review): Result<Pair<String, List<Review>>, DataError> {
-        return try {
-            val documentId = firestoreDataSource.addReviewData(review)
-            Result.Success(Pair(documentId, listOf(review)))
-        } catch (e: Exception) {
-            Log.e("ReviewsRepository", "Errore nell'aggiunta della recensione", e)
-            Result.Error(mapExceptionToDataError(e))
-        }
-    }
-
-    suspend fun addReviewToService(serviceId: String, reviewId: String): Result<Unit, DataError> {
-        return try {
-            val documentId = firestoreDataSourceService.addReviewToAService(serviceId, reviewId)
-            Result.Success(documentId)
-        } catch (e: Exception) {
-            Log.e("ReviewsRepository", "Errore nell'aggiunta della recensione", e)
-            Result.Error(mapExceptionToDataError(e))
-        }
-
-    }
 
     suspend fun getCollectionFromService(serviceId: String): Result<String, DataError> {
         return try {
-            val collection = firestoreDataSourceService.getCollectionPathFromServiceId(serviceId)
+            val collection = serviceDataSource.getCollectionPathFromServiceId(serviceId)
             Result.Success(collection)
         } catch (e: Exception) {
             Log.e("ReviewsRepository", "Errore nel recupero della collezione di recensioni associate al servizio selezionato", e)
@@ -66,7 +89,7 @@ class ReviewsRepository @Inject constructor(
 
     suspend fun getServiceIdFromName(name: String): Result<String?, DataError> {
         return try {
-            val serviceId = firestoreDataSourceService.getIdServiceFromName(name)
+            val serviceId = serviceDataSource.getIdServiceFromName(name)
             Result.Success(serviceId)
         } catch (e: Exception) {
             Log.e("ReviewsRepository", "Errore nel recupero dell'id del servizio", e)

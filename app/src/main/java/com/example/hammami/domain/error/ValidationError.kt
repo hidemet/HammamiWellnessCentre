@@ -23,6 +23,15 @@ sealed interface ValidationError : Error {
 
     }
 
+    sealed interface Review : ValidationError {
+        enum class TextError : Error {
+            EMPTY
+        }
+        enum class RatingError : Error {
+            INVALID_RATING
+        }
+    }
+
     sealed interface User : ValidationError {
         enum class FirstNameError : Error {
             EMPTY,

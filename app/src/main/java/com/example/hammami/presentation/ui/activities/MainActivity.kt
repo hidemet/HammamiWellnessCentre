@@ -4,17 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.hammami.R
-import com.example.hammami.core.ui.UiText
 import com.example.hammami.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -52,7 +47,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.bookingSummaryFragment,
                 R.id.couponFragment,
                 R.id.couponSelectionFragment,
-                R.id.couponSuccessFragment
+                R.id.couponSuccessFragment,
+                R.id.bookingDetailFragment,
+                R.id.editBookingFragment,
+                R.id.reviewSummaryFragment,
+                R.id.addReviewFragment
                 -> {
                     binding.bottomNavigation.visibility = View.GONE
                 }

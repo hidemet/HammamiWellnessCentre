@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- App Bar Layout for Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -19,7 +18,6 @@
             app:titleCentered="true" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -33,9 +31,7 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Header Image with Rounded Corners -->
 
-            <!-- Title Text -->
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="100dp"
@@ -54,21 +50,18 @@
                 android:text="@string/coupon_generated_description"
                 android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
-            <!-- Include the Coupon Card -->
             <include
                 android:id="@+id/couponCard"
                 layout="@layout/item_active_voucher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <!-- Action Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:orientation="vertical">
 
-                <!-- Primary Action Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonBackToCoupons"
                     android:layout_width="match_parent"
@@ -76,7 +69,6 @@
                     android:layout_marginBottom="8dp"
                     android:text="@string/back_to_coupons" />
 
-                <!-- Secondary Action Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonBackToHome"
                     style="@style/Widget.Material3.Button.OutlinedButton"

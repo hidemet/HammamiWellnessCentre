@@ -14,12 +14,6 @@ data class PayPalPayment(
     val token: String
 ) : PaymentSystem
 
-//enum class PaymentType {
-//    SERVICE_BOOKING,
-//    GIFT_CARD_PURCHASE
-//}
-
-
 enum class PaymentMethod {
     CREDIT_CARD,
     PAYPAL,

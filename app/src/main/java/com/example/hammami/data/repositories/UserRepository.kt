@@ -9,8 +9,12 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.StorageException
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Transaction
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,7 +26,40 @@ class UserRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
 
-     fun deductPoints(transaction: Transaction, userId: String, pointsToDeduct: Int): Result<Unit, DataError> {
+    private val _isAdmin = MutableStateFlow<Boolean?>(null)
+    val isAdmin: StateFlow<Boolean?> = _isAdmin.asStateFlow()
+
+    suspend fun isUserAdmin(userId: String): Result<Boolean, DataError> {
+        return try {
+            val isAdmin = firestoreDataSource.checkIfAdmin(userId)
+            _isAdmin.value = isAdmin
+            Result.Success(isAdmin)
+        } catch (e: Exception) {
+            Log.e("UserRepository", "isUserAdmin: Error for user ID: $userId", e)
+            _isAdmin.value = false
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+    suspend fun getUserById(userId: String): Result<User, DataError> {
+        return try {
+            val user = firestoreDataSource.fetchUserData(userId)
+            if (user != null) {
+                Result.Success(user)
+            } else {
+                Result.Error(DataError.User.USER_NOT_FOUND)
+            }
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Errore nel recupero dei dati utente per ID: $userId", e)
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
+    fun deductPoints(
+        transaction: Transaction,
+        userId: String,
+        pointsToDeduct: Int
+    ): Result<Unit, DataError> {
         try {
             val userDocument = firestore.collection("users").document(userId)
             val userSnapshot = transaction.get(userDocument)
@@ -40,11 +77,16 @@ class UserRepository @Inject constructor(
     }
 
 
-    fun addUserPoints(transaction: Transaction, userId: String, pointsToAdd: Int): Result<Unit, DataError> {
+    fun addUserPoints(
+        transaction: Transaction,
+        userId: String,
+        pointsToAdd: Int
+    ): Result<Unit, DataError> {
         return try {
             firestoreDataSource.addUserPoints(transaction, userId, pointsToAdd)
             Result.Success(Unit)
         } catch (e: Exception) {
+            Log.e("UserRepository", "Error updating user points for user: $userId", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
@@ -64,6 +106,20 @@ class UserRepository @Inject constructor(
                 }
             }
 
+            is Result.Error -> Result.Error(uidResult.error)
+        }
+    }
+
+     suspend fun getCurrentUserFirstName(): Result<String, DataError> {
+        return when (val uidResult = authRepository.getCurrentUserId()) {
+            is Result.Success -> {
+                try {
+                    val firstName = firestoreDataSource.fetchUserFirstName(uidResult.data)
+                    Result.Success(firstName)
+                } catch (e: Exception) {
+                    Result.Error(mapExceptionToDataError(e))
+                }
+            }
             is Result.Error -> Result.Error(uidResult.error)
         }
     }

@@ -69,7 +69,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun handleProfileNavigation() {
         if (viewModel.isUserAuthenticated()) {
-            findNavController().navigate(R.id.action_global_profileFragment)
+            findNavController().navigate(R.id.action_homeFragment_to_profileFragment)
         } else {
             Snackbar.make(
                 binding.root,

@@ -42,7 +42,7 @@
                 app:layout_constraintBottom_toTopOf="@id/Estetica"
                 android:layout_width="match_parent"
                 android:layout_height="74dp"
-                app:cardElevation="4dp"
+                app:cardElevation="2dp"
                 app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -57,7 +57,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/tvBenessere"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:src="@drawable/placeholder_image"/>
+                        android:src="@drawable/benessere_hammami"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tvBenessere"
@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
-                app:cardElevation="0dp"
+                app:cardElevation="2dp"
                 app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -100,7 +100,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/tvEstetica"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:src="@drawable/placeholder_image"/>
+                        android:src="@drawable/stonemassage"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tvEstetica"
@@ -128,7 +128,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
-                app:cardElevation="0dp"
+                app:cardElevation="2dp"
                 app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -143,7 +143,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/tvMassaggi"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:src="@drawable/placeholder_image"/>
+                        android:src="@drawable/esteticahammami"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tvMassaggi"

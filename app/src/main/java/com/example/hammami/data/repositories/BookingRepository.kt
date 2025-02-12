@@ -4,28 +4,35 @@ import android.util.Log
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
-import com.example.hammami.core.time.DateTimeUtils.toMillis
 import com.example.hammami.data.datasource.booking.FirebaseFirestoreBookingDataSource
+import com.example.hammami.data.mapper.BookingMapper
 import com.example.hammami.domain.model.BookingStatus
 import com.example.hammami.domain.model.Service
+import com.example.hammami.domain.usecase.booking.CancelBookingReminderUseCase
+import com.example.hammami.domain.usecase.booking.ScheduleBookingReminderUseCase
 import com.google.firebase.FirebaseException
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Transaction
-import java.time.LocalDate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class BookingRepository @Inject constructor(
     private val bookingDataSource: FirebaseFirestoreBookingDataSource,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val bookingMapper: BookingMapper,
+    private val scheduleBookingReminderUseCase: ScheduleBookingReminderUseCase,
+    private val cancelBookingReminderUseCase: CancelBookingReminderUseCase
 ) {
 
     suspend fun createBooking(
         service: Service,
-        selectedDate: LocalDate,
-        startTime: String,
-        endTime: String,
+        startDate: Timestamp,
+        endDate: Timestamp,
         status: BookingStatus,
         price: Double
     ): Result<Booking, DataError> {
@@ -35,18 +42,21 @@ class BookingRepository @Inject constructor(
                     is Result.Success -> {
                         val userId = userIdResult.data
                         val bookingId = bookingDataSource.generateBookingId()
+
                         val booking = Booking(
                             id = bookingId,
                             serviceId = service.id,
                             serviceName = service.name,
-                            dateMillis = selectedDate.toMillis(),
-                            startTime = startTime,
-                            endTime = endTime,
+                            startDate = startDate,
+                            endDate = endDate,
                             status = status,
                             userId = userId,
                             price = price
                         )
-                        bookingDataSource.saveBooking(booking)
+                        bookingDataSource.saveBooking(booking.let { bookingMapper.toDto(it) })
+
+                        //Programma notifica
+                        scheduleBookingReminderUseCase(booking)
                         Result.Success(booking)
                     }
 
@@ -61,6 +71,7 @@ class BookingRepository @Inject constructor(
         }
     }
 
+
     fun updateBooking(
         transaction: Transaction,
         bookingId: String,
@@ -69,10 +80,10 @@ class BookingRepository @Inject constructor(
         transactionId: String
     ): Result<Unit, DataError> {
         return try {
-            if(bookingId.isBlank()) {
+            if (bookingId.isBlank()) {
                 return Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
             }
-            bookingDataSource.updateBooking(transaction, bookingId, status, amount,transactionId)
+            bookingDataSource.updateBooking(transaction, bookingId, status, amount, transactionId)
             Result.Success(Unit)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nell'aggiornare la prenotazione", e)
@@ -80,9 +91,38 @@ class BookingRepository @Inject constructor(
         }
     }
 
+    suspend fun updateBookingDetails(
+        bookingId: String,
+        startDate: Timestamp,
+        endDate: Timestamp
+    ): Result<Unit, DataError> {
+        return try {
+            if (bookingId.isBlank()) {
+                return Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
+            }
+
+            cancelBookingReminderUseCase(bookingId)
+
+            bookingDataSource.updateBookingDetails(bookingId, startDate, endDate)
+
+            val updatedBookingResult = getBookingById(bookingId)
+            if (updatedBookingResult is Result.Success) {
+                val updatedBooking = updatedBookingResult.data
+
+                scheduleBookingReminderUseCase(updatedBooking)
+            } else if (updatedBookingResult is Result.Error){
+                return Result.Error(updatedBookingResult.error)
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Log.e("BookingRepository", "Errore nell'aggiornare i dettagli della prenotazione", e)
+            Result.Error(mapExceptionToDataError(e))
+        }
+    }
+
     fun updateBookingReview(bookingId: String): Result<Unit, DataError> {
         return try {
-            if(bookingId.isBlank()) {
+            if (bookingId.isBlank()) {
                 return Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
             }
             bookingDataSource.updateBookingReview(bookingId)
@@ -93,20 +133,66 @@ class BookingRepository @Inject constructor(
         }
     }
 
-    suspend fun getBookingsForDate(date: LocalDate): Result<List<Booking>, DataError> {
+    fun getBookingsForDateRange(
+        startDate: Timestamp,
+        endDate: Timestamp
+    ): Flow<Result<List<Booking>, DataError>> {
         return try {
-            val dateMillis = date.toMillis()
-            val bookings = bookingDataSource.getBookingsForDate(dateMillis)
-            Result.Success(bookings)
+            bookingDataSource.getBookingsForDateRange(startDate, endDate)
+                .map { dtoList ->
+                    Result.Success(dtoList.map { bookingMapper.toDomain(it) })
+                }
         } catch (e: Exception) {
-            Log.e("BookingRepository", "Errore nel recuperare le prenotazioni per data", e)
+            Log.e(
+                "BookingRepository",
+                "Errore nel recuperare le prenotazioni per l'intervallo di date",
+                e
+            )
+            flowOf(Result.Error(mapExceptionToDataError(e)))
+        }
+
+    }
+
+    fun getBookingsForUser(): Flow<Result<List<Booking>, DataError>> {
+        return try {
+            val userIdResult = authRepository.getCurrentUserId()
+            if (userIdResult is Result.Success) {
+                bookingDataSource.getBookingsForUser(
+                    userIdResult.data,
+                ).map { dtoList ->
+                    val bookings = dtoList.map { bookingMapper.toDomain(it) }
+                    Result.Success( bookings )
+                }
+            } else {
+                flowOf(Result.Error(DataError.Auth.NOT_AUTHENTICATED))
+            }
+        } catch (e: Exception) {
+            Log.e(
+                "BookingRepository",
+                "Errore nel recuperare le prenotazioni utente per l'intervallo di date",
+                e
+            )
+            flowOf(Result.Error(mapExceptionToDataError(e)))
+        }
+    }
+
+    suspend fun isTimeSlotAvailable(
+        startDate: Timestamp,
+        endDate: Timestamp
+    ): Result<Boolean, DataError> {
+        return try {
+            val isAvailable = bookingDataSource.isTimeSlotAvailable(startDate, endDate)
+            Result.Success(isAvailable)
+        } catch (e: Exception) {
+            Log.e("BookingRepository", "Errore nel verificare la disponibilità dello slot", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
 
     suspend fun getUserBookings(userId: String): Result<List<Booking>, DataError> {
         return try {
-            val bookings = bookingDataSource.getUserBookings(userId)
+            val bookings =
+                bookingDataSource.getUserBookings(userId).map { bookingMapper.toDomain(it) }
             Result.Success(bookings)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel recuperare le prenotazioni dell'utente", e)
@@ -116,12 +202,12 @@ class BookingRepository @Inject constructor(
 
     suspend fun getUserBookingsSeparated(userId: String): Result<Pair<List<Booking>, List<Booking>>, DataError> {
         return try {
-            val bookings = bookingDataSource.getUserBookings(userId)
-            val currentDate = LocalDate.now().toMillis()
+            val bookings =
+                bookingDataSource.getUserBookings(userId).map { bookingMapper.toDomain(it) }
+            val currentDate = Timestamp.now()
 
-            val pastBookings = bookings.filter { it.dateMillis < currentDate }
-            val futureBookings = bookings.filter { it.dateMillis >= currentDate }
-
+            val pastBookings = bookings.filter { it.startDate < currentDate }
+            val futureBookings = bookings.filter { it.startDate >= currentDate }
             Result.Success(Pair(pastBookings, futureBookings))
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nel recuperare le prenotazioni dell'utente", e)
@@ -131,10 +217,14 @@ class BookingRepository @Inject constructor(
 
     suspend fun getBookingById(bookingId: String): Result<Booking, DataError> {
         return try {
-            val booking = bookingDataSource.getBookingById(bookingId)
-            Result.Success(booking)
+            val bookingDto = bookingDataSource.getBookingById(bookingId)
+            if (bookingDto != null) {
+                Result.Success(bookingMapper.toDomain(bookingDto))
+            } else {
+                Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
+            }
         } catch (e: Exception) {
-        Log.e("BookingRepository", "Errore nel recuperare la prenotazione", e)
+            Log.e("BookingRepository", "Errore nel recuperare la prenotazione", e)
             Result.Error(mapExceptionToDataError(e))
         }
     }
@@ -142,6 +232,7 @@ class BookingRepository @Inject constructor(
     suspend fun deleteBooking(bookingId: String): Result<Unit, DataError> {
         return try {
             bookingDataSource.deleteBooking(bookingId)
+            cancelBookingReminderUseCase(bookingId)
             Result.Success(Unit)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nell'eliminare la prenotazione", e)

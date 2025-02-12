@@ -56,7 +56,6 @@
             android:text="@string/apply_discount"
             style="@style/Widget.Material3.Button.TextButton" />
 
-        <!-- Sconto applicato -->
         <com.google.android.material.chip.Chip
             android:id="@+id/appliedDiscountChip"
             android:layout_width="wrap_content"

@@ -5,7 +5,6 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.PropertyName
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
-import javax.inject.Inject
 
 @Parcelize
 data class Service(
@@ -17,7 +16,7 @@ data class Service(
     @get:PropertyName("Immagine") @set:PropertyName("Immagine") var image: String? = null,
     @get:PropertyName("Durata") @set:PropertyName("Durata") var length: Long? = null,
     @get:PropertyName("Categoria") @set:PropertyName("Categoria") var category: String? = null,
-    @get:PropertyName("Recensioni") @set:PropertyName("Recensioni") var reviews: @RawValue List<DocumentReference>? = null,   // List<DocumentReference>
+    @get:PropertyName("Recensioni") @set:PropertyName("Recensioni") var reviews: @RawValue List<DocumentReference>? = null,
     @get:PropertyName("Sezione homepage") @set:PropertyName("Sezione homepage") var homepageSection: String? = null,
     @get:PropertyName("Benefici") @set:PropertyName("Benefici") var benefits: String? = null
 ) : Parcelable{

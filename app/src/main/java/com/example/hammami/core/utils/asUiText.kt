@@ -18,6 +18,14 @@ fun FirstNameError.asUiText(): UiText {
     }
 }
 
+fun Review.TextError.asUiText(): UiText {
+    return UiText.StringResource(R.string.error_text_empty)
+}
+
+fun Review.RatingError.asUiText(): UiText {
+    return UiText.StringResource(R.string.error_rating_invalid)
+}
+
 fun LastNameError.asUiText(): UiText {
     return UiText.StringResource(R.string.error_last_name_empty)
 }
@@ -115,6 +123,7 @@ fun DataError.asUiText(): UiText {
             DataError.User.UNKNOWN -> UiText.StringResource(R.string.error_unknown_user)
         }
 
+
         is Storage -> when (this) {
             Storage.BUCKET_NOT_FOUND -> UiText.StringResource(R.string.error_bucket_not_found)
             Storage.QUOTA_EXCEEDED -> UiText.StringResource(R.string.error_quota_exceeded)
@@ -203,5 +212,7 @@ fun Error.asUiText(): UiText {
         is Payment -> this.asUiText()
         is Service -> this.asUiText()
         is Booking -> this.asUiText()
+        is Review.TextError -> this.asUiText()
+        is Review.RatingError -> this.asUiText()
     }
 }

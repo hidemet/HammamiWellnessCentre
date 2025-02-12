@@ -77,6 +77,18 @@
                     app:singleSelection="true" />
             </HorizontalScrollView>
 
+            <TextView
+                android:id="@+id/closedDayMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/closed_day"
+                android:visibility="gone"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/bookButton"
                 android:layout_width="match_parent"

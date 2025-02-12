@@ -5,6 +5,5 @@
     android:viewportHeight="27.12">
 
     <group android:name="logo_group">
-        <!-- Tutto il contenuto esistente del tuo logo va qui -->
     </group>
 </vector>

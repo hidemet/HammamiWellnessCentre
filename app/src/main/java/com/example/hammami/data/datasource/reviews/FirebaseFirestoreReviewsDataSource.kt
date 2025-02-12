@@ -5,6 +5,7 @@ import com.example.hammami.domain.model.User
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Transaction
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,11 +16,12 @@ class FirebaseFirestoreReviewsDataSource @Inject constructor(
 ) {
     private val reviewsCollection = firestore.collection("/Recensioni")
 
-    suspend fun fetchReviewsData(reviewsPathList: List<DocumentReference>?) : List<Review> {
+    suspend fun fetchReviewsData(reviewsPathList: List<DocumentReference>?): List<Review> {
         val allReviews = mutableListOf<Review>()
         try {
             reviewsPathList?.forEach { reviewPath ->
-                val review = firestore.document(reviewPath.path).get().await().toObject(Review::class.java)
+                val review =
+                    firestore.document(reviewPath.path).get().await().toObject(Review::class.java)
                 review?.let { allReviews.add(it) }
             }
         } catch (e: FirebaseFirestoreException) {
@@ -28,13 +30,17 @@ class FirebaseFirestoreReviewsDataSource @Inject constructor(
         return allReviews
     }
 
-    suspend fun addReviewData(review: Review) : String{
-        try {
-            val document = reviewsCollection.add(review).await()
-            return document.path
-        } catch (e: FirebaseFirestoreException) {
-            throw e
+ fun addReviewData(transaction: Transaction, review: Review): String {
+    return try {
+        val document = transaction.run {
+            val newDocRef = reviewsCollection.document()
+            set(newDocRef, review)
+            newDocRef
         }
+        document.id
+    } catch (e: FirebaseFirestoreException) {
+        throw e
     }
+}
 
 }
