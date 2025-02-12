@@ -7,7 +7,6 @@ import javax.inject.Inject
 
 class CardInputFormatter @Inject constructor() {
     fun formatExpiryDate(input: String): String {
-        // Inserisce lo slash automaticamente dopo i primi due numeri
         return input.take(5) // MM/YY
     }
 
@@ -19,7 +18,6 @@ class CardInputFormatter @Inject constructor() {
 
 }
 
-// Implementato come extension del TextInputEditText
 fun TextInputEditText.setupExpiryDateFormatting(
     formatter: CardInputFormatter,
     onValueChanged: (String) -> Unit

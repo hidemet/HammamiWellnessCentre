@@ -26,7 +26,7 @@ class AdminActivity : AppCompatActivity() {
         // Aggiungi un listener per gestire la visibilità della
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.homeAdminFragment, R.id.agendaAdminFragment, R.id.catalogueAdminFragment -> {
+                R.id.homeAdminFragment, R.id.agendaAdminFragment, R.id.adminServiceCatalogueFragment -> {
                     // Mostra la BottomNavigationView solo per queste destinazioni
                     binding.bottomNavigationAdmin.visibility = View.VISIBLE
                 }

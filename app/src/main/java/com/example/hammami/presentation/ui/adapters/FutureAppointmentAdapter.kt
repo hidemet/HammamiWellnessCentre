@@ -1,6 +1,5 @@
 package com.example.hammami.presentation.ui.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -25,7 +24,6 @@ class FutureAppointmentAdapter : ListAdapter<Booking, FutureAppointmentAdapter.V
     }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val booking = getItem(position)
-        Log.d("FutureAppointmentAdapter", "onBindViewHolder: posizione=$position, bookingId=${booking.id}") // LOG
         holder.bind(booking)
     }
 
@@ -55,20 +53,15 @@ class FutureAppointmentAdapter : ListAdapter<Booking, FutureAppointmentAdapter.V
 
 class AppointmentDiffCallback : DiffUtil.ItemCallback<Booking>() {
     override fun areItemsTheSame(oldItem: Booking, newItem: Booking): Boolean {
-        val areTheSame = oldItem.id == newItem.id
-        Log.d(
-            "AppointmentDiffCallback",
-            "areItemsTheSame: oldId=${oldItem.id}, newId=${newItem.id}, result=$areTheSame"
-        )
-        return areTheSame
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: Booking, newItem: Booking): Boolean {
         val areTheSame = oldItem == newItem
-        Log.d(
-            "AppointmentDiffCallback",
-            "areContentsTheSame: oldItem=$oldItem, newItem=$newItem, result=$areTheSame"
-        )
+//        Log.d(
+//            "AppointmentDiffCallback",
+//            "areContentsTheSame: oldItem=$oldItem, newItem=$newItem, result=$areTheSame"
+//        )
         return areTheSame
     }
 }

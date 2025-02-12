@@ -11,6 +11,9 @@
     <string name="select_time">Seleziona l\'orario</string>
     <string name="book_now">Prenota ora</string>
 
+    <string name="permission_required_title">Permesso Necessario</string>
+    <string name="notification_permission_rationale">Per poterti inviare promemoria sui tuoi appuntamenti e aggiornamenti importanti, abbiamo bisogno del tuo permesso per inviare notifiche. Le notifiche sono fondamentali per non perdere le tue prenotazioni. Vuoi concedere il permesso?</string>
+
     <!-- Errori relativi alle prenotazioni (DataError.Booking) -->
     <string name="error_invalid_time">Orario non valido. Seleziona un orario valido.</string>
     <string name="error_invalid_date">Data non valida. Seleziona una data valida.</string>

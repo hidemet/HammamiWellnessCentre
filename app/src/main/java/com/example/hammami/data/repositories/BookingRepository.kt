@@ -100,8 +100,23 @@ class BookingRepository @Inject constructor(
             if (bookingId.isBlank()) {
                 return Result.Error(DataError.Booking.BOOKING_NOT_FOUND)
             }
-            bookingDataSource.updateBookingDetails(bookingId, startDate, endDate)
+
             cancelBookingReminderUseCase(bookingId)
+
+            bookingDataSource.updateBookingDetails(bookingId, startDate, endDate)
+
+            val updatedBookingResult = getBookingById(bookingId)
+            if (updatedBookingResult is Result.Success) {
+                val updatedBooking = updatedBookingResult.data
+                Log.d("BookingRepository", "updatedBookingDetails: updatedBooking=$updatedBooking") // LOG
+
+
+                scheduleBookingReminderUseCase(updatedBooking)
+                Log.d("BookingRepository", "Notifica riprogrammata dopo l'update")
+            } else if (updatedBookingResult is Result.Error){
+                Log.e("BookingRepository", "Errore nel recuperare la prenotazione dopo l'update", (updatedBookingResult.error as Throwable))
+                return Result.Error(updatedBookingResult.error)
+            }
             Result.Success(Unit)
         } catch (e: Exception) {
             Log.e("BookingRepository", "Errore nell'aggiornare i dettagli della prenotazione", e)

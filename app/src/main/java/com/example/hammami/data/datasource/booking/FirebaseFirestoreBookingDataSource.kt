@@ -115,7 +115,6 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
     fun getBookingsForUser(
         userId: String,
     ): Flow<List<BookingDto>> = callbackFlow {
-        Log.d("FirestoreDataSource", "getBookingsForUserAndDateRange: userId=$userId") // LOG
         var listenerRegistration: ListenerRegistration? = null
 
         try {
@@ -132,7 +131,6 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
 
                 if (snapshot != null) {
                     val bookings = snapshot.documents.mapNotNull { it.toObject(BookingDto::class.java) }
-                    Log.d("FirestoreDataSource", "getBookingsForUserAndDateRange: Got ${bookings.size} bookings") // LOG
                     trySend(bookings)
                 } else {
                     Log.d("FirestoreDataSource", "getBookingsForUserAndDateRange: Snapshot is null")  // LOG
@@ -152,7 +150,6 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
 
     suspend fun isTimeSlotAvailable(startDate: Timestamp, endDate: Timestamp): Boolean {
         return try {
-            Log.d("FirestoreBookingDataSource", "isTimeSlotAvailable: startDate=$startDate, endDate=$endDate")
             val querySnapshot = bookingsCollection
                 .whereLessThan("startDate", endDate)
                 .whereGreaterThan("endDate", startDate)
@@ -160,7 +157,6 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
                 .await()
 
             val isAvailable = querySnapshot.isEmpty // Se la query è vuota, lo slot è disponibile
-            Log.d("FirestoreBookingDataSource", "isTimeSlotAvailable: slot is available: $isAvailable")
             isAvailable
 
         } catch (e: Exception) {
@@ -176,9 +172,7 @@ class FirebaseFirestoreBookingDataSource @Inject constructor(
     fun updateBookingReview(bookingId: String) {
         try {
             val bookingRef = bookingsCollection.document(bookingId)
-            Log.e("FirestoreBookingDataSource", "$bookingRef")
             bookingRef.update("hasReview", true)
-            Log.e("FirestoreBookingDataSource", "Impostato hasReview a true")
         } catch (e: FirebaseFirestoreException) {
             throw e
         }

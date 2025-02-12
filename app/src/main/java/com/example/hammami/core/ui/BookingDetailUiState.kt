@@ -8,6 +8,6 @@ data class BookingDetailUiState(
     val booking: Booking? = null,
     val user: User? = null,
     val isLoading: Boolean = false,
-    val availableOptions: List<ItemProfileOption> = emptyList(), // Opzioni disponibili
-    val isNavigationOptionVisible: Boolean = false // Flag per la visibilità dell'opzione di navigazione
+    val availableOptions: List<ItemProfileOption> = emptyList(),
+    val isNavigationOptionVisible: Boolean = false
 )

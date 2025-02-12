@@ -28,7 +28,7 @@ class NotificationWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val bookingId = inputData.getString(KEY_BOOKING_ID) ?: return@withContext Result.failure()
-        val isCancellation = inputData.getBoolean(KEY_IS_CANCELLATION, false) // Recupera il flag
+        val isCancellation = inputData.getBoolean(KEY_IS_CANCELLATION, false)
 
         when (val bookingResult = getBookingByIdUseCase(bookingId)) {
             is com.example.hammami.core.result.Result.Success -> {

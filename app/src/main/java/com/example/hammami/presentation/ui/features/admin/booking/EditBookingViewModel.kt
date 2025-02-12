@@ -13,6 +13,7 @@ import com.example.hammami.core.utils.asUiText
 import com.example.hammami.domain.model.Booking
 import com.example.hammami.domain.usecase.booking.GetAvailableTimeSlotsUseCase
 import com.example.hammami.domain.usecase.booking.GetBookingByIdUseCase
+import com.example.hammami.domain.usecase.booking.ScheduleBookingReminderUseCase
 import com.example.hammami.domain.usecase.booking.UpdateBookingDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,6 +30,7 @@ class EditBookingViewModel @Inject constructor(
     private val getBookingByIdUseCase: GetBookingByIdUseCase,
     private val updateBookingDetailsUseCase: UpdateBookingDetailsUseCase,
     private val getAvailableTimeSlotsUseCase: GetAvailableTimeSlotsUseCase,
+    private val scheduleBookingReminderUseCase: ScheduleBookingReminderUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditBookingUiState())
@@ -125,7 +127,17 @@ class EditBookingViewModel @Inject constructor(
                 startDate = startDate,
                 endDate = endDate
             )) {
-                is Result.Success -> emitUiEvent(EditBookingUiEvent.BookingUpdatedSuccessfully)
+                is Result.Success ->
+                {
+                    when (val updatedBookingResult  = getBookingByIdUseCase(bookingId)) {
+                        is Result.Success -> {
+                            scheduleBookingReminderUseCase(updatedBookingResult .data)
+                            emitUiEvent(EditBookingUiEvent.BookingUpdatedSuccessfully)
+                        }
+                        is Result.Error -> emitUiEvent(EditBookingUiEvent.ShowError(updatedBookingResult.error.asUiText()))
+                    }
+                    emitUiEvent(EditBookingUiEvent.BookingUpdatedSuccessfully)
+                }
                 is Result.Error -> emitUiEvent(EditBookingUiEvent.ShowError(result.error.asUiText()))
             }
         }

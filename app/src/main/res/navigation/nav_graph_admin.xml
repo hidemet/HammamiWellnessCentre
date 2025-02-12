@@ -65,8 +65,8 @@
     </fragment>
 
     <fragment
-        android:id="@+id/catalogueAdminFragment"
-        android:name="com.example.hammami.presentation.ui.features.admin.users.AdminUsersFragment"
+        android:id="@+id/adminServiceCatalogueFragment"
+        android:name="com.example.hammami.presentation.ui.features.admin.service.AdminServiceCatalogueFragment"
         android:label="AdminUsersFragment"
-        tools:layout="@layout/fragment_admin_users" />
+        tools:layout="@layout/fragment_admin_service_catalogue" />
 </navigation>

@@ -40,19 +40,12 @@ class EditBookingFragment : BaseFragment() {
     private val viewModel: EditBookingViewModel by viewModels()
     private val args: EditBookingFragmentArgs by navArgs()
 
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requestPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-                if (isGranted) {
-                    // Permesso concesso, procedi con la logica di prenotazione
-
-                } else {
-                    showSnackbar(UiText.StringResource(R.string.notification_permission_denied))
-                }
-            }
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            showSnackbar(UiText.StringResource(R.string.notification_permission_denied))
+        }
     }
 
     override fun onCreateView(
@@ -60,6 +53,18 @@ class EditBookingFragment : BaseFragment() {
     ): View {
         _binding = FragmentBookingBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if(!hasNotificationPermission()) {
+            requestNotificationPermission()
+        }
+        setupUI()
+        observeFlows()
+        viewModel.loadBooking(args.bookingId)
+
     }
 
     private fun hasNotificationPermission(): Boolean {
@@ -71,20 +76,6 @@ class EditBookingFragment : BaseFragment() {
 
     private fun requestNotificationPermission() {
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setupUI()
-        observeFlows()
-        viewModel.loadBooking(args.bookingId)
-
-        findNavController().addOnDestinationChangedListener { controller, destination, arguments ->
-            Log.d("EditBookingFragment", "Navigated to: ${destination.label}")
-            // Puoi anche stampare gli argomenti se necessario:
-            // Log.d("EditBookingFragment", "Arguments: $arguments")
-        }
     }
 
     override fun setupUI() {

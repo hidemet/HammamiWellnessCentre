@@ -15,32 +15,25 @@ class TimeSlotCalculator @Inject constructor(
         serviceDurationMinutes: Int,
         date: LocalDate
     ): List<TimeSlot> {
-        Log.d("TimeSlotCalculator", "generateAvailableTimeSlots called with date: $date, duration: $serviceDurationMinutes") // LOG IMPORTANTE
-
         val potentialSlots = timeSlotGenerator.generateTimeSlots(serviceDurationMinutes, date)
-        Log.d("TimeSlotCalculator", "Potential slots generated: $potentialSlots") // LOG
 
         if (potentialSlots.isEmpty()) {
-            Log.d("TimeSlotCalculator", "No potential slots, returning empty list.")
             return emptyList()
         }
 
         val availableSlots = mutableListOf<TimeSlot>()
 
         for (slot in potentialSlots) {
-            val startTimestamp = DateTimeUtils.toTimestamp(date, slot.startTime)
-            val endTimestamp = DateTimeUtils.toTimestamp(date, slot.endTime)
+          //  val startTimestamp = DateTimeUtils.toTimestamp(date, slot.startTime)
+         //   val endTimestamp = DateTimeUtils.toTimestamp(date, slot.endTime)
 
-            Log.d("TimeSlotCalculator", "Checking slot: $slot, startTimestamp: $startTimestamp, endTimestamp: $endTimestamp") // LOG
 
 
             when (val isAvailableResult = isTimeSlotAvailableUseCase(date = date, slot = slot)) {
                 is Result.Success -> {
-                    Log.d("TimeSlotCalculator", "isTimeSlotAvailableUseCase returned: ${isAvailableResult.data}") // LOG
                     if (isAvailableResult.data) {
                         availableSlots.add(slot)
                     } else {
-                        Log.d("TimeSlotCalculator", "Slot $slot è NON disponibile") // LOG
                     }
                 }
                 is Result.Error -> {
@@ -50,7 +43,6 @@ class TimeSlotCalculator @Inject constructor(
             }
         }
 
-        Log.d("TimeSlotCalculator", "Final available slots: $availableSlots") // LOG
         return availableSlots.sortedBy { it.startTime }
     }
 }

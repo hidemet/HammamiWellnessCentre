@@ -13,7 +13,7 @@
         android:title="Agenda"/>
 
     <item
-        android:id="@id/catalogueAdminFragment"
+        android:id="@id/adminServiceCatalogueFragment"
         android:enabled="true"
         android:icon="@drawable/import_contacts"
         android:title="Catalogo"/>

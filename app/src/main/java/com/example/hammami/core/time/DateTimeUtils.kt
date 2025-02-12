@@ -84,7 +84,6 @@ object DateTimeUtils {
         val dateTime =
             LocalDateTime.of(date, time.startTime).atZone(ZoneId.systemDefault()).toInstant()
         val timestamp =  Timestamp(Date.from(dateTime))
-        Log.d("DateTimeUtils", "toTimestamp: date=$date, time=${time.startTime}, timestamp=$timestamp") // LOG
         return timestamp
     }
     fun Timestamp.toLocalDate(): LocalDate {
