@@ -27,7 +27,7 @@ import com.example.hammami.domain.usecase.validation.user.ValidateLastNameUseCas
 import com.example.hammami.domain.usecase.validation.user.ValidatePhoneNumberUseCase
 import com.example.hammami.core.utils.ClipboardManager
 import com.example.hammami.domain.usecase.user.GetCurrentUserIdUseCase
-import com.example.hammami.util.PreferencesManager
+import com.example.hammami.core.utils.PreferencesManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage

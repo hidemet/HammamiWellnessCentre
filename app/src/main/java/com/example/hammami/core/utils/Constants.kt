@@ -1,4 +1,4 @@
-package com.example.hammami.util
+package com.example.hammami.core.utils
 
 object Constants {
     const val USER_COLLECTION = "users"

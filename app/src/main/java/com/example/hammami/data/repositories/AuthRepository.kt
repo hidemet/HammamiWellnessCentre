@@ -2,7 +2,7 @@ package com.example.hammami.data.repositories
 
 import com.example.hammami.domain.error.DataError
 import com.example.hammami.core.result.Result
-import com.example.hammami.util.PreferencesManager
+import com.example.hammami.core.utils.PreferencesManager
 import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
