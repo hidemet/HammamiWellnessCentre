@@ -17,6 +17,8 @@ Un'applicazione mobile nativa per Android, sviluppata in **Kotlin**, il cui desi
 | :---: | :---: | :---: | :---: |
 | ![Schermata Home](./media/home-screen.png) | ![Dettaglio di un servizio](./media/service-detail-screen.png) | ![Calendario di prenotazione](./media/booking-calendar.png) | ![Schermata Pagamento](./media/payment_screen.png) |
 
+*(Una panoramica visiva del flusso utente principale: dalla scoperta del servizio al pagamento.)*
+
 *(Una panoramica visiva delle funzionalità chiave dell'applicazione.)*
 
 ## 🗺️ Architettura dell'Informazione e Flussi Utente
