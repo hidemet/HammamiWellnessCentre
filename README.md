@@ -26,7 +26,6 @@ Un'applicazione mobile nativa per Android, sviluppata in **Kotlin**, il cui desi
 Prima dello sviluppo, l'intera architettura di navigazione è stata mappata per garantire un'esperienza utente logica e intuitiva. Il diagramma seguente illustra i principali flussi di navigazione dal punto di vista del cliente.
 
 ![Mappa di Navigazione dell'App](./media/navigation-map.png)
-*(Assicurati di aver caricato l'immagine della navigation map in `media/navigation-map.png`)*
 
 ## 🏛️ Architettura e Stack Tecnologico
 
