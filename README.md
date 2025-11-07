@@ -1,5 +1,5 @@
 # HammamiWellnessCentre
-Un'applicazione mobile nativa per Android, sviluppata in **Kotlin**, il cui design è stato interamente guidato da un processo di **Human-Centered Design (HCD)**. Utilizzando **Material Design 3**, l'app consente agli utenti di esplorare servizi, prenotare trattamenti, gestire il proprio profilo e interagire con il centro benessere attraverso un'interfaccia intuitiva e accessibile.
+Un'applicazione mobile nativa per Android, sviluppata in **Kotlin**, progettata come soluzione digitale per **Hammami (hammami.it)**, un rinomato centro benessere di Brescia. L'app, il cui design è stato guidato da un processo di **Human-Centered Design (HCD)**, digitalizza l'intera esperienza cliente: dall'esplorazione dei servizi alla prenotazione e gestione degli appuntamenti.
 
 ---
 
