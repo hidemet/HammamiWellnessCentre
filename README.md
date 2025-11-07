@@ -1,5 +1,4 @@
 # HammamiWellnessCentre
-
 Un'applicazione mobile nativa per Android, sviluppata in **Kotlin**, il cui design è stato interamente guidato da un processo di **Human-Centered Design (HCD)**. Utilizzando **Material Design 3**, l'app consente agli utenti di esplorare servizi, prenotare trattamenti, gestire il proprio profilo e interagire con il centro benessere attraverso un'interfaccia intuitiva e accessibile.
 
 ---
