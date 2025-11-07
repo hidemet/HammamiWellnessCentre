@@ -6,8 +6,8 @@ Un'applicazione mobile nativa per Android, sviluppata in **Kotlin**, il cui desi
 
 ### 📄 **Documentazione Completa**
 * [**Esplora il Prototipo Interattivo su Figma**](https://www.figma.com/design/7mJzNG0WF3RerFoHGTPknW/Material-3-Design-Kit--Community-?node-id=55908-54774&t=YZoReQabeNy1w2rK-1)
-*   [**Leggi la Relazione di Progetto Completa](./relazione hammami.pdf)**
-*   [**Visualizza le Slide di Presentazione](slide presentazione hammami.pdf)**
+*   [**Leggi la Relazione di Progetto Completa](./relazione-hammami.pdf)**
+*   [**Visualizza le Slide di Presentazione](./slide-presentazione-hammami.pdf)**
 
 ---
 
