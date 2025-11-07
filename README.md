@@ -11,7 +11,7 @@ Un'applicazione mobile nativa per Android, sviluppata in **Kotlin**, il cui desi
 
 ---
 
-## ✨ Feature Principali in Azione
+## ✨ Feature Principali
 
 | Homepage & Servizi | Dettaglio e Prenotazione | Profilo e Coupon |
 | :---: | :---: | :---: |
