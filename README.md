@@ -13,9 +13,9 @@ Un'applicazione mobile nativa per Android, sviluppata in **Kotlin**, il cui desi
 
 ## ✨ Feature Principali
 
-| Homepage & Servizi | Dettaglio e Prenotazione | Profilo e Coupon |
-| :---: | :---: | :---: |
-| ![Schermata Home](./media/home-screen.png) | ![Schermata Dettaglio Servizio](./media/service-detail-screen.png) | ![Schermata Login](./media/login-screen.png) |
+| Homepage & Servizi | Dettaglio Servizio | Calendario Prenotazione | Pagamento |
+| :---: | :---: | :---: | :---: |
+| ![Schermata Home](./media/home-screen.png) | ![Dettaglio di un servizio](./media/service-detail-screen.png) | ![Calendario di prenotazione](./media/booking-calendar.png) | ![Schermata Pagamento](./media/payment_screen.png) |
 
 *(Una panoramica visiva delle funzionalità chiave dell'applicazione.)*
 
